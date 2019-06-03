@@ -2,7 +2,6 @@
 
 """
 __author__ = "Axelle Apvrille"
-__status__ = "Beta"
 __license__ = "MIT License"
 """
 import hashlib
@@ -25,7 +24,7 @@ import droidziprar
 import droidurl
 import xml.parsers.expat as expat
 
-__version__ = '2.2'
+__version__ = '2.3'
 
 class droidsample:
     """Base class for an Android sample to analyze"""
