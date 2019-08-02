@@ -18,7 +18,7 @@ It automatically disassembles the Android application and looks for various prop
 - **procyon** https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler
 - AXMLPrinter2.jar https://code.google.com/p/android4me/
 - Java >= 1.7.0
-- SQLAlchemy: `easy_install SQLAlchemy` or `pip install SQLAlchemy`
+- SQLAlchemy: `easy_install SQLAlchemy` or `pip install SQLAlchemy` or `apt-get install python-sqlalchemy`
 
 ### Configuration
 
