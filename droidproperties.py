@@ -127,7 +127,7 @@ class droidproperties:
         # automatically set to False kit properties
         self.kits.clear()
         self.kitsconfig = droidconfig.droidconfig(droidconfig.KIT_CONFIGFILE, self.verbose)
-        for section in self.armconfig.get_sections():
+        for section in self.kitsconfig.get_sections():
             self.kits[section] = False
         
         # END OF reinit to default values
@@ -149,7 +149,6 @@ class droidproperties:
                                  arm_properties=json.dumps(self.arm),\
                                  dex_properties=json.dumps(self.dex),\
                                  kits=json.dumps(self.kits))
-
         session.add(sample)
         try:
             session.commit()

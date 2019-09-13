@@ -542,6 +542,7 @@ class droidsample:
                             if self.verbose:
                                 print("kits[%s] = True (detected %s)" % (section, pattern))
                                 list.append(section)
+                                self.properties.kits[ section ] = True
                                 break # break one level
         return list
 
