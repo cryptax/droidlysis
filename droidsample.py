@@ -540,7 +540,7 @@ class droidsample:
                     for pattern in pattern_list:
                         if os.access(os.path.join(smali_dir, pattern), os.R_OK):
                             if self.verbose:
-                                print("kits[%s] = True (detected %s)" % (section, pattern))
+                                print("kits[%s] = True (detected pattern: %s)" % (section, pattern))
                                 list.append(section)
                                 self.properties.kits[ section ] = True
                                 break # break one level
@@ -641,7 +641,12 @@ class droidsample:
         if os.access(smali_dir, os.R_OK) and os.listdir(smali_dir) != []: 
             exceptions = []
             for kit in list_of_kits:
-                exceptions.append(os.path.join(smali_dir, self.properties.kitsconfig.get_pattern(kit)))
+                pattern = self.properties.kitsconfig.get_pattern(kit)
+                if pattern != None and pattern != '':
+                    exceptions.append(os.path.join(smali_dir, pattern ))
+                else:
+                    if self.verbose:
+                        print "WARNING: configuration file error: empty pattern for %s" % (kit)
 
             smali_regexp = self.properties.smaliconfig.get_all_regexp()
             match = droidutil.recursive_search(smali_regexp, smali_dir, exceptions, False)
