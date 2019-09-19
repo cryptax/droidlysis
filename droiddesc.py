@@ -82,7 +82,7 @@ class droiddesc:
             self.descfile.write("The victim fails to receive some SMS messages.\n")
 
         if 'coinhive' in self.sample.properties.wide and self.sample.properties.wide['coinhive']:
-            self.descfile.write("The malware mines crypto-currencies.\n")
+            self.descfile.write("The sample mines crypto-currencies.\n")
 
         self.descfile.write('\n')
 
@@ -90,7 +90,7 @@ class droiddesc:
     def summary(self):
         self.descfile.write("## Summary\n\n")
 
-        self.descfile.write('This malware targets Android mobile devices.\n')
+        self.descfile.write('This sample targets Android mobile devices.\n')
 
         if self.spyware:
             self.descfile.write("It spies on its victim.\n")
@@ -125,28 +125,28 @@ class droiddesc:
             self.descfile.write('\n')
 
         if self.sample.properties.manifest['package'] != None:
-            self.descfile.write("The malware comes packaged as %s.\n" % (self.sample.properties.manifest['package']))
+            self.descfile.write("The sample comes packaged as %s.\n" % (self.sample.properties.manifest['package']))
 
         if self.sample.properties.manifest['main_activity'] != None:
             self.descfile.write("The main activity is %s.\n" % (self.sample.properties.manifest['main_activity']))
         if self.sample.properties.manifest['activities']:
-            self.descfile.write("The malware defines %d activities: " % (len(self.sample.properties.manifest['activities'])))
+            self.descfile.write("The sample defines %d activities: " % (len(self.sample.properties.manifest['activities'])))
             self.descfile.write("%s.\n" % (', '.join(self.sample.properties.manifest['activities'])))
 
         if self.sample.properties.manifest['providers']:
-            self.descfile.write("The malware defines %d providers: " % (len(self.sample.properties.manifest['providers'])))
+            self.descfile.write("The sample defines %d providers: " % (len(self.sample.properties.manifest['providers'])))
             self.descfile.write("%s.\n" % (', '.join(self.sample.properties.manifest['providers'])))
                    
         if self.sample.properties.manifest['receivers']:
-            self.descfile.write("The malware defines %d receivers: " % (len(self.sample.properties.manifest['receivers'])))
+            self.descfile.write("The sample defines %d receivers: " % (len(self.sample.properties.manifest['receivers'])))
             self.descfile.write("%s.\n" % (', '.join(self.sample.properties.manifest['receivers'])))
 
         if self.sample.properties.manifest['services']:
-            self.descfile.write("The malware defines %d services: " % (len(self.sample.properties.manifest['services'])))
+            self.descfile.write("The sample defines %d services: " % (len(self.sample.properties.manifest['services'])))
             self.descfile.write("%s.\n" % (', '.join(self.sample.properties.manifest['services'])))
 
         if self.sample.properties.manifest['libraries']:
-            self.descfile.write("The malware defines %d libraries: " % (len(self.sample.properties.manifest['libraries'])))
+            self.descfile.write("The sample defines %d libraries: " % (len(self.sample.properties.manifest['libraries'])))
             self.descfile.write("%s.\n" % (', '.join(self.sample.properties.manifest['libraries'])))
 
         if 'http' in self.sample.properties.smali and self.sample.properties.smali['http']:
@@ -173,7 +173,7 @@ class droiddesc:
         capabilities = self.capabilities()
         if capabilities:
             self.descfile.write('## Detected Features / Capabilities\n\n')
-            self.descfile.write("The malware shows the following potential capabilities:\n")
+            self.descfile.write("The sample shows the following potential capabilities:\n")
             self.descfile.write("\n")
             for cap in capabilities:
                 self.descfile.write("- %s\n" % (cap))
@@ -192,16 +192,16 @@ class droiddesc:
                 or self.sample.properties.smali['get_sim_operator']\
                 or self.sample.properties.smali['gps']\
                 or self.sample.properties.smali['uuid']:
-            self.descfile.write("The malware is likely to be exposing your privacy.\n")
+            self.descfile.write("The sample is likely to be exposing your privacy.\n")
 
         if self.sample.properties.smali['base64'] or self.sample.properties.smali['debugger'] \
                 or self.sample.properties.smali['encryption'] or self.sample.properties.smali['obfuscation']\
                 or self.sample.properties.smali['package_sig'] or self.sample.properties.smali['reflection']\
                 or self.sample.properties.wide['qemu']:
-            self.descfile.write("The malware is likely to be using some form of anti-reversing techniques.\n")
+            self.descfile.write("The sample is likely to be using some form of anti-reversing techniques.\n")
 
         if self.sample.properties.smali['emulator'] or self.sample.properties.smali['nox'] or self.sample.properties.smali['bluestacks'] or self.sample.properties.smali['genymotion'] or self.sample.properties.smali['andy']:
-            self.descfile.write("The malware detects emulators.\n")
+            self.descfile.write("The sample detects emulators.\n")
 
         if self.sample.properties.dex['bad_sha1'] or self.sample.properties.dex['bad_adler32']:
             self.descfile.write("The sample's integrity has been compromised.\n")
@@ -212,7 +212,7 @@ class droiddesc:
         files = self.list_files()
         if files:
             self.descfile.write('\n## Files\n\n')
-            self.descfile.write("The malware installs the following files on the device:\n\n")
+            self.descfile.write("The sample installs the following files on the device:\n\n")
             for file in files:
                 self.descfile.write("- %s\n" % (file))
 
@@ -226,7 +226,7 @@ class droiddesc:
 
         if self.sample.properties.manifest['permissions']:
             self.descfile.write('\n## Permissions\n\n')
-            self.descfile.write("The malware asks for the following permissions:\n\n")
+            self.descfile.write("The sample asks for the following permissions:\n\n")
             for perm in self.sample.properties.manifest['permissions']:
                 self.descfile.write("- %s\n" % (perm))
             self.descfile.write("\n")
@@ -235,7 +235,7 @@ class droiddesc:
         """writes internal details to the open description file"""
         self.descfile.write("\n## Certificate details\n\n")
         if self.sample.properties.certificate['timestamp']:
-            self.descfile.write("It is likely this malware was created in %s\n" % (str(self.sample.properties.certificate['timestamp'])))
+            self.descfile.write("It is likely this sample was created in %s\n" % (str(self.sample.properties.certificate['timestamp'])))
         
         if self.sample.properties.certificate['owner']:
             self.descfile.write("Certificate owner: %s\n" % str(self.sample.properties.certificate['owner']))
