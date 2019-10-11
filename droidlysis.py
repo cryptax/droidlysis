@@ -96,9 +96,8 @@ def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, ena
         sample.extract_meta_properties()
         sample.extract_manifest_properties()
         sample.extract_dex_properties()
-        if not no_kit_exception:
-            listofkits = sample.extract_kit_properties()
-        else:
+        listofkits = sample.extract_kit_properties()
+        if no_kit_exception:
             listofkits = []
         sample.extract_smali_properties(listofkits)
         sample.extract_wide_properties(listofkits)

@@ -541,9 +541,9 @@ class droidsample:
                         if os.access(os.path.join(smali_dir, pattern), os.R_OK):
                             if self.verbose:
                                 print("kits[%s] = True (detected pattern: %s)" % (section, pattern))
-                                list.append(section)
-                                self.properties.kits[ section ] = True
-                                break # break one level
+                            list.append(section)
+                            self.properties.kits[ section ] = True
+                            break # break one level
         return list
 
     def extract_dex_properties(self):
