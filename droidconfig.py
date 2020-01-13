@@ -1,5 +1,5 @@
 import os
-import ConfigParser
+import configparser
 
 # ------------------------- DroidLysis Configuration file -----------------
 
@@ -9,7 +9,7 @@ BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.1.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex2jar-0.0.9.16-SNAPSHOT"), "d2j-dex2jar.sh")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
 KEYTOOL = os.path.join( "/usr/bin/keytool" )
-INSTALL_DIR = os.path.expanduser("~/dev/droidlysis")
+INSTALL_DIR = os.path.expanduser("~/dev/droidlysis3")
 SQLALCHEMY = 'sqlite:///droidlysis.db' # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
 
 # ------------------------- Property configuration files -------------------
@@ -26,10 +26,10 @@ class droidconfig:
 
         self.filename = filename
         self.verbose = verbose
-        self.configparser = ConfigParser.RawConfigParser()
+        self.configparser = configparser.RawConfigParser()
 
         if self.verbose:
-            print "Reading configuration file: '%s'" % (filename)
+            print( "Reading configuration file: '%s'" % (filename))
         self.configparser.read(filename)
 
     def get_sections(self):
@@ -41,7 +41,7 @@ class droidconfig:
     def get_description(self, section):
         try:
             return self.configparser.get(section, 'description')
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        except (configparser.NoSectionError, configparser.NoOptionError):
             pass
         return None
 
@@ -55,7 +55,7 @@ class droidconfig:
                 allpatterns = self.configparser.get(section, 'pattern')
             else:
                 allpatterns= self.configparser.get(section, 'pattern') + '|' + allpatterns
-        return allpatterns
+        return bytes(allpatterns, 'utf-8')
 
     def match_properties(self, match, properties):
         '''
@@ -76,7 +76,7 @@ class droidconfig:
             for pattern in pattern_list:
                 if match[pattern]:
                     if self.verbose:
-                        print "Setting properties[%s] = True (matches %s)" % (section, pattern)
+                        print( "Setting properties[%s] = True (matches %s)" % (section, pattern))
                     properties[section] = True
                     break
 

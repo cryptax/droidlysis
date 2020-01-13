@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 __author__ = "Axelle Apvrille"
@@ -35,16 +35,16 @@ class droidziprar:
         try:
             if self.zipmode:
                 if self.verbose:
-                    print "Opening Zip archive "+filename
+                    print( "Opening Zip archive "+filename)
                 self.handle = zipfile.ZipFile(filename, 'r')
             else:
                 if self.verbose:
-                    print "Opening Rar archive "+filename
+                    print( "Opening Rar archive "+filename)
                 self.handle = rarfile.RarFile(filename, 'r')
 
-        except (struct.error, zipfile.BadZipfile, zipfile.LargeZipFile, IOError), e:
+        except (struct.error, zipfile.BadZipfile, zipfile.LargeZipFile, IOError) as e:
             if self.verbose:
-                print "Exception caught in ZipFile: %s" % (repr(e))
+                print( "Exception caught in ZipFile: %s" % (repr(e)))
             self.handle = None
 
         return self.handle
@@ -94,7 +94,7 @@ class droidziprar:
 
     def extract_all(self, outdir):
         if self.zipmode:
-            print 'Launching unzip process on %s with output dir=%s' % (self.archive_name, outdir)
+            print( 'Launching unzip process on %s with output dir=%s' % (self.archive_name, outdir))
             subprocess.call([ "/usr/bin/unzip" , "-o", "-qq", "-P", self.password, self.archive_name, "-d", outdir ])
         else:
             assert self.handle != None, "zip/rar file handle has been closed"
@@ -121,7 +121,7 @@ class droidziprar:
             return metainfo.date_time
         except (KeyError, rarfile.NoRarEntry) as e:
             if self.verbose:
-                print "%s does not exist in %s" % (filename, self.archive_name)
+                print( "%s does not exist in %s" % (filename, self.archive_name))
         return None
 
     def close(self):
@@ -130,5 +130,5 @@ class droidziprar:
         else:
             self.handle.close()
             if self.verbose:
-                print "Closing archive: " + self.archive_name
+                print( "Closing archive: " + self.archive_name)
     

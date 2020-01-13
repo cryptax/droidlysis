@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 __author__ = "Axelle Apvrille"
@@ -145,7 +145,7 @@ class droidproperties:
                                  file_innerzips=self.file_innerzips,\
                                  manifest_properties=json.dumps(self.manifest), \
                                  smali_properties=json.dumps(self.smali),\
-                                 wide_properties=json.dumps(self.wide,encoding='latin1'),\
+                                 wide_properties=json.dumps(self.wide),\
                                  arm_properties=json.dumps(self.arm),\
                                  dex_properties=json.dumps(self.dex),\
                                  kits=json.dumps(self.kits))

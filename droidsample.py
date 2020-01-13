@@ -3,12 +3,12 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
+__version__ = '3.0'
 """
 import hashlib
 import os
 import re
 import itertools
-import magic
 import sys
 import struct
 import zlib
@@ -16,7 +16,7 @@ import shutil
 import subprocess
 import xml.dom.minidom
 import droidutil
-import droidlysis
+import droidlysis3
 import droidconfig
 import droidcountry
 import droidproperties
@@ -24,12 +24,12 @@ import droidziprar
 import droidurl
 import xml.parsers.expat as expat
 
-__version__ = '2.3'
+
 
 class droidsample:
     """Base class for an Android sample to analyze"""
     
-    def __init__(self, filename, output='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_description=False, disable_dump=False, no_kit_exception=False):
+    def __init__(self, filename, output='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_description=False, no_kit_exception=False):
         """Setup analysis of a given sample. This does not perform the analysis in itself."""
 
         assert filename != None, "Filename is invalid"
@@ -39,17 +39,16 @@ class droidsample:
         self.clear = clear
         self.enable_procyon = enable_procyon
         self.disable_description = disable_description # we need those for recursive calls to process_file
-        self.disable_dump = disable_dump
         self.no_kit_exception = no_kit_exception
         self.ziprar = None # zip file or rar file file handle
 
         sanitized_basename = droidutil.sanitize_filename(os.path.basename(filename))
-        print "Filename: "+filename
+        print("Filename: "+filename)
         self.properties = droidproperties.droidproperties(samplename=sanitized_basename,\
                                                               sha256=droidutil.sha256sum(filename), \
                                                               verbose=self.verbose)
         if verbose:
-            print "SHA256: %s" % (self.properties.sha256)
+            print( "SHA256: %s" % (self.properties.sha256))
 
         """Computing the SHA1 of a file is only useful to help out the analyst. 
         The digest is written to the automatic analysis/description of the sample. That
@@ -59,7 +58,7 @@ class droidsample:
         if not clear: 
             sha1 = droidutil.sha1sum(filename)
             if verbose:
-                print "SHA1: %s" % (sha1)
+                print( "SHA1: %s" % (sha1))
 
 
         # Creating the output analysis directory
@@ -68,7 +67,7 @@ class droidsample:
                 hash=self.properties.sha256))
 
         if verbose:
-            print "Output analysis directory: " + self.outdir
+            print( "Output analysis directory: " + self.outdir )
 
         if os.path.exists(self.outdir):
             try:
@@ -76,7 +75,7 @@ class droidsample:
                 os.makedirs(self.outdir)
             except RuntimeError:
                 if verbose:
-                    print "Failed to remove directory - rmtree / RuntimeError"
+                    print( "Failed to remove directory - rmtree / RuntimeError" )
         else:
             os.makedirs(self.outdir)
 
@@ -109,7 +108,7 @@ class droidsample:
            self.properties.filetype == droidutil.UNKNOWN or \
            self.properties.filetype == droidutil.DEX:
             if self.verbose:
-                print "This is a %s. Nothing to unzip for %s" % (droidutil.str_filetype(self.properties.filetype), self.absolute_filename)
+                print( "This is a %s. Nothing to unzip for %s" % (droidutil.str_filetype(self.properties.filetype), self.absolute_filename) )
             return self.properties.filetype
 
         if self.properties.filetype == droidutil.ZIP or \
@@ -123,37 +122,37 @@ class droidsample:
             if self.ziprar.handle == None:
                 self.properties.filetype = droidutil.UNKNOWN # damaged zip/rar
                 if self.verbose:
-                    print "We are unable to unzip/unrar %s because of errors" % (self.absolute_filename)
+                    print( "We are unable to unzip/unrar %s because of errors" % (self.absolute_filename) )
                 return droidutil.UNKNOWN
             # Now, we know self.ziprar is valid and open.
             self.properties.filetype, innerzips = self.ziprar.get_type()
             if innerzips:
                 self.properties.file_innerzips = True
                 if self.verbose:
-                    print "There are inner zips/rars in " + self.absolute_filename
+                    print( "There are inner zips/rars in " + self.absolute_filename )
 
                 for element in innerzips:
                     # extract the inner zip/rar
                     if self.verbose:
-                        print "Extracting " + element + " inside " + self.absolute_filename
+                        print( "Extracting " + element + " inside " + self.absolute_filename )
                     try:
                         self.ziprar.extract_one_file(element, self.outdir)
                         if self.verbose:
-                            print "Recursively processing " + os.path.join(self.outdir, element)
-                        droidlysis.process_file(os.path.join(self.outdir, element), self.outdir, self.verbose, self.clear, self.enable_procyon, self.disable_description, self.disable_dump, self.no_kit_exception)
+                            print( "Recursively processing " + os.path.join(self.outdir, element) )
+                        droidlysis3.process_file(os.path.join(self.outdir, element), self.outdir, self.verbose, self.clear, self.enable_procyon, self.disable_description, self.no_kit_exception)
                     except:
-                        print "Cannot extract %s : %s" % (element, sys.exc_info()[0])
+                        print( "Cannot extract %s : %s" % (element, sys.exc_info()[0]) )
             
         if self.properties.filetype == droidutil.APK:
             # our zip actually is an APK
             if not self.clear:
                 # let's unzip
                 if self.verbose:
-                    print "Unzipping " + self.absolute_filename + " to " + os.path.join(self.outdir, 'unzipped')
+                    print( "Unzipping " + self.absolute_filename + " to " + os.path.join(self.outdir, 'unzipped'))
                 try:
                     self.ziprar.extract_all(outdir=os.path.join(self.outdir, 'unzipped'))
                 except:
-                    print "Unzipping failed (catching exception): %s" % (sys.exc_info()[0])
+                    print( "Unzipping failed (catching exception): %s" % (sys.exc_info()[0]))
 
         return self.properties.filetype
 
@@ -197,7 +196,7 @@ class droidsample:
                 self.properties.filetype == droidutil.UNKNOWN:
             # TODO: we could be running procyon on a class file.
             if self.verbose:
-                print "Nothing to disassemble for " + self.absolute_filename
+                print("Nothing to disassemble for " + self.absolute_filename)
             return 
 
         if self.properties.filetype == droidutil.APK:
@@ -205,10 +204,10 @@ class droidsample:
             # of the output dir... So we can't do this directly on self.outdir
             apktool_outdir = os.path.join(self.outdir, "apktool")
             if self.verbose:
-                print "Running apktool on inputfile=" + self.absolute_filename
+                print("Running apktool on inputfile=" + self.absolute_filename)
 
             if self.verbose:
-                print "Apktool command: java -jar %s d -f %s %s" % (droidconfig.APKTOOL_JAR, self.absolute_filename, apktool_outdir)
+                print("Apktool command: java -jar %s d -f %s %s" % (droidconfig.APKTOOL_JAR, self.absolute_filename, apktool_outdir))
                 subprocess.call(["java", "-jar", droidconfig.APKTOOL_JAR, \
                                  "d", "-f", self.absolute_filename,  \
                                  "-o", apktool_outdir ])
@@ -219,21 +218,21 @@ class droidsample:
                                  "-o", apktool_outdir ], stdout=self.process_output, stderr=self.process_output)
                 
             if self.verbose:
-                print "Apktool finished"
+                print( "Apktool finished" )
 
             if os.path.isdir(apktool_outdir):
                 droidutil.move_dir(apktool_outdir, self.outdir)
 
             # extract classes.dex whatever happens, we'll use it
             if self.verbose:
-                print "Extracting classes.dex"
+                print( "Extracting classes.dex" )
             try:
                 self.ziprar.extract_one_file('classes.dex', self.outdir)
             except:
                 if self.verbose:
-                    print "Extracting classes.dex failed: %s" % (sys.exc_info()[0])
+                    print( "Extracting classes.dex failed: %s" % (sys.exc_info()[0]))
                 else:
-                    print "Extracting classes.dex failed"
+                    print( "Extracting classes.dex failed")
 
         # Disassemble the DEX
         if self.properties.filetype == droidutil.DEX:
@@ -247,13 +246,13 @@ class droidsample:
                 (os.access(smali_dir, os.R_OK) and not os.listdir(smali_dir)) \
                 and os.access( dex_file, os.R_OK)):
             if self.verbose:
-                print "Using baksmali on " + dex_file
+                print( "Using baksmali on " + dex_file )
             try:
                 subprocess.call( [ "java", "-jar", droidconfig.BAKSMALI_JAR, \
                                    "d", "-o", smali_dir, dex_file ], \
                                  stdout=self.process_output, stderr=self.process_output)
             except:
-                print "Baksmali failed"
+                print( "Baksmali failed" )
 
         # Decompile the DEX
         if self.verbose:
@@ -262,27 +261,27 @@ class droidsample:
         if not self.clear and os.access( dex_file, os.R_OK ):
             jar_file = os.path.join(self.outdir, 'classes-dex2jar.jar')
             if self.verbose:
-                print "Dex2jar on " + dex_file
+                print( "Dex2jar on " + dex_file )
             subprocess.call( [ droidconfig.DEX2JAR_CMD, "--force", dex_file, "-o", jar_file ], \
                                  stdout=self.process_output, stderr=self.process_output)
             if os.access( jar_file, os.R_OK ):
                 if self.enable_procyon:
                     if self.verbose:
-                        print "Procyon decompiler on " + jar_file
+                        print( "Procyon decompiler on " + jar_file )
                     subprocess.call( [ "java", "-jar", droidconfig.PROCYON_JAR, \
                                            jar_file, "-o", os.path.join(self.outdir, 'procyon') ], \
                                          stdout=self.process_output, stderr=self.process_output)
                 if self.verbose:
-                    print "Unjarring " + jar_file
+                    print( "Unjarring " + jar_file )
                 jarziprar = droidziprar.droidziprar(jar_file, zipmode=True, verbose=self.verbose)
                 if jarziprar.handle == None:
                     if self.verbose:
-                        print "Bad Jar / Failed to unjar " + jar_file
+                        print( "Bad Jar / Failed to unjar " + jar_file )
                 else:
                     try:
                         jarziprar.extract_all(os.path.join(self.outdir, 'unjarred'))
                     except:
-                        print "Failed to unjar: %s" % (sys.exc_info()[0])
+                        print( "Failed to unjar: %s" % (sys.exc_info()[0]) )
                     jarziprar.close()
                 
         # Convert binary Manifest
@@ -290,11 +289,11 @@ class droidsample:
             manifest = os.path.join( self.outdir, 'AndroidManifest.xml')
             if not os.access( manifest, os.R_OK) or os.path.getsize(manifest)==0:
                 if self.verbose: 
-                    print "Extracting binary AndroidManifest.xml"
+                    print( "Extracting binary AndroidManifest.xml")
                 try:
                     self.ziprar.extract_one_file('AndroidManifest.xml', self.outdir)
                 except:
-                    print "Failed to extract binary manifest: %s" % (sys.exc_info()[0])
+                    print("Failed to extract binary manifest: %s" % (sys.exc_info()[0]))
                 if os.access( manifest, os.R_OK) and os.path.getsize(manifest)>0:
                     textmanifest = os.path.join( self.outdir, 'AndroidManifest.text.xml')
                     subprocess.call( [ "java", "-jar", droidconfig.AXMLPRINTER_JAR, manifest ], \
@@ -320,10 +319,10 @@ class droidsample:
             self.properties.file_nb_dir, self.properties.file_nb_classes = droidutil.count_filedirs(smali_dir)
 
         if self.verbose:
-            print "Filesize: %d" % (self.properties.file_size)
-            print "Is Small: %d" % (self.properties.file_small)
-            print "Nb Class: %d" % (self.properties.file_nb_classes)
-            print "Nb Dir  : %d" % (self.properties.file_nb_dir)
+            print( "Filesize: %d" % (self.properties.file_size))
+            print( "Is Small: %d" % (self.properties.file_small))
+            print( "Nb Class: %d" % (self.properties.file_nb_classes))
+            print( "Nb Dir  : %d" % (self.properties.file_nb_dir))
 
     def extract_meta_properties(self):
         """Extracting meta-data related to APK's signature timestamp and signing certificate"""
@@ -332,11 +331,11 @@ class droidsample:
             if self.properties.certificate['timestamp'] != None:
                 self.properties.certificate['year'] = self.properties.certificate['timestamp'][0]
                 if self.verbose:
-                    print "APK timestamp: %d" % (self.properties.certificate['timestamp'][0])
+                    print( "APK timestamp: %d" % (self.properties.certificate['timestamp'][0]))
 
             # extract properties from the certificate
             if self.verbose:
-                print "------------- Extracting properties from certificate"
+                print( "------------- Extracting properties from certificate")
 
             list = []
             try:
@@ -345,13 +344,13 @@ class droidsample:
                     list = self.ziprar.extract_pattern(self.outdir, 'META-INF/.*\.DSA')
             except:
                 if self.verbose:
-                    print "Error at extraction: %s" % (sys.exc_info()[0])
+                    print( "Error at extraction: %s" % (sys.exc_info()[0]))
 
             if list:
                 try: 
                     keyout = subprocess.check_output( [ droidconfig.KEYTOOL, "-printcert",  "-file", \
                                                        os.path.join(self.outdir, list[0]) ], \
-                                                     stderr=self.process_output)
+                                                     stderr=self.process_output).decode('utf-8')
                     keyout = re.sub(': ', '#', keyout)
                     keyout = re.sub('\t| ', '', keyout)
                     keyout = re.sub('until#', '\nUntil#', keyout)
@@ -360,41 +359,41 @@ class droidsample:
                         index = keysplit.index("Owner")
                         self.properties.certificate['owner'] = keysplit[index+1]
                         if self.verbose:
-                            print "Certificate Owner: "+self.properties.certificate['owner']
+                            print( "Certificate Owner: "+self.properties.certificate['owner'])
                         self.extract_certificate_owner_properties(self.properties.certificate['owner'])
                             
                     except ValueError:
                         if self.verbose:
-                            print "Certificate Owner not present"
+                            print( "Certificate Owner not present")
                     try:
                         index = keysplit.index("Serialnumber")
                         self.properties.certificate['serialno'] = keysplit[index+1]
                         if self.verbose:
-                            print "Certificate Serial no: "+self.properties.certificate['serialno']
+                            print( "Certificate Serial no: "+self.properties.certificate['serialno'])
 
                         # detect typical dev certificate
                         if re.search('936eacbe07f201df', self.properties.certificate['serialno'], re.IGNORECASE):
                             self.properties.certificate['dev'] = True
                             if self.verbose:
-                                print "Dev certificate detected"
+                                print( "Dev certificate detected")
                     except ValueError:
                         if self.verbose:
-                            print "Serial number not present"
+                            print( "Serial number not present")
                     try:
                         index = keysplit.index("Signaturealgorithmname")
                         self.properties.certificate['algo'] = keysplit[index+1]
                         if self.verbose:
-                            print "Algo: "+self.properties.certificate['algo']
+                            print( "Algo: "+self.properties.certificate['algo'] )
                     except ValueError:
                         if self.verbose:
-                            print "Signature algorithm name not present"
-                except subprocess.CalledProcessError, e:
+                            print( "Signature algorithm name not present")
+                except subprocess.CalledProcessError as e:
                     if self.verbose:
-                        print "Caught CalledProcessError: ", e.output
-                        print "Probably an invalid certificate"
+                        print( "Caught CalledProcessError: ", e.output)
+                        print( "Probably an invalid certificate" )
             else:
                 if self.verbose:
-                    print "No certificate found"
+                    print( "No certificate found" )
 
     def extract_certificate_owner_properties(self, owner):
         # owner should not be null
@@ -406,7 +405,7 @@ class droidsample:
             else:
                 self.properties.certificate['country'] = droidcountry.to_int(cert_country)
                 if self.verbose:
-                    print "Certificate Country = %s (%d)" % (cert_country, self.properties.certificate['country'])
+                    print( "Certificate Country = %s (%d)" % (cert_country, self.properties.certificate['country']) )
 
         # Debug certificate
         m = re.search('OU=Android  O=Android L=Mountain View', owner, re.IGNORECASE)
@@ -429,7 +428,7 @@ class droidsample:
             m = re.search(av, owner, re.IGNORECASE)
             if m != None:
                 if self.verbose:
-                    print "Certificate owner matches AV : "+m.group(0)
+                    print( "Certificate owner matches AV : "+m.group(0) )
                 self.certificate['av'] = True
 
         # Companies
@@ -440,7 +439,7 @@ class droidsample:
             m = re.search(f, owner, re.IGNORECASE)
             if m != None:
                 if self.verbose:
-                    print "Certificate owner matches Famous : "+m.group(0)
+                    print( "Certificate owner matches Famous : "+m.group(0) )
                 self.certificate['famous'] = True
 
             
@@ -454,7 +453,7 @@ class droidsample:
                 xmldoc = xml.dom.minidom.parse(manifest)
             except expat.ExpatError:
                 if self.verbose:
-                    print "XML parsing error"
+                    print( "XML parsing error" )
                 return;
 
             tab = droidutil.get_elements(xmldoc, 'service', 'android:name')
@@ -487,9 +486,9 @@ class droidsample:
             droidutil.get_elements(xmldoc, 'meta-data', 'android:value')
 
             if self.verbose:
-                print "MinSDK=%s MaxSDK=%s TargetSDK=%s" % (self.properties.manifest['minSDK'], self.properties.manifest['maxSDK'], self.properties.manifest['targetSDK'])
+                print( "MinSDK=%s MaxSDK=%s TargetSDK=%s" % (self.properties.manifest['minSDK'], self.properties.manifest['maxSDK'], self.properties.manifest['targetSDK']))
                 for perm in self.properties.manifest['permissions']:
-                    print "Requires permission " + perm
+                    print( "Requires permission " + perm)
 
             # get main activity
             for actitem in xmldoc.getElementsByTagName('activity'):
@@ -499,7 +498,7 @@ class droidsample:
                             if b.getAttribute( 'android:name' ) == 'android.intent.category.LAUNCHER':
                                 self.properties.manifest['main_activity'] = actitem.getAttribute( 'android:name' )
             if self.verbose and self.properties.manifest['main_activity'] != None:
-                print "Main activity: " + self.properties.manifest['main_activity']
+                print( "Main activity: " + self.properties.manifest['main_activity'])
 
             # search for swf
             metalist = droidutil.get_elements(xmldoc, 'meta-data', 'android:value')
@@ -517,14 +516,14 @@ class droidsample:
                             self.properties.manifest['listens_outgoing_call'] = True
 
             if self.verbose:
-                print "Listens to incoming SMS  : %d" % (self.properties.manifest['listens_incoming_sms'])
-                print "Listens to outgoing calls: %d" % (self.properties.manifest['listens_outgoing_call'])
+                print( "Listens to incoming SMS  : %d" % (self.properties.manifest['listens_incoming_sms']))
+                print( "Listens to outgoing calls: %d" % (self.properties.manifest['listens_outgoing_call']))
                 
             # get package name
             if not self.clear:
                 self.properties.manifest_package = droidutil.get_element(xmldoc, 'manifest', 'package')
                 if self.verbose:
-                    print "Package's name : %s" % (self.properties.manifest_package)
+                    print( "Package's name : %s" % (self.properties.manifest_package))
 
     def extract_kit_properties(self):
         """
@@ -566,7 +565,7 @@ class droidsample:
                         self.properties.dex['magic_unknown'] = False
 
                 if self.verbose:
-                    print "DEX Magic: %s" % (repr(magic))
+                    print( "DEX Magic: %s" % (repr(magic)))
 
                 checksum = file.read(4)
                 sha1 = file.read(20)
@@ -574,15 +573,15 @@ class droidsample:
                 # check sha1 of file
                 if sha1 != '':
                     computed_sha1 = hashlib.sha1(file.read()).hexdigest()
-                    if droidutil.byte2hex( sha1 ) != computed_sha1:
+                    if sha1.hex() != computed_sha1:
                         self.properties.dex['bad_sha1'] = True
 
                         if self.verbose:
-                            print "DEX SHA1 read    : %s" % (droidutil.byte2hex(sha1))
-                            print "DEX SHA1 computed: %s" % (computed_sha1)
+                            print( "DEX SHA1 read    : %s" % sha1.hex())
+                            print( "DEX SHA1 computed: %s" % (computed_sha1))
                 else:
                     if self.verbose:
-                        print "Impossible to read file's SHA1 => impossible to check"
+                        print( "Impossible to read file's SHA1 => impossible to check")
 
                 # check checksum
                 if checksum != '':
@@ -592,18 +591,18 @@ class droidsample:
                         self.properties.dex['bad_adler32'] = True
 
                     if self.verbose:
-                        print "DEX checksum read    : %s (reverse order)" % ( droidutil.byte2hex(checksum) )
-                        print "DEX checksum computed: %s" % (hex(computed_adler32))
+                        print( "DEX checksum read    : %s (reverse order)" % ( droidutil.byte2hex(checksum) ))
+                        print( "DEX checksum computed: %s" % (hex(computed_adler32)))
                 else:
                     if self.verbose:
-                        print "Impossible to read file's checksum => impossible to check"
+                        print( "Impossible to read file's checksum => impossible to check" )
 
                 # check header size
                 file.seek(8+4+20+4, 0)
                 header_size = struct.unpack("<I", file.read(4))[0]
                 if header_size > 0x70:
                     if self.verbose:
-                        print "DEX header is bigger than expected: %d (HoseDex2Jar?)" % (header_size)
+                        print( "DEX header is bigger than expected: %d (HoseDex2Jar?)" % (header_size) )
                     self.properties.dex['big_header'] = True
 
                 # look for 0 0x0 if-eq v0, v0, +9
@@ -619,14 +618,14 @@ class droidsample:
                 match = fill_array_pattern.search(buffer)
                 if match != None:
                     if self.verbose:
-                        print "fill-array-data trick located at offset=%d" % (data_offset + match.start())
+                        print( "fill-array-data trick located at offset=%d" % (data_offset + match.start()) )
                         # to print the matching string: ''.join( [ "%02X " % ord( x ) for x in buffer[match.start():match.end() ] ).strip()
                     self.properties.dex['thuxnder'] = True
                 
                 file.close()            
             else:
                 if self.verbose:
-                    print "Dex file %s is missing or empty" % (dex_file)
+                    print( "Dex file %s is missing or empty" % (dex_file))
 
     def extract_smali_properties(self, list_of_kits):
         if self.properties.filetype != droidutil.APK and\
@@ -646,15 +645,14 @@ class droidsample:
                     exceptions.append(os.path.join(smali_dir, pattern ))
                 else:
                     if self.verbose:
-                        print "WARNING: configuration file error: empty pattern for %s" % (kit)
+                        print( "WARNING: configuration file error: empty pattern for %s" % (kit) )
 
             smali_regexp = self.properties.smaliconfig.get_all_regexp()
             match = droidutil.recursive_search(smali_regexp, smali_dir, exceptions, False)
             
-            if not self.disable_dump:
-                analysis_file = open(os.path.join(self.outdir, droidlysis.property_dump_file), 'a')
-                analysis_file.write('# Smali keywords\n')
-                analysis_file.close()
+            analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+            analysis_file.write('# Smali keywords\n')
+            analysis_file.close()
 
             self.properties.smaliconfig.match_properties(match, self.properties.smali)
             
@@ -683,19 +681,18 @@ class droidsample:
                         print "smali[ssh] = True"
                 '''
 
-                if not self.disable_dump:
-                    analysis_file = open(os.path.join(self.outdir, droidlysis.property_dump_file), 'a')
-                    # let's not dump for nops
-                    if not (mykey == ' nop'):
-                        if match[mykey]:
-                            analysis_file.write("## %s\n" % (mykey))
-                        for element in match[mykey]:
-                            analysis_file.write("- "+str(element)+"\n")
-                    analysis_file.write('\n')
-                    analysis_file.close()
+                analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+                # let's not dump for nops
+                if not (mykey == ' nop'):
+                    if match[mykey]:
+                        analysis_file.write("## %s\n" % (mykey))
+                    for element in match[mykey]:
+                        analysis_file.write("- "+str(element)+"\n")
+                analysis_file.write('\n')
+                analysis_file.close()
         else:
             if self.verbose:
-                print "Cannot extract smali properties, because directory %s not found" % (smali_dir)
+                print( "Cannot extract smali properties, because directory %s not found" % (smali_dir))
             # all smali properties should then be set to unknown
             for key in sorted(self.properties.smali.keys()):
                 self.properties.smali[key] = 'unknown'
@@ -727,17 +724,15 @@ class droidsample:
 
             wide_regexp = self.properties.wideconfig.get_all_regexp()
             match = droidutil.recursive_search(wide_regexp, self.outdir, exceptions, False)
-            
-            if not self.disable_dump:
-                analysis_file = open(os.path.join(self.outdir, droidlysis.property_dump_file), 'a')
-                analysis_file.write('# Keywords in resources, assets, lib\n\n')
-                analysis_file.close()
+            analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+            analysis_file.write('# Keywords in resources, assets, lib\n\n')
+            analysis_file.close()
 
             self.properties.wideconfig.match_properties(match, self.properties.wide)
 
-            for mykey in match.keys(): 
-                if not self.disable_dump and match[mykey]:
-                    analysis_file = open(os.path.join(self.outdir, droidlysis.property_dump_file), 'a')
+            for mykey in match.keys():
+                if match[mykey]:
+                    analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
                     analysis_file.write("- "+str(mykey)+"\n")
                     analysis_file.close()
 
@@ -749,24 +744,22 @@ class droidsample:
                 # actually, it should be \+[0-9]{1,3}[0-9]{1,14} but that
                 # generates too many false positives (numbers for other reasons)
                 # so I'm being conservative
-                if mykey.startswith('+') and self.properties.wide['has_phonenumbers']:
-                    if re.search("\+[0-9]{1,3}[0-9]{10,14}", mykey):
+                if mykey.startswith('+') and self.properties.wide['has_phonenumbers']: # mykey.startswith('+') and 
+                    if re.search(b"\+[0-9]{1,3}[0-9]{10,14}", mykey):
                         self.properties.wide['phonenumbers'].append(mykey)
                         if self.verbose:
-                            print "Phone number spotted: " + mykey
-                        if not self.disable_dump:
-                            analysis_file = open(os.path.join(self.outdir, droidlysis.property_dump_file), 'a')
-                            analysis_file.write("- "+str(mykey)+"\n")
-                            analysis_file.close()
+                            print( "Phone number spotted: " + mykey)
+                        analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+                        analysis_file.write("- "+str(mykey)+"\n")
+                        analysis_file.close()
 
                 # we want to process each potential URL
                 if mykey.find('http') >= 0 and match[mykey]:
                     self.interesting_url(mykey)
 
-            if not self.disable_dump:
-                analysis_file = open(os.path.join(self.outdir, droidlysis.property_dump_file), 'a')
-                analysis_file.write('\n\n')
-                analysis_file.close()
+            analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+            analysis_file.write('\n\n')
+            analysis_file.close()
 
             # trying to grab the application's name
             if not self.clear:
@@ -794,7 +787,7 @@ class droidsample:
             if arm_filename == '':
                 arm_filename = self.absolute_filename
             if self.verbose: 
-                print "Extracting properties from " + arm_filename
+                print( "Extracting properties from " + arm_filename)
 
             # Run "strings" on the executable
             proc = subprocess.Popen(['strings', arm_filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -805,7 +798,7 @@ class droidsample:
                 if matches != None:
                     self.properties.arm[section] = True
                     if self.verbose:
-                        print "Setting arm[%s]  = True" % (section)
+                        print( "Setting arm[%s]  = True" % (section))
                     if section == 'url_in_exec':
                         for m in matches:
                             self.interesting_url(m)
@@ -828,33 +821,33 @@ class droidsample:
                 filetype = droidutil.get_filetype(absolute_file)
                 if filetype == droidutil.ARM:
                     if self.verbose:
-                        print "%s is an ARM executable" % (absolute_file)
+                        print( "%s is an ARM executable" % (absolute_file))
                     found_arm.append(absolute_file)
                 else:
                     if filetype == droidutil.ZIP:
                         innerzip = droidziprar.droidziprar(absolute_file, True, self.verbose)
                         if innerzip.handle == None:
                             if self.verbose:
-                                print "%s is not a valid zip" % (absolute_file)
+                                print( "%s is not a valid zip" % (absolute_file))
                             return found_apk, found_arm
                         filetype = innerzip.get_type()
                         innerzip.close()
                         if filetype == droidutil.APK:
                             if self.verbose:
-                                print "%s contains an APK" % (absolute_file)
+                                print( "%s contains an APK" % (absolute_file))
                             found_apk.append(absolute_file)
                     else:
                         if filetype == droidutil.RAR:
                             innerzip = droidziprar.droidziprar(absolute_file, False, self.verbose)
                             if innerzip.handle == None:
                                 if self.verbose:
-                                    print "%s is not a valid rar" % (absolute_file)
+                                    print( "%s is not a valid rar" % (absolute_file))
                                 return found_apk, found_arm
                             filetype = innerzip.get_type()
                             innerzip.close()
                             if filetype == droidutil.APK:
                                 if self.verbose:
-                                    print "%s contains an APK" % (absolute_file)
+                                    print( "%s contains an APK" % (absolute_file))
                                 found_apk.append(absolute_file)
         return found_arm, found_apk
 
@@ -869,23 +862,23 @@ class droidsample:
         for dir in list_dir:
             if os.access(dir, os.R_OK) and os.path.isdir(dir):
                 if self.verbose:
-                    print "Parsing %s for embedded executables or zips... " % (dir)
+                    print( "Parsing %s for embedded executables or zips... " % (dir))
 
                 found_arm, found_apk = self.find_executables(dir)
                 if found_arm or found_apk:
                     self.properties.wide['embed_exec'] = True
                     if self.verbose:
-                        print "Embedded executables/zip found in " + dir
+                        print( "Embedded executables/zip found in " + dir)
                     if found_arm:
                         for arm in found_arm:
                             if self.verbose:
-                                print "Recursively processing " + arm
+                                print( "Recursively processing " + arm)
                             self.extract_arm_properties(arm)
                     if found_apk:
                         for apk in found_apk:
                             if self.verbose:
-                                print "Recursively processing " + apk
-                            droidlysis.process_file(apk, self.outdir, self.verbose, self.clear, self.enable_procyon, self.disable_description, self.disable_dump, self.no_kit_exception)
+                                print( "Recursively processing " + apk)
+                            droidlysis3.process_file(apk, self.outdir, self.verbose, self.clear, self.enable_procyon, self.disable_description, self.disable_dump, self.no_kit_exception)
 
     def interesting_url(self, url):
         """Rules out meaningless URLs to keep only those which might be useful for attackers.
@@ -900,7 +893,7 @@ class droidsample:
         url = re.sub('\r.*', '', url)
         url = re.sub('[^\x00-\x7F]','', url)
 
-        url_regexp = '|'.join(droidurl.build_special_url_list());
+        url_regexp = '|'.join(droidurl.build_special_url_list())
         match = re.search(url_regexp, url) # only one match per line
 
         if match == None:
@@ -909,7 +902,7 @@ class droidsample:
             if url not in self.properties.wide['urls']:
                 self.properties.wide['urls'].append(url) 
                 if self.verbose:
-                    print "URL: %s" % (url)
+                    print( "URL: %s" % (url))
 
             # raise a warning if it downloads APKs or for dropbox
             search = re.findall("\.apk|\.zip",url)

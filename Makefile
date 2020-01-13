@@ -1,4 +1,4 @@
-VERSION = 2.3
+VERSION = 3.0
 
 release:
 	mkdir ./droidlysis-$(VERSION)

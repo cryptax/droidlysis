@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # $Source$
 """
 __author__ = "Axelle Apvrille"
@@ -60,7 +60,7 @@ class droiddesc:
 
     def write_description(self,description_file, verbose=True):
         if verbose:
-            print "Writing description to " + description_file
+            print( "Writing description to " + description_file)
         self.descfile = open(description_file, 'w')
 
         self.descfile.write("# %s\n\n" % (self.sample.properties.sha256))
@@ -110,7 +110,7 @@ class droiddesc:
             self.descfile.write('It mines cryptocurrencies.\n')
 
 
-        if 'minSDK' in self.sample.properties.manifest and self.sample.properties.manifest['minSDK'] > 0:
+        if 'minSDK' in self.sample.properties.manifest and self.sample.properties.manifest['minSDK'] is not None and self.sample.properties.manifest['minSDK'] > 0:
             for item in versions:
                 if item.apilevel == self.sample.properties.manifest['minSDK']:
                     self.descfile.write("It affects Android versions %s and above.\n" % (item.version))

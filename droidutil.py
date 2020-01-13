@@ -9,13 +9,6 @@ from collections import defaultdict
 
 """Those are my own utilities for sample analysis"""
 
-def byte2hex(thebytes):
-    """Converts a sequence of bytes to a string representing it in hexa format.
-    Input: bytes (e.g \x01\x04...)
-    Output: lowercase string of hex (eg. dc0004eaef004765d8...)
-    """
-    return ''.join( [ "%02x" % ord( x ) for x in thebytes ])
-
 def mkdir_if_necessary(path):
     """Creates the directory if it does not exist yet. 
     If it exists, does not do anything.
@@ -234,14 +227,14 @@ class matchresult:
         self.lineno = thelineno
     
     def __repr__(self):
-        return "file=%s lineno=%d line=%s" % (self.file, self.lineno, self.line)
+        return 'file=%s lineno=%d line=%s' % (self.file, self.lineno, self.line)
 
     def __str__(self):
         if len(self.file) > 50:
             f = '...'+self.file[-50:]
         else:
             f = self.file
-        return "file=%40.40s no=%4d line=%20.20s" % (f, self.lineno, self.line)
+        return 'file=%40.40s no=%4d line=%20.20s' % (f, self.lineno, self.line)
 
 def recursive_search(search_regexp, directory, exception_list=[], verbose=False):
     """Recursively search in a directory except in some subdirectories
@@ -257,8 +250,8 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
     matches = defaultdict(list)
 
     if verbose:
-        print "Searching in " + directory + " for " + search_regexp
-        print "Exceptions: %s" % (str(exception_list))
+        print("Searching in " + directory + " for " + search_regexp.decode('utf-8'))
+        print("Exceptions: %s" % (str(exception_list)))
 
     for entry in os.listdir(directory):
         current_entry = os.path.join(directory, entry)
@@ -272,16 +265,16 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
 
                 # ok, this file must be searched
                 lineno = 0
-                for line in open(current_entry, 'r'):
+                for line in open(current_entry, 'rb'):
                     lineno += 1
                     match = re.search(search_regexp, line)
                     if match != None:
                         if verbose:
-                            print "Match: File: " +entry+ " Keyword: " +match.group(0) + " Line: " + line
+                            print("Match: File: " +entry+ " Keyword: " +match.group(0).decode('utf-8') + " Line: " + line.decode('utf-8'))
                         """match.group(0) only provides one match per line if we need more, 
                         re.search is not appropriate
                         and should be replaced by re.findall"""
-                        matches[ match.group(0) ].append(matchresult(current_entry, line, lineno))
+                        matches[ match.group(0).decode('utf-8') ].append(matchresult(current_entry, line, lineno))
 
 
             if os.path.isdir(current_entry):
@@ -307,10 +300,3 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
 
     return matches
 
-
-            
-                    
-
-
-        
-    
