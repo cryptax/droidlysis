@@ -9,10 +9,10 @@ import os
 import subprocess
 import droidutil # that's my own utilities
 import droidsample
-import droiddesc
+import droidreport
 
 property_dump_file = 'autoanalysis.md'
-description_file = 'description.md'
+report_file = 'report.md'
 __version__ = "3.0"
 
 def get_arguments():
@@ -31,7 +31,7 @@ script which processes Android samples.
     parser.add_argument('-V', '--version', help='displays version number', action='version', version="%(prog)s "+__version__)
     parser.add_argument('--no-kit-exception', help='by default, ad/dev/stats kits are ruled out for searches. Use this option to treat them as regular namespaces', action='store_true')
     parser.add_argument('--enable-procyon', help='enable procyon decompilation', action='store_true')
-    parser.add_argument('--disable-description', help='do not generate automatic description', action='store_true')
+    parser.add_argument('--disable-report', help='do not generate automatic report', action='store_true')
     parser.add_argument('--disable-sql', help='do not write analysis to SQL database', action='store_true')
 
     args = parser.parse_args()
@@ -60,7 +60,7 @@ def process_input(args):
         if os.path.isdir(element): 
             listing = os.listdir(element)
             for file in listing:
-                process_file(os.path.join(element, file), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_description, args.no_kit_exception, args.disable_sql)
+                process_file(os.path.join(element, file), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_report, args.no_kit_exception, args.disable_sql)
                 if args.movein:
                     if args.verbose:
                         print("Moving %s to %s" % (os.path.join('.',element), os.path.join(args.movein, element)))
@@ -72,7 +72,7 @@ def process_input(args):
                             print( "%s no longer present?: %s\n" % (file, str(e)))
 
         if os.path.isfile(element):
-            process_file(os.path.join('.',element), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_description, args.no_kit_exception)
+            process_file(os.path.join('.',element), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_report, args.no_kit_exception)
             # dirname = os.path.join(args.output, '{filename}-*'.format(filename=element))
             if args.movein:
                 if args.verbose:
@@ -80,12 +80,12 @@ def process_input(args):
                 os.rename(os.path.join('.',element), os.path.join(args.movein, os.path.basename(element)))
 
 
-def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_description=False, no_kit_exception=False, disable_sql=False):
+def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_report=False, no_kit_exception=False, disable_sql=False):
     """Static analysis of a given file"""
 
     if os.access(infile, os.R_OK): 
         print("Processing: " + infile + " ...")
-        sample = droidsample.droidsample(infile, outdir, verbose, clear, enable_procyon, disable_description, no_kit_exception)
+        sample = droidsample.droidsample(infile, outdir, verbose, clear, enable_procyon, disable_report, no_kit_exception)
         sample.unzip()
         sample.disassemble()
         sample.extract_file_properties()
@@ -102,9 +102,9 @@ def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, ena
             sample.properties.write()
 
         if not clear:
-            if not disable_description:
-                description = droiddesc.droiddesc(sample)
-                description.write_description(os.path.join(sample.outdir, description_file), verbose)
+            if not disable_report:
+                report = droidreport.droidreport(sample)
+                report.write_report(os.path.join(sample.outdir, report_file), verbose)
             
             analysis_file = open(os.path.join(sample.outdir, property_dump_file), 'a')
             analysis_file.write(str(sample.properties))

@@ -230,11 +230,11 @@ class matchresult:
         return 'file=%s lineno=%d line=%s' % (self.file, self.lineno, self.line)
 
     def __str__(self):
-        if len(self.file) > 50:
-            f = '...'+self.file[-50:]
+        if len(self.file) > 70:
+            f = '...'+self.file[-70:]
         else:
             f = self.file
-        return 'file=%40.40s no=%4d line=%20.20s' % (f, self.lineno, self.line)
+        return 'file=%50s no=%4d line=%30s' % (f, self.lineno, self.line)
 
 def recursive_search(search_regexp, directory, exception_list=[], verbose=False):
     """Recursively search in a directory except in some subdirectories
