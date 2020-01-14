@@ -66,11 +66,25 @@ class droidreport:
 
     def write_properties(self):
         # Header / File info
+        print("\033[1;36;1m============= Report ============\033[0m")
         self.reportfile.write("{0:20.20}: {1}".format('Sanitized basename', self.sample.properties.sanitized_basename))
         print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Sanitized basename', self.sample.properties.sanitized_basename))
         
         self.reportfile.write("{0:20.20}: {1}".format('SHA256', self.sample.properties.sha256))
         print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('SHA256', self.sample.properties.sha256))
+
+        self.reportfile.write("{0:20.20}: {1} bytes".format('File size', self.sample.properties.file_size))
+        print("{0:20.20}: \033[1;37;1m{1}\033[0m bytes".format('File size', self.sample.properties.file_size))
+
+        self.reportfile.write("{0:20.20}: {1}".format('Is small', self.sample.properties.file_small))
+        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Is small', self.sample.properties.file_small))
+
+        self.reportfile.write("{0:20.20}: {1}".format('Nb of classes', self.sample.properties.file_nb_classes))
+        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Nb of classes', self.sample.properties.file_nb_classes))
+
+        self.reportfile.write("{0:20.20}: {1}".format('Nb of directories', self.sample.properties.file_nb_dir))
+        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Nb of dirs', self.sample.properties.file_nb_dir))
+
 
         # Certificate properties
         self.reportfile.write("\nCertificate properties:")
@@ -79,16 +93,15 @@ class droidreport:
         for key in self.sample.properties.certificate.keys():
             if self.sample.properties.certificate[key] is not False:
                 print("{0:20.20}: \033[1;36;1m{1}\033[0m".format(key, self.sample.properties.certificate[key] ))
-            else:
-                print("{0:20.20}: {1}".format(key,     self.sample.properties.certificate[key] ))
+            self.reportfile.write("{0:20.20}: {1}".format(key, self.sample.properties.certificate[key] ))
 
         # Manifest properties
         self.reportfile.write("\nManifest properties:")
         print("\n\033[0;30;47mManifest properties\033[0m")
         for key in self.sample.properties.manifest.keys():
-            if self.sample.properties.manifest[key] is not False and self.sample.properties.manifest[key] is not None:
-                self.reportfile.write("{0:20.20}: \033[1;33;1m{1}\033[0m".format(key, self.sample.properties.manifest[key] ))
-                print("{0:20.20}: \033[1;33;1m{1}\033[0m".format(key, self.sample.properties.manifest[key] ))
+            if self.sample.properties.manifest[key] is not False and self.sample.properties.manifest[key] is not None and self.sample.properties.manifest[key] :
+                self.reportfile.write("{0:20.20}: {1}".format(key, self.sample.properties.manifest[key] ))
+                print("{0:20.20}: \033[1;36;1m{1}\033[0m".format(key, self.sample.properties.manifest[key] ))
             else:
                 self.reportfile.write("{0:20.20}: {1}".format(key,     self.sample.properties.manifest[key] ))
 

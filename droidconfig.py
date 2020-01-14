@@ -80,3 +80,4 @@ class droidconfig:
                     properties[section] = True
                     break
 
+

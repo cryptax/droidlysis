@@ -591,7 +591,7 @@ class droidsample:
                         self.properties.dex['bad_adler32'] = True
 
                     if self.verbose:
-                        print( "DEX checksum read    : %s (reverse order)" % ( droidutil.byte2hex(checksum) ))
+                        print( "DEX checksum read    : %s (reverse order)" % ( checksum.hex() ))
                         print( "DEX checksum computed: %s" % (hex(computed_adler32)))
                 else:
                     if self.verbose:
@@ -657,29 +657,20 @@ class droidsample:
             self.properties.smaliconfig.match_properties(match, self.properties.smali)
             
             for mykey in match.keys():
-                '''
-                if self.verbose:
+                '''if self.verbose:
                     for element in match[mykey]:
-                        print("- keyword=%s detected: %s" % (mykey, str(element)))
-                '''
-                '''if mykey.find('android_id') >= 0 and match[mykey]:
+                        print("- keyword=%s detected: %s" % (mykey, str(element)))'''
+                if mykey.find('android_id') >= 0 and match[mykey]:
                     # this matches const-string v[0-9]*, "android_id"/'
                     self.properties.smali['android_id'] = True
-                    if self.verbose:
-                        print "smali[android_id] = True"
 
                 if mykey.find('scp') >= 0 and mykey.find('const-string') >=0 and match[mykey]:
                     # const-string v[0-9]*, ".*scp.*"
                     self.properties.smali['scp'] = True
-                    if self.verbose:
-                        print "smali[scp] = True"
 
                 if mykey.find('ssh') >= 0 and mykey.find('const-string') >= 0 and match[mykey]:
                     # const-string v[0-9]*, ".*ssh.*'
                     self.properties.smali['ssh'] = True
-                    if self.verbose:
-                        print "smali[ssh] = True"
-                '''
 
                 analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
                 # let's not dump for nops
