@@ -270,11 +270,11 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
                     match = re.search(search_regexp, line)
                     if match != None:
                         if verbose:
-                            print("Match: File: " +entry+ " Keyword: " +match.group(0).decode('utf-8') + " Line: " + line.decode('utf-8'))
+                            print("Match: File: " +entry+ " Keyword: " +match.group(0).decode('utf-8', errors='replace') + " Line: " + line.decode('utf-8', errors='replace'))
                         """match.group(0) only provides one match per line if we need more, 
                         re.search is not appropriate
                         and should be replaced by re.findall"""
-                        matches[ match.group(0).decode('utf-8') ].append(matchresult(current_entry, line, lineno))
+                        matches[ match.group(0).decode('utf-8', errors='replace') ].append(matchresult(current_entry, line, lineno))
 
 
             if os.path.isdir(current_entry):

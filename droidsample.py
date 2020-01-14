@@ -891,8 +891,8 @@ class droidsample:
         url = re.sub('[,;" ].*', '', url) # remove after ",; or whitespace
         url = re.sub('\n.*','', url)
         url = re.sub('\r.*', '', url)
-        url = re.sub('[^\x00-\x7F]','', url)
-
+        url = re.sub('[^\x20-\x7e]','', url)
+        
         url_regexp = '|'.join(droidurl.build_special_url_list())
         match = re.search(url_regexp, url) # only one match per line
 

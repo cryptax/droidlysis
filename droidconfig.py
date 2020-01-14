@@ -9,7 +9,7 @@ BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.1.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex2jar-0.0.9.16-SNAPSHOT"), "d2j-dex2jar.sh")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
 KEYTOOL = os.path.join( "/usr/bin/keytool" )
-INSTALL_DIR = os.path.expanduser("~/dev/droidlysis3")
+INSTALL_DIR = os.path.expanduser("~/dev/droidlysis")
 SQLALCHEMY = 'sqlite:///droidlysis.db' # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
 
 # ------------------------- Property configuration files -------------------
