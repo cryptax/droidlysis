@@ -1,43 +1,163 @@
 # DroidLysis
 
 DroidLysis is a **property extractor for Android apps**.
-It automatically disassembles the Android application and looks for various properties within the package or its disassembly.
+It automatically disassembles the Android application you provide
+and looks for various properties within the package or its disassembly.
 
-**Just moved to Python 3**. It works, but expect a few bugs...
+DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zip files (zip), Rar files (rar) or directories of files.
 
 ## Install
 
 ### Requirements
 
-- Python 3
-- python-setuptools
--  **rarfile** Python library from https://github.com/markokr/rarfile (or `python3-rarfile`)
--  **unrar**: `apt-get install unrar-free`
--  **python3-magic** >= 0.4.6 from https://github.com/ahupp/python-magic
-- **apktool** https://ibotpeaches.github.io/Apktool/
-- **baksmali** https://bitbucket.org/JesusFreke/smali/downloads
-- **dex2jar** https://github.com/pxb1988/dex2jar
-- **procyon** https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler
-- AXMLPrinter2.jar https://code.google.com/p/android4me/
-- Java >= 1.7.0
-- SQLAlchemy: `easy_install SQLAlchemy` or `pip install SQLAlchemy` or `apt-get install python3-sqlalchemy`
+1. **Install required system packages**: Python3, Pip, unzip: `sudo apt-get install default-jre git python3 python3-pip unzip wget`
+2. **Install Android disassembly tools**. DroidLysis does not perform the disassembly itself, but relies on other tools to do so. Therefore, you must install:
+
+- [Apktool](https://ibotpeaches.github.io/Apktool/) - note we only need the Jar.
+- [AXMLPrinter2](https://code.google.com/p/android4me/)
+- [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads) - note we only need the Jar.
+- [Dex2jar](https://github.com/pxb1988/dex2jar)
+- [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)
+
+Some of these tools are redundant, but sometimes one fails on a sample while another does not. DroidLysis detects this and tries to switch to a tool that works for the sample.
+
+As of Jan 14 2020, the following installation works:
+
+```
+$ mkdir softs
+$ cd softs
+$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.1.jar
+$ wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/android4me/AXMLPrinter2.jar
+$ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.3.4.jar
+$ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
+$ unzip dex-tools-2.1-SNAPSHOT.zip
+$ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.36.jar
+```
+3. **Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
+
+```
+$ git clone https://github.com/cryptax/droidlysis
+$ cd droidlysis
+$ pip3 install -r requirements
+```
+
 
 ### Configuration
 
-Configure `droidconfig.py`
-Set the appropriate directory for each tool: APKTOOL_JAR, AXMLPRINTER_JAR etc.
+The configuration is extremely simple, you only need to tune `droidconfig.py`:
+
+- `APKTOOL_JAR`: set the path to your apktool jar
+- `AXMLPRINTER_JAR`: set the path to your axmlprinter2 jar
+- `BAKSMALI_JAR`: set the path to your baksmali jar
+- `DEX2JAR_CMD`: set the path to the folder containing `d2j-dex2.jar.sh`
+- `PROCYON_JAR`: set the path to the procyon decompiler jar
+- `INSTALL_DIR`: set the path to your DroidLysis instance. Do not forget to set this or DroidLysis won't work correctly!
+
 Example:
 
-```python
-APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.3.0.jar")
+```
+APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
+AXMLPRINTER_JAR = os.path.join( os.path.expanduser("~/softs"), "AXMLPrinter2.jar")
+BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.4.jar")
+DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.s
+h")
+PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.36.jar")
+INSTALL_DIR = 
 ```
 
-This tells DroidLysis to use Apktool from `~/softs/apktool_2.3.0.jar`.
-
+Optionally, if you need a specific situation, you might need to tune the following too. Normally, the default options will work and you won't have to touch these:
+- `SQLALCHEMY`: specify your SQL database.
+- `SMALI_CONFIGFILE`: smali patterns
+- `WIDE_CONFIGFILE`: resource patterns
+- `ARM_CONFIGFILE`: ARM executable patterns
+- `KIT_CONFIGFILE`: 3rd party SDK patterns
+- `KEYTOOL`: absolute path of `keytool` which generally ships with Java
 
 ## Usage
 
-Usage: `python ./droidlysis3.py --help`.
-The most typical usage is: `python ./droidlysis.py --input yourapk --output ./outdir`.
-Where this will analyze your APK (`yourapk`) and put the result of the analysis as a subdirectory of `./outdir`.
+DroidLysis has been ported to Python 3. To launch it and get options:
+
+```
+python3 ./droidlysis3.py --help
+```
+
+For example, test it on [Signal's APK](https://signal.org/android/apk/):
+
+```
+python3 ./droidlysis3.py --input Signal-website-universal-release-4.52.4.apk --output /tmp
+```
+
+![](./example.png)
+
+DroidLysis outputs:
+
+- A summary on the console (see example.png)
+- The unzipped, pre-processed sample in a subdirectory of your output dir. The subdirectory is named using the sample's filename and sha256 sum. For example, if we analyze the Signal application and set `--output /tmp`, the analysis will be written to `/tmp/Signalwebsiteuniversalrelease4.52.4.apk-f3c7d5e38df23925dd0b2fe1f44bfa12bac935a6bc8fe3a485a4436d4487a290`.
+- A database (by default, SQLite `droidlysis.db`) containing properties it noticed.
+
+## Options
+
+Get usage with `python3 ./droidlysis3.py --help`
+
+- The input can be a file or a directory of files to recursively look into. DroidLysis knows how to process Android packages, DEX, ODEX and ARM executables, ZIP, RAR. DroidLysis won't fail on other type of files (unless there is a bug...) but won't be able to understand the content.
+
+- When processing directories of files, it is typically quite helpful to move processed samples to another location to know what has been processed. This is handled by option `--movein`.  Also, if you are only interested in statistics, you should probably clear the output directory which contains detailed information for each sample: this is option `--clearoutput`.
+
+- When dealing with single samples, on the contrary, statistics are typically not so interesting, and their generation can be disabled with `--disable-sql`
+
+- DEX decompilation is quite long with Procyon, so this option is disabled by default. If you want to decompile to Java, use `--enable-procyon`.
+
+- DroidLysis's analysis does not inspect known 3rd party SDK by default, i.e. for instance it won't report any suspicious activity from these. If you want them to be inspected, use option `--no-kit-exception`. This usually creates many more detected properties for the sample, as SDKs (e.g. advertisment) use lots of flagged APIs (get GPS location, get IMEI, get IMSI, HTTP POST...).
+
+## Sample output directory (`--output DIR`)
+
+This directory contains (when applicable):
+
+- A readable `AndroidManifest.xml`
+- Readable resources in `res`
+- Libraries `lib`, assets `assets`
+- Disassembled Smali code: `smali` (and others)
+- Package meta information: `META-INF`
+- Package contents when simply unzipped in `./unzipped`
+- DEX executable `classes.dex` (and others), and converted to jar: `classes-dex2jar.jar`, and unjarred in `./unjarred`
+
+The following files are generated by DroidLysis:
+
+- `autoanalysis.md`: lists each pattern DroidLysis detected and where.
+- `report.md`: same as what was printed on the console
+
+If you do not need the sample output directory to be generated, use the option `--clearoutput`.
+
+## SQLite database
+
+This field is particularly useful when you are processing a directory of samples and later want to scan through properties DroidLysis found in them.
+
+By default, you will find the database in the directory `droidlysis.db`.
+
+The results are stored in a table named `samples`. Each entry in the table is relative to a given sample. Each column is properties DroidLysis tracks.
+
+For example, to retrieve all filename, SHA256 sum and smali properties of the database:
+
+```
+sqlite> select sha256, sanitized_basename, smali_properties from samples;
+f3c7d5e38df23925dd0b2fe1f44bfa12bac935a6bc8fe3a485a4436d4487a290|Signalwebsiteuniversalrelease4.52.4.apk|{"send_sms": true, "receive_sms": true, "abort_broadcast": true, "call": false, "email": false, "answer_call": false, "end_call": true, "phone_number": false, "intent_chooser": true, "get_accounts": true, "contacts": false, "get_imei": true, "get_external_storage_stage": false, "get_imsi": false, "get_network_operator": false, "get_active_network_info": false, "get_line_number": true, "get_sim_country_iso": true,
+...
+```
+
+## Property patterns
+
+What DroidLysis detects can be configured and extended in the files of the `./conf` directory.
+
+A pattern consist of:
+
+- a **tag** name: example `send_sms`. This is to name the property. Must be unique across the `.conf` file.
+- a **pattern**: this is a regexp to be matched. Ex: `;->sendTextMessage|;->sendMultipartTextMessage|SmsManager;->sendDataMessage`. In the `smali.conf` file, this regexp is match on Smali code. In this particular case, there are 3 different ways to send SMS messages from the code: sendTextMessage, sendMultipartTextMessage and sendDataMessage.
+- a **description** (optional): explains the importance of the property and what it means.
+
+```
+[send_sms]
+pattern=;->sendTextMessage|;->sendMultipartTextMessage|SmsManager;->sendDataMessage
+description=Sending SMS messages
+```
+
 

@@ -19,9 +19,8 @@ def get_arguments():
     """Read arguments for the program and returns the ArgumentParser"""
 
     parser = argparse.ArgumentParser(description='''DroidLysis3 is a Python 
-script which processes Android samples. 
-
-1/ It extracts properties from the samples (e.g connects to Internet, roots the phone...). The extracted properties are displayed.
+script which processes Android samples. \n
+1/ It extracts properties from the samples (e.g connects to Internet, roots the phone...). The extracted properties are displayed.\n
 2/ It helps the analyst begin its reverse engineering of the sample, by performing a first automatic analysis, disassembling, decompiling and a description draft.''', prog='DroidLysis', epilog='Version '+__version__+' - Greetz from Axelle Apvrille')
     parser.add_argument('-i', '--input', help='input directories or files to process', nargs='+', action='store', default='.')
     parser.add_argument('-o', '--output', help='analysis of input files is written into subdirectories of this directory', action='store', default='.')
