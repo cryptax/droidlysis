@@ -62,16 +62,17 @@ BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.4.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.s
 h")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.36.jar")
-INSTALL_DIR = 
+INSTALL_DIR = os.path.expanduser("~/droidlysis")
 ```
 
 Optionally, if you need a specific situation, you might need to tune the following too. Normally, the default options will work and you won't have to touch these:
 - `SQLALCHEMY`: specify your SQL database.
+- `KEYTOOL`: absolute path of `keytool` which generally ships with Java
 - `SMALI_CONFIGFILE`: smali patterns
 - `WIDE_CONFIGFILE`: resource patterns
 - `ARM_CONFIGFILE`: ARM executable patterns
 - `KIT_CONFIGFILE`: 3rd party SDK patterns
-- `KEYTOOL`: absolute path of `keytool` which generally ships with Java
+
 
 ## Usage
 
