@@ -710,6 +710,7 @@ class droidsample:
                 exceptions.append(os.path.join(os.path.join(self.outdir, 'smali'), self.properties.kitsconfig.get_pattern(kit)))
             exceptions.append("/unjarred")
             exceptions.append("/unzipped")
+            exceptions.append("/unknown")
             exceptions.append("classes.dex")
             exceptions.append('autoanalysis.md')
 

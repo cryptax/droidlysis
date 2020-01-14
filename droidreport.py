@@ -120,7 +120,7 @@ class droidreport:
         self.reportfile.write("\nWide properties\n")
         print("\n\033[0;30;47mWide properties /  What Resources/Assets do\033[0m")
         for section in self.sample.properties.wide.keys():
-            if self.sample.properties.wide[section] is not False and self.sample.properties.wide[section] is not None:
+            if self.sample.properties.wide[section] is not False and self.sample.properties.wide[section] is not None and self.sample.properties.wide[section]:
                 if self.sample.properties.wideconfig.get_description(section) is not None:
                     print("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.wide[section], self.sample.properties.wideconfig.get_description(section)))
                     self.reportfile.write("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.wide[section], self.sample.properties.wideconfig.get_description(section)))

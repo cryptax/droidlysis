@@ -30,7 +30,10 @@ def build_special_url_list():
 
 
     # clean URLs - which do not correspond to a kit i.e with a smali path
+    list.append('creativecommons\.org')
     list.append('docs\.google\.')
+    list.append('jsoup\.org')
+    list.append('www\.jcip\.net')
     list.append('finance\.google\.')
     list.append('maps\.google') 
     list.append('^https*://play\.google\.com')
@@ -50,7 +53,8 @@ def build_special_url_list():
     list.append('developer\.android\.com/reference/')
     list.append('fontforge\.sf\.net')
     list.append('www\.apache\.org')  
-    list.append('www\.apple\.com') 
+    list.append('www\.apple\.com')
+    list.append('travis-ci\.org')
     list.append('twitter\.com') 
     list.append('www\.gnu\.org')
     list.append('www\.fsf\.org')
@@ -107,7 +111,7 @@ def build_special_url_list():
     list.append('xml\.apache\.org') 
     list.append('xml\.org') 
     list.append('xmlpull\.org') 
-    list.append('^https*://.*/configure[-_0-9]*\.dtd$') 
+    list.append('^https*://.*/configure[-_0-9]*\.dtd$')
     
         # Operator
     list.append('10\.0\.0\.172') 
@@ -121,7 +125,7 @@ def build_special_url_list():
     list.append('mmsbouygtel\.com') 
     list.append('\.monternet\.com') 
 
-        # Protocol
+    # Protocol
     list.append('oauth_token') 
 
     # adkit urls which sometimes appear outside the smali path
