@@ -560,7 +560,7 @@ class droidsample:
                 if magic[0:3] == 'dey':
                     self.properties.dex['odex'] = True
                 for i in range(35,39):
-                    if magic[4:7] == ('0%d' % (i)):
+                    if magic[4:7] == (b'0%d' % (i)):
                         self.properties.dex['magic'] = i
                         self.properties.dex['magic_unknown'] = False
 
