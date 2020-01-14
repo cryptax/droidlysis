@@ -10,6 +10,7 @@ import subprocess
 import droidutil # that's my own utilities
 import droidsample
 import droidreport
+import sys
 
 property_dump_file = 'autoanalysis.md'
 report_file = 'report.md'
@@ -114,9 +115,14 @@ def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, ena
             proc.communicate()
 
         sample.close()
-    
 
+def check_python_version():
+    if sys.version_info.major < 3:
+        print("ERROR: Please run DroidLysis with Python 3")
+        quit()
+        
 if __name__ == "__main__":
+    check_python_version()
     args = get_arguments()
     process_input(args)
     print("END")

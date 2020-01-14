@@ -554,7 +554,7 @@ class droidsample:
                 dex_file = os.path.join(self.outdir, 'classes.dex')
 
             if os.access(dex_file, os.R_OK) and os.stat(dex_file).st_size > 0:
-                file = open(dex_file, "rb")
+                file = open(dex_file, 'rb')
                 magic = file.read(8)
                 self.properties.dex['magic_unknown'] = True
                 if magic[0:3] == 'dey':
