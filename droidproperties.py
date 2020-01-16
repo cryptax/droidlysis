@@ -154,5 +154,6 @@ class droidproperties:
             session.commit()
         except sqlalchemy.exc.IntegrityError:
             # occurs when the sample with the same sha256 is already in
-            print("Sample is already in the database")
+            if self.verbose:
+                print("Sample is already in the database")
 

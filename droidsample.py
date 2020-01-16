@@ -29,7 +29,7 @@ import xml.parsers.expat as expat
 class droidsample:
     """Base class for an Android sample to analyze"""
     
-    def __init__(self, filename, output='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_description=False, no_kit_exception=False):
+    def __init__(self, filename, output='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_description=False, silent=False, no_kit_exception=False):
         """Setup analysis of a given sample. This does not perform the analysis in itself."""
 
         assert filename != None, "Filename is invalid"
@@ -39,11 +39,13 @@ class droidsample:
         self.clear = clear
         self.enable_procyon = enable_procyon
         self.disable_description = disable_description # we need those for recursive calls to process_file
+        self.silent = silent
         self.no_kit_exception = no_kit_exception
         self.ziprar = None # zip file or rar file file handle
 
         sanitized_basename = droidutil.sanitize_filename(os.path.basename(filename))
-        print("Filename: "+filename)
+        if not silent:
+            print("Filename: "+filename)
         self.properties = droidproperties.droidproperties(samplename=sanitized_basename,\
                                                               sha256=droidutil.sha256sum(filename), \
                                                               verbose=self.verbose)

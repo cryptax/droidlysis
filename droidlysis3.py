@@ -26,6 +26,7 @@ script which processes Android samples. \n
     parser.add_argument('-i', '--input', help='input directories or files to process', nargs='+', action='store', default='.')
     parser.add_argument('-o', '--output', help='analysis of input files is written into subdirectories of this directory', action='store', default='.')
     parser.add_argument('-c', '--clearoutput', help='erase the output directory at the end. Indicates you want something quick.', action='store_true')
+    parser.add_argument('-s', '--silent', help='do not display output on console', action='store_true')
     parser.add_argument('-m', '--movein', help='after it has been processed, each input file is moved to this directory', action='store')
     parser.add_argument('-v', '--verbose', help='get more detailed messages', action='store_true')
     parser.add_argument('-V', '--version', help='displays version number', action='version', version="%(prog)s "+__version__)
@@ -72,7 +73,7 @@ def process_input(args):
                             print( "%s no longer present?: %s\n" % (file, str(e)))
 
         if os.path.isfile(element):
-            process_file(os.path.join('.',element), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_report, args.no_kit_exception)
+            process_file(os.path.join('.',element), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_report, args.silent, args.no_kit_exception)
             # dirname = os.path.join(args.output, '{filename}-*'.format(filename=element))
             if args.movein:
                 if args.verbose:
@@ -80,12 +81,13 @@ def process_input(args):
                 os.rename(os.path.join('.',element), os.path.join(args.movein, os.path.basename(element)))
 
 
-def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_report=False, no_kit_exception=False, disable_sql=False):
+def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_report=False, silent=False, no_kit_exception=False, disable_sql=False):
     """Static analysis of a given file"""
 
     if os.access(infile, os.R_OK): 
-        print("Processing: " + infile + " ...")
-        sample = droidsample.droidsample(infile, outdir, verbose, clear, enable_procyon, disable_report, no_kit_exception)
+        if not silent:
+            print("Processing: " + infile + " ...")
+        sample = droidsample.droidsample(infile, outdir, verbose, clear, enable_procyon, disable_report, silent, no_kit_exception)
         sample.unzip()
         sample.disassemble()
         sample.extract_file_properties()
@@ -101,16 +103,25 @@ def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, ena
         if not disable_sql:
             sample.properties.write()
 
+        report_to_file = True
+        if clear or disable_report:
+            report_to_file = False
+
+        console = True
+        if silent:
+            console = False
+
+        if console or report_to_file:
+            report = droidreport.droidreport(sample, console=True, report_to_file=report_to_file)
+            report.write(os.path.join(sample.outdir, report_file), verbose)
+
         if not clear:
-            if not disable_report:
-                report = droidreport.droidreport(sample)
-                report.write_report(os.path.join(sample.outdir, report_file), verbose)
-            
             analysis_file = open(os.path.join(sample.outdir, property_dump_file), 'a')
             analysis_file.write(str(sample.properties))
             analysis_file.close()
         else:
-            print("Removing directory %s ..." % (sample.outdir))
+            if not silent:
+                print("Removing directory %s ..." % (sample.outdir))
             proc = subprocess.Popen(['rm', '-rf', sample.outdir])
             proc.communicate()
 

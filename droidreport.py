@@ -52,123 +52,139 @@ versions = [ droidversion( '1.0', 1 ),
 # ------------------------------------------------------
 
 class droidreport:
-    def __init__(self, sample):
+    def __init__(self, sample, console=True, report_to_file=True):
+        # console means we want to display the result on the console
+        # report file means we want to dump in the report file
         self.sample = sample
+        self.console = console
+        self.report_to_file = report_to_file
+        
 
-    def write_report(self,report_file, verbose=True):
+    def write(self, report_file, verbose=True):
         if verbose:
             print( "Writing report to " + report_file)
-        self.reportfile = open(report_file, 'w')
+        if self.report_to_file:
+            self.reportfile = open(report_file, 'w')
+            self.reportfile.write("# %s\n\n" % (self.sample.properties.sha256))
 
-        self.reportfile.write("# %s\n\n" % (self.sample.properties.sha256))
         self.write_properties()
-        self.reportfile.close()
+
+        if self.report_to_file:
+            self.reportfile.close()
+
+    def write_file(self, message):
+        if self.report_to_file:
+            self.reportfile.write(message)
+
+    def write_console(self, message):
+        if self.console:
+            print(message)
 
     def write_properties(self):
         # Header / File info
         print("\033[1;36;1m============= Report ============\033[0m")
-        self.reportfile.write("{0:20.20}: {1}\n".format('Sanitized basename', self.sample.properties.sanitized_basename))
-        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Sanitized basename', self.sample.properties.sanitized_basename))
+        self.write_file("{0:20.20}: {1}\n".format('Sanitized basename', self.sample.properties.sanitized_basename))
+        self.write_console("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Sanitized basename', self.sample.properties.sanitized_basename))
         
-        self.reportfile.write("{0:20.20}: {1}\n".format('SHA256', self.sample.properties.sha256))
-        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('SHA256', self.sample.properties.sha256))
+        self.write_file("{0:20.20}: {1}\n".format('SHA256', self.sample.properties.sha256))
+        self.write_console("{0:20.20}: \033[1;37;1m{1}\033[0m".format('SHA256', self.sample.properties.sha256))
 
-        self.reportfile.write("{0:20.20}: {1} bytes\n".format('File size', self.sample.properties.file_size))
-        print("{0:20.20}: \033[1;37;1m{1}\033[0m bytes".format('File size', self.sample.properties.file_size))
+        self.write_file("{0:20.20}: {1} bytes\n".format('File size', self.sample.properties.file_size))
+        self.write_console("{0:20.20}: \033[1;37;1m{1}\033[0m bytes".format('File size', self.sample.properties.file_size))
 
-        self.reportfile.write("{0:20.20}: {1}\n".format('Is small', self.sample.properties.file_small))
-        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Is small', self.sample.properties.file_small))
+        self.write_file("{0:20.20}: {1}\n".format('Is small', self.sample.properties.file_small))
+        self.write_console("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Is small', self.sample.properties.file_small))
 
-        self.reportfile.write("{0:20.20}: {1}\n".format('Nb of classes', self.sample.properties.file_nb_classes))
-        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Nb of classes', self.sample.properties.file_nb_classes))
+        self.write_file("{0:20.20}: {1}\n".format('Nb of classes', self.sample.properties.file_nb_classes))
+        self.write_console("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Nb of classes', self.sample.properties.file_nb_classes))
 
-        self.reportfile.write("{0:20.20}: {1}\n".format('Nb of directories', self.sample.properties.file_nb_dir))
-        print("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Nb of dirs', self.sample.properties.file_nb_dir))
+        self.write_file("{0:20.20}: {1}\n".format('Nb of directories', self.sample.properties.file_nb_dir))
+        self.write_console("{0:20.20}: \033[1;37;1m{1}\033[0m".format('Nb of dirs', self.sample.properties.file_nb_dir))
 
 
         # Certificate properties
-        self.reportfile.write("\nCertificate properties:\n")
-        print("\n\033[0;30;47mCertificate properties\033[0m")
+        self.write_file("\nCertificate properties:\n")
+        self.write_console("\n\033[0;30;47mCertificate properties\033[0m")
         
         for key in self.sample.properties.certificate.keys():
             if self.sample.properties.certificate[key] is not False:
-                print("{0:20.20}: \033[1;36;1m{1}\033[0m".format(key, self.sample.properties.certificate[key] ))
-            self.reportfile.write("{0:20.20}: {1}\n".format(key, self.sample.properties.certificate[key] ))
+                self.write_console("{0:20.20}: \033[1;36;1m{1}\033[0m".format(key, self.sample.properties.certificate[key] ))
+            self.write_file("{0:20.20}: {1}\n".format(key, self.sample.properties.certificate[key] ))
 
         # Manifest properties
-        self.reportfile.write("\nManifest properties:\n")
-        print("\n\033[0;30;47mManifest properties\033[0m")
+        self.write_file("\nManifest properties:\n")
+        self.write_console("\n\033[0;30;47mManifest properties\033[0m")
         for key in self.sample.properties.manifest.keys():
             if self.sample.properties.manifest[key] is not False and self.sample.properties.manifest[key] is not None and self.sample.properties.manifest[key] :
-                self.reportfile.write("{0:20.20}: {1}\n".format(key, self.sample.properties.manifest[key] ))
-                print("{0:20.20}: \033[1;36;1m{1}\033[0m".format(key, self.sample.properties.manifest[key] ))
+                self.write_file("{0:20.20}: {1}\n".format(key, self.sample.properties.manifest[key] ))
+                self.write_console("{0:20.20}: \033[1;36;1m{1}\033[0m".format(key, self.sample.properties.manifest[key] ))
             else:
-                self.reportfile.write("{0:20.20}: {1}\n".format(key,     self.sample.properties.manifest[key] ))
+                self.write_file("{0:20.20}: {1}\n".format(key,     self.sample.properties.manifest[key] ))
 
 
         # Smali properties
-        self.reportfile.write("\nSmali properties\n")
-        print("\n\033[0;30;47mSmali properties /  What the Dalvik code does\033[0m")
+        self.write_file("\nSmali properties\n")
+        self.write_console("\n\033[0;30;47mSmali properties /  What the Dalvik code does\033[0m")
         for section in self.sample.properties.smali.keys():
             if self.sample.properties.smali[section] is not False:
-                print("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
-                self.reportfile.write("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
+                self.write_console("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
+                self.write_file("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
             else:
-                self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.smali[section]))
+                self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.smali[section]))
 
         # Wide properties
-        self.reportfile.write("\nWide properties\n")
-        print("\n\033[0;30;47mWide properties /  What Resources/Assets do\033[0m")
+        self.write_file("\nWide properties\n")
+        self.write_console("\n\033[0;30;47mWide properties /  What Resources/Assets do\033[0m")
         for section in self.sample.properties.wide.keys():
             if self.sample.properties.wide[section] is not False and self.sample.properties.wide[section] is not None and self.sample.properties.wide[section]:
                 if self.sample.properties.wideconfig.get_description(section) is not None:
-                    print("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.wide[section], self.sample.properties.wideconfig.get_description(section)))
-                    self.reportfile.write("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.wide[section], self.sample.properties.wideconfig.get_description(section)))
+                    self.write_console("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.wide[section], self.sample.properties.wideconfig.get_description(section)))
+                    self.write_file("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.wide[section], self.sample.properties.wideconfig.get_description(section)))
                 else:
-                    print("{0:20.20}: \033[1;31;1m{1}\033[0m".format(section, self.sample.properties.wide[section]))
-                    self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.wide[section]))
+                    self.write_console("{0:20.20}: \033[1;31;1m{1}\033[0m".format(section, self.sample.properties.wide[section]))
+                    self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.wide[section]))
             else:
                 # case where the property is False, or None.
-                self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.wide[section]))
+                self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.wide[section]))
 
         # ARM properties
-        self.reportfile.write("\nARM properties\n")
-        print("\n\033[0;30;47mARM properties /  What native ARM libraries do\033[0m")
+        self.write_file("\nARM properties\n")
+        self.write_console("\n\033[0;30;47mARM properties /  What native ARM libraries do\033[0m")
         for section in self.sample.properties.arm.keys():
             if self.sample.properties.arm[section] is not False and self.sample.properties.arm[section] is not None:
                 if self.sample.properties.armconfig.get_description(section) is not None:
-                    print("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.arm[section], self.sample.properties.armconfig.get_description(section)))
-                    self.reportfile.write("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.arm[section], self.sample.properties.armconfig.get_description(section)))
+                    self.write_console("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.arm[section], self.sample.properties.armconfig.get_description(section)))
+                    self.write_file("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.arm[section], self.sample.properties.armconfig.get_description(section)))
                 else:
-                    print("{0:20.20}: \033[1;31;1m{1}\033[0m".format(section, self.sample.properties.arm[section]))
-                    self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.arm[section]))
+                    self.write_console("{0:20.20}: \033[1;31;1m{1}\033[0m".format(section, self.sample.properties.arm[section]))
+                    self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.arm[section]))
             else:
                 # case where the property is False, or None.
-                self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.arm[section]))
+                self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.arm[section]))
 
         # DEX properties
-        self.reportfile.write("\nDEX properties\n")
-        print("\n\033[0;30;47mDEX properties /  About classes.dex format\033[0m")
+        self.write_file("\nDEX properties\n")
+        self.write_console("\n\033[0;30;47mDEX properties /  About classes.dex format\033[0m")
         for section in self.sample.properties.dex.keys():
             if self.sample.properties.dex[section] is not False and self.sample.properties.dex[section] is not None:
-                print("{0:20.20}: \033[1;31;1m{1} \033[0m".format(section, self.sample.properties.dex[section]))
-                self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.dex[section]))
+                self.write_console("{0:20.20}: \033[1;31;1m{1} \033[0m".format(section, self.sample.properties.dex[section]))
+                self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.dex[section]))
             else:
                 # case where the property is False, or None.
-                self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.dex[section]))
+                self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.dex[section]))
                 
         # Kits properties
-        self.reportfile.write("\nKit properties\n")
-        print("\n\033[0;30;47mKit properties /  Detected 3rd party SDKs\033[0m")
+        self.write_file("\nKit properties\n")
+        self.write_console("\n\033[0;30;47mKit properties /  Detected 3rd party SDKs\033[0m")
         for section in self.sample.properties.kits.keys():
             if self.sample.properties.kits[section] is not False and self.sample.properties.kits[section] is not None:
                 if self.sample.properties.kitsconfig.get_description(section) is not None:
-                    print("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.kits[section], self.sample.properties.kitsconfig.get_description(section)))
-                    self.reportfile.write("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.kits[section], self.sample.properties.kitsconfig.get_description(section)))
+                    self.write_console("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.kits[section], self.sample.properties.kitsconfig.get_description(section)))
+                    self.write_file("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.kits[section], self.sample.properties.kitsconfig.get_description(section)))
                 else:
-                    print("{0:20.20}: \033[1;31;1m{1}\033[0m".format(section, self.sample.properties.kits[section]))
-                    self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.kits[section]))
+                    self.write_console("{0:20.20}: \033[1;31;1m{1}\033[0m".format(section, self.sample.properties.kits[section]))
+                    self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.kits[section]))
             else:
                 # case where the property is False, or None.
-                self.reportfile.write("{0:20.20}: {1}\n".format(section, self.sample.properties.kits[section]))
+                self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.kits[section]))
         
