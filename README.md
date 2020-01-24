@@ -10,7 +10,7 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 
 ### Requirements
 
-1. **Install required system packages**: Python3, Pip, unzip: `sudo apt-get install default-jre git python3 python3-pip unzip wget`
+1. **Install required system packages**: Python3, Pip, unzip: `sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev`
 2. **Install Android disassembly tools**. DroidLysis does not perform the disassembly itself, but relies on other tools to do so. Therefore, you must install:
 
 - [Apktool](https://ibotpeaches.github.io/Apktool/) - note we only need the Jar.
