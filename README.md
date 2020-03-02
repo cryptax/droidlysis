@@ -14,20 +14,18 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 2. **Install Android disassembly tools**. DroidLysis does not perform the disassembly itself, but relies on other tools to do so. Therefore, you must install:
 
 - [Apktool](https://ibotpeaches.github.io/Apktool/) - note we only need the Jar.
-- [AXMLPrinter2](https://code.google.com/p/android4me/)
 - [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads) - note we only need the Jar.
 - [Dex2jar](https://github.com/pxb1988/dex2jar)
 - [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)
 
 Some of these tools are redundant, but sometimes one fails on a sample while another does not. DroidLysis detects this and tries to switch to a tool that works for the sample.
 
-As of Jan 14 2020, the following installation works:
+As of March 2 2020, the following installation works:
 
 ```
 $ mkdir softs
 $ cd softs
 $ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.1.jar
-$ wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/android4me/AXMLPrinter2.jar
 $ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.3.4.jar
 $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
 $ unzip dex-tools-2.1-SNAPSHOT.zip
@@ -52,7 +50,6 @@ $ pip3 install -r requirements
 The configuration is extremely simple, you only need to tune `droidconfig.py`:
 
 - `APKTOOL_JAR`: set the path to your apktool jar
-- `AXMLPRINTER_JAR`: set the path to your axmlprinter2 jar
 - `BAKSMALI_JAR`: set the path to your baksmali jar
 - `DEX2JAR_CMD`: set the path to the folder containing `d2j-dex2.jar.sh`
 - `PROCYON_JAR`: set the path to the procyon decompiler jar
@@ -62,7 +59,6 @@ Example:
 
 ```
 APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
-AXMLPRINTER_JAR = os.path.join( os.path.expanduser("~/softs"), "AXMLPrinter2.jar")
 BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.4.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.s
 h")

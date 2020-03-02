@@ -23,7 +23,7 @@ import droidproperties
 import droidziprar
 import droidurl
 import xml.parsers.expat as expat
-
+from androguard.cli import androaxml_main
 
 
 class droidsample:
@@ -167,7 +167,7 @@ class droidsample:
                 java -jar apktool.jar [-q] d file.apk outdir/apktool
                 if apktool failed
                       java -jar baksmali.jar -o outdir/smali classes.dex in file.apk
-                      java -jar AXMLPrinter.jar binary-manifest in file.apk > outdir/AndroidManifest.text.xml
+                      androaxml.py --input binary-manifest in file.apk --output outdir/AndroidManifest.text.xml
                 if clear unset,
                       unzip file.apk -d outdir/unzipped
                 else
@@ -298,8 +298,7 @@ class droidsample:
                     print("Failed to extract binary manifest: %s" % (sys.exc_info()[0]))
                 if os.access( manifest, os.R_OK) and os.path.getsize(manifest)>0:
                     textmanifest = os.path.join( self.outdir, 'AndroidManifest.text.xml')
-                    subprocess.call( [ "java", "-jar", droidconfig.AXMLPRINTER_JAR, manifest ], \
-                                         stdout=open(textmanifest, "w"), stderr=self.process_output)
+                    androaxml_main(manifest, textmanifest)
                     if os.access( textmanifest, os.R_OK ):
                         # overwrite the binary manifest with the converted text one
                         os.rename(textmanifest, manifest)

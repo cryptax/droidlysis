@@ -4,7 +4,6 @@ import configparser
 # ------------------------- DroidLysis Configuration file -----------------
 
 APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.0.jar")
-AXMLPRINTER_JAR = os.path.join( os.path.expanduser("~/softs"), "AXMLPrinter2.jar")
 BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.1.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex2jar-0.0.9.16-SNAPSHOT"), "d2j-dex2jar.sh")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")

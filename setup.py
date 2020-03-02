@@ -16,7 +16,7 @@ setup(
     license='MIT',
     keywords="android malware reverse",
     python_requires='>=3.0.*',
-    version = '3.0.18',
+    version = '3.0.19',
     packages=['conf'],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -26,6 +26,6 @@ setup(
         "Topic :: Software Development :: Disassemblers",
     ],
     include_package_data=True,
-    install_requires=[ 'configparser', 'python-magic', 'SQLAlchemy', 'rarfile' ],
+    install_requires=[ 'configparser', 'python-magic', 'SQLAlchemy', 'rarfile', 'androguard' ],
     scripts = [ 'droidlysis3.py', 'droidconfig.py', 'droidcountry.py', 'droidproperties.py', 'droidreport.py', 'droidsample.py', 'droidsql.py', 'droidurl.py', 'droidutil.py', 'droidziprar.py' ],
 )
