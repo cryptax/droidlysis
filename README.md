@@ -33,13 +33,18 @@ $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.z
 $ unzip dex-tools-2.1-SNAPSHOT.zip
 $ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.36.jar
 ```
-3. **Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
+
+Then, you have two options:
+
+3a. **Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
 
 ```
 $ git clone https://github.com/cryptax/droidlysis
 $ cd droidlysis
 $ pip3 install -r requirements
 ```
+
+3b. Or install using pip3: `pip3 install droidlysis`
 
 
 ### Configuration
