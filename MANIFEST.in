@@ -1,0 +1,2 @@
+include conf/*.conf
+include conf/__init__.py
