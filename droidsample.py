@@ -759,7 +759,6 @@ class droidsample:
             analysis_file.close()
 
             # detect base64 encoded string in resources
-            print("Wide exceptions: ", exceptions)
             self.find_base64_strings(self.outdir, exceptions, self.properties.wide['base64_strings'])
 
             # trying to grab the application's name
