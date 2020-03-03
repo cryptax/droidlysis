@@ -32,9 +32,11 @@ $ unzip dex-tools-2.1-SNAPSHOT.zip
 $ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.36.jar
 ```
 
-Then, you have two options:
+### Installation
 
-3a. **Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
+Once the necessary tools are installed, you have two options:
+
+Either **Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
 
 ```
 $ git clone https://github.com/cryptax/droidlysis
@@ -42,7 +44,7 @@ $ cd droidlysis
 $ pip3 install -r requirements
 ```
 
-3b. Or install using pip3: `pip3 install droidlysis`
+**Or install using pip3**: `pip3 install droidlysis`
 
 
 ### Configuration
@@ -57,7 +59,7 @@ The configuration is extremely simple, you only need to tune `droidconfig.py`:
 
 Example:
 
-```
+```python
 APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
 BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.4.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.s
@@ -161,6 +163,7 @@ A pattern consist of:
 pattern=;->sendTextMessage|;->sendMultipartTextMessage|SmsManager;->sendDataMessage
 description=Sending SMS messages
 ```
+
 
 ## Updates
 
