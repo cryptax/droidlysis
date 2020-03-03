@@ -162,4 +162,8 @@ pattern=;->sendTextMessage|;->sendMultipartTextMessage|SmsManager;->sendDataMess
 description=Sending SMS messages
 ```
 
+## Updates
+
+v3.1.0 - Detection of Base64 strings
+
 
