@@ -103,6 +103,7 @@ class droidproperties:
         self.wide['app_name'] = None
         self.wide['phonenumbers'] = []
         self.wide['urls'] = []
+        self.wide['base64_strings'] = []
         self.wide['apk_zip_url'] = False
         self.wideconfig = droidconfig.droidconfig(droidconfig.WIDE_CONFIGFILE, self.verbose)
         for section in self.wideconfig.get_sections():

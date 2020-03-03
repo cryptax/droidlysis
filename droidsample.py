@@ -680,8 +680,9 @@ class droidsample:
                         analysis_file.write("## %s\n" % (mykey))
                     for element in match[mykey]:
                         analysis_file.write("- "+str(element)+"\n")
-                analysis_file.write('\n')
-                analysis_file.close()
+                    analysis_file.write('\n')
+                    analysis_file.close()
+                
         else:
             if self.verbose:
                 print( "Cannot extract smali properties, because directory %s not found" % (smali_dir))
@@ -704,6 +705,8 @@ class droidsample:
         # detect executables in resources
         self.find_exec_in_resources()
 
+
+
         # other properties
         if self.properties.filetype == droidutil.APK or self.properties.filetype == droidutil.DEX:
             exceptions = []
@@ -720,6 +723,7 @@ class droidsample:
             analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
             analysis_file.write('# Keywords in resources, assets, lib\n\n')
             analysis_file.close()
+
 
             self.properties.wideconfig.match_properties(match, self.properties.wide)
 
@@ -753,6 +757,10 @@ class droidsample:
             analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
             analysis_file.write('\n\n')
             analysis_file.close()
+
+            # detect base64 encoded string in resources
+            print("Wide exceptions: ", exceptions)
+            self.find_base64_strings(self.outdir, exceptions, self.properties.wide['base64_strings'])
 
             # trying to grab the application's name
             if not self.clear:
@@ -904,6 +912,32 @@ class droidsample:
                     self.properties.wide['apk_zip_url'] = True
 
         return self.properties.wide['urls']
+
+    def find_base64_strings(self, thedir, exceptions, theproperty):
+        # const-string v1, "xyz=="
+        # this won't detect all base64 strings because they won't all finish with ==
+        # but we'll get some...
+        base64_regexp = bytes("const-string v[0-9]*, \"[a-zA-Z0-9/=]*==\"", 'utf-8')
+        base64_strings = droidutil.recursive_search(base64_regexp, thedir, exceptions, False)
+
+        if base64_strings is not None:
+            analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+            analysis_file.write("Base64 strings:\n")
+            analysis_file.close()
+            
+            for s in base64_strings.keys():
+                # remove the const-string vX part
+                thestr = re.sub('const-string v[0-9]*, "', '', s)
+                thestr = re.sub('==\"', '==', thestr)
+                if thestr not in theproperty:
+                    theproperty.append(thestr)
+                    analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+                    analysis_file.write("- "+thestr+"\n")
+                    analysis_file.close()
+                    if self.verbose:
+                        print("Base64 string: ", thestr)
+
+
 
             
             

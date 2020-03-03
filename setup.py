@@ -16,7 +16,7 @@ setup(
     license='MIT',
     keywords="android malware reverse",
     python_requires='>=3.0.*',
-    version = '3.0.19',
+    version = '3.1.0',
     packages=['conf'],
     classifiers=[
         "Programming Language :: Python :: 3",
