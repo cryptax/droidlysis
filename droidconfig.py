@@ -3,11 +3,11 @@ import configparser
 
 # ------------------------- DroidLysis Configuration file -----------------
 
-APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.0.jar")
-BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.1.jar")
-DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex2jar-0.0.9.16-SNAPSHOT"), "d2j-dex2jar.sh")
+APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
+BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.4.0.jar")
+DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.sh")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
-INSTALL_DIR = os.path.expanduser("~/dev/droidlysis")
+INSTALL_DIR = os.path.expanduser("~/git/droidlysis")
 SQLALCHEMY = 'sqlite:///droidlysis.db' # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
 KEYTOOL = os.path.join( "/usr/bin/keytool" )
 
@@ -22,6 +22,7 @@ KIT_CONFIGFILE =  os.path.join(os.path.join(INSTALL_DIR, './conf/kit.conf'))
 class droidconfig:
     def __init__(self, filename, verbose=False):
         assert filename != None, "Filename is invalid"
+        assert os.access(filename, os.R_OK) != False, "File {0} is not readable".format(filename)
 
         self.filename = filename
         self.verbose = verbose

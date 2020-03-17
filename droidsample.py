@@ -656,7 +656,6 @@ class droidsample:
             analysis_file.close()
 
             self.properties.smaliconfig.match_properties(match, self.properties.smali)
-            
             for mykey in match.keys():
                 '''if self.verbose:
                     for element in match[mykey]:
