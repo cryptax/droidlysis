@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+
+import droidlysis3
+
+if __name__ == "__main__":
+    droidlysis3.check_python_version()
+    args = droidlysis3.get_arguments()
+    droidlysis3.process_input(args)
+    print("END")

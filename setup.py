@@ -18,6 +18,18 @@ setup(
     python_requires='>=3.0.*',
     version = '3.1.0',
     packages=['conf'],
+    py_modules=[
+        'droidconfig',
+        'droidcountry',
+        'droidlysis3',
+        'droidproperties',
+        'droidreport',
+        'droidsample',
+        'droidsql',
+        'droidurl',
+        'droidutil',
+        'droidziprar',
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -27,5 +39,5 @@ setup(
     ],
     include_package_data=True,
     install_requires=[ 'configparser', 'python-magic', 'SQLAlchemy', 'rarfile', 'androguard' ],
-    scripts = [ 'droidlysis3.py', 'droidconfig.py', 'droidcountry.py', 'droidproperties.py', 'droidreport.py', 'droidsample.py', 'droidsql.py', 'droidurl.py', 'droidutil.py', 'droidziprar.py' ],
+    scripts = [ 'droidlysis' ],
 )
