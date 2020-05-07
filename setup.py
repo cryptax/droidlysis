@@ -38,6 +38,6 @@ setup(
         "Topic :: Software Development :: Disassemblers",
     ],
     include_package_data=True,
-    install_requires=[ 'configparser', 'python-magic', 'SQLAlchemy', 'rarfile', 'androguard' ],
+    install_requires=[ 'python-magic', 'SQLAlchemy', 'rarfile', 'androguard' ],
     scripts = [ 'droidlysis' ],
 )
