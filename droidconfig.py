@@ -7,7 +7,7 @@ APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
 BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.4.0.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.sh")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
-INSTALL_DIR = os.path.expanduser("~/git/droidlysis")
+INSTALL_DIR = os.path.dirname(__file__)
 SQLALCHEMY = 'sqlite:///droidlysis.db' # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
 KEYTOOL = os.path.join( "/usr/bin/keytool" )
 
