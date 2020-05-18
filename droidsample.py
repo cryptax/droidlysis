@@ -3,7 +3,7 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
-__version__ = '3.0'
+__version__ = '3.2.0'
 """
 import hashlib
 import os
@@ -23,8 +23,6 @@ import droidproperties
 import droidziprar
 import droidurl
 import xml.parsers.expat as expat
-from androguard.cli import androaxml_main
-
 
 class droidsample:
     """Base class for an Android sample to analyze"""
@@ -262,10 +260,15 @@ class droidsample:
             
         if not self.clear and os.access( dex_file, os.R_OK ):
             jar_file = os.path.join(self.outdir, 'classes-dex2jar.jar')
-            if self.verbose:
-                print( "Dex2jar on " + dex_file )
-            subprocess.call( [ droidconfig.DEX2JAR_CMD, "--force", dex_file, "-o", jar_file ], \
+            if os.access( droidconfig.DEX2JAR_CMD, os.X_OK):
+                if self.verbose:
+                    print( "Dex2jar on " + dex_file )
+                subprocess.call( [ droidconfig.DEX2JAR_CMD, "--force", dex_file, "-o", jar_file ], \
                                  stdout=self.process_output, stderr=self.process_output)
+            else:
+                if self.verbose:
+                    print("Dex2jar: file is not executable, skipping (file: {0})".format(droidconfig.DEX2JAR_CMD))
+                    
             if os.access( jar_file, os.R_OK ):
                 if self.enable_procyon:
                     if self.verbose:
@@ -298,7 +301,9 @@ class droidsample:
                     print("Failed to extract binary manifest: %s" % (sys.exc_info()[0]))
                 if os.access( manifest, os.R_OK) and os.path.getsize(manifest)>0:
                     textmanifest = os.path.join( self.outdir, 'AndroidManifest.text.xml')
-                    androaxml_main(manifest, textmanifest)
+                    subprocess.call( [ "androaxml.py", "--input", manifest, \
+                                           "--output", textmanifest ], \
+                                         stdout=self.process_output, stderr=self.process_output)
                     if os.access( textmanifest, os.R_OK ):
                         # overwrite the binary manifest with the converted text one
                         os.rename(textmanifest, manifest)
