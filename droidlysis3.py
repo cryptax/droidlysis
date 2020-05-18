@@ -14,7 +14,7 @@ import sys
 
 property_dump_file = 'autoanalysis.md'
 report_file = 'report.md'
-__version__ = "3.0"
+__version__ = "3.2.0"
 
 def get_arguments():
     """Read arguments for the program and returns the ArgumentParser"""
@@ -133,3 +133,8 @@ def check_python_version():
         quit()
 
 
+if __name__ == "__main__":
+    check_python_version()
+    args = get_arguments()
+    process_input(args)
+    print("END")
