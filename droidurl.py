@@ -11,7 +11,9 @@ def build_special_url_list():
     list = []
     
     # dummy URLs
-    list.append('127\.0\.0\.1:*$')
+    list.append('^(http://)127\.0\.0\.1$')
+    list.append('^8\.8\.8\.8$')
+    list.append('^8\.8\.4\.4$')
     list.append('^https*://%s:%d%s')
     list.append('^(http://)*192\.168\.[0-9.:]*')
     list.append('host:port')

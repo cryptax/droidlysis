@@ -3,7 +3,7 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 """
 import hashlib
 import os
@@ -709,8 +709,6 @@ class droidsample:
         # detect executables in resources
         self.find_exec_in_resources()
 
-
-
         # other properties
         if self.properties.filetype == droidutil.APK or self.properties.filetype == droidutil.DEX:
             exceptions = []
@@ -728,10 +726,9 @@ class droidsample:
             analysis_file.write('# Keywords in resources, assets, lib\n\n')
             analysis_file.close()
 
-
             self.properties.wideconfig.match_properties(match, self.properties.wide)
 
-            for mykey in match.keys():
+            for mykey in match.keys(): # remember mykey is the matched value not the pattern
                 if match[mykey]:
                     analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
                     analysis_file.write("- "+str(mykey)+"\n")
@@ -754,7 +751,13 @@ class droidsample:
                         analysis_file.write("- "+str(mykey)+"\n")
                         analysis_file.close()
 
-                # we want to process each potential URL
+                # we want to process each potential URL and IP address
+                ip_pattern = re.compile("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
+                if ip_pattern.match(mykey):
+                    if self.verbose:
+                        print("IP address to check: {}".format(mykey))
+                    self.interesting_url(mykey)
+                    
                 if mykey.find('http') >= 0 and match[mykey]:
                     self.interesting_url(mykey)
 
@@ -781,7 +784,6 @@ class droidsample:
                                         self.properties.app_name = re.sub('[^:print:]','', self.properties.app_name)
                                         break
 
-                        
     def extract_arm_properties(self, arm_filename=''):
         """Extracts properties from an ARM executable
         Either call this on a sample which is an ARM file. 

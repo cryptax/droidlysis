@@ -20,13 +20,13 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 
 Some of these tools are redundant, but sometimes one fails on a sample while another does not. DroidLysis detects this and tries to switch to a tool that works for the sample.
 
-As of March 2 2020, the following installation works:
+As of August 13 2020, the following installation works:
 
 ```
 $ mkdir softs
 $ cd softs
 $ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.1.jar
-$ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.3.4.jar
+$ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.4.0.jar
 $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
 $ unzip dex-tools-2.1-SNAPSHOT.zip
 $ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.36.jar
@@ -36,15 +36,30 @@ $ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.3
 
 Once the necessary tools are installed, you have two options:
 
-Either **Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
+1. pip3: recommended install. The package might date back a little, so with this option you might not get the latest version.
+2. clone the repo: this will always be the most up-to-date version.
+
+#### Easiest install: pip3
+
+The recommended install is with **pip3** in a *virtual environment* (`pip3 install virtualenv`):
+
+```
+$ python3 -m venv droidlysis
+$ cd droidlysis
+$ source ./bin/activate
+(droidlysis) /droidlysis # pip3 install droidlysis
+```
+
+
+#### Most up-to-date solution: clone the repo
+
+**Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
 
 ```
 $ git clone https://github.com/cryptax/droidlysis
 $ cd droidlysis
-$ pip3 install -r requirements
+$ pip3 install -r requirements.txt
 ```
-
-**Or install using pip3**: `pip3 install droidlysis`
 
 
 ### Configuration
@@ -61,7 +76,7 @@ Example:
 
 ```python
 APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
-BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.3.4.jar")
+BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.4.0.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.s
 h")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.36.jar")
@@ -167,6 +182,7 @@ description=Sending SMS messages
 
 ## Updates
 
+v3.2.1 - IP address detection
 v3.2.0 - Dex2jar is optional
 v3.1.0 - Detection of Base64 strings
 
