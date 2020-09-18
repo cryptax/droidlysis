@@ -1,5 +1,14 @@
 # Dev notes
 
+Packaging:
+```
+python3 setup.py sdist bdist_wheel
+python3 -m pip install --user --upgrade twine
+python3 -m twine upload --repository testpypi dist/*
+```
+
+on pypi: `twine upload dist/*`
+
 Testing in a Docker container:
 
 ```

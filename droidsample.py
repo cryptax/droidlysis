@@ -463,28 +463,50 @@ class droidsample:
                 return;
 
             tab = droidutil.get_elements(xmldoc, 'service', 'android:name')
+            tab.extend(droidutil.get_elements(xmldoc, 'service', 'obfuscation:name'))
             for t in tab:
-                self.properties.manifest['services'].append(re.sub(r"u'(?P<name>.*)'", r"\g<name>", t))
+                name = re.sub(r"u'(?P<name>.*)'", r"\g<name>", t)
+                if name != "''":
+                    self.properties.manifest['services'].append(name)
                                                             
             tab = droidutil.get_elements(xmldoc, 'receiver', 'android:name')
+            tab.extend(droidutil.get_elements(xmldoc, 'receiver', 'obfuscation:name'))
             for t in tab:
-                self.properties.manifest['receivers'].append(re.sub(r"u'(?P<nom>.*)'", r"\g<nom>", t))
+                name = re.sub(r"u'(?P<name>.*)'", r"\g<name>", t)
+                if name != "''" :
+                    self.properties.manifest['receivers'].append(name)
 
             tab = droidutil.get_elements(xmldoc, 'activity', 'android:name')
+            tab.extend(droidutil.get_elements(xmldoc, 'activity', 'obfuscation:name'))
             for t in tab:
-                self.properties.manifest['activities'].append(re.sub(r"u'(?P<nom>.*)'", r"\g<nom>", t))
+                name = re.sub(r"u'(?P<name>.*)'", r"\g<name>", t)
+                if name != "''" :
+                    self.properties.manifest['activities'].append(name)
 
             tab = droidutil.get_elements(xmldoc, 'provider', 'android:name')
+            tab.extend(droidutil.get_elements(xmldoc, 'provider', 'obfuscation:name'))
             for t in tab:
-                self.properties.manifest['providers'].append(re.sub(r"u'(?P<nom>.*)'", r"\g<nom>", t))
+                name = re.sub(r"u'(?P<name>.*)'", r"\g<name>", t)
+                if name != "''" :
+                    self.properties.manifest['providers'].append(name)
 
             tab = droidutil.get_elements(xmldoc, 'uses-library', 'android:name')
             for t in tab:
                 self.properties.manifest['libraries'].append(re.sub(r"u'(?P<nom>.*)'", r"\g<nom>", t))
 
             tab = droidutil.get_elements(xmldoc, 'uses-permission', 'android:name')
+            tab.extend(droidutil.get_elements(xmldoc, 'uses-permission', 'obfuscation:name'))
             for t in tab:
-                self.properties.manifest['permissions'].append(t.replace('android.permission.','').replace("u'", '').replace("'", ''))
+                name = t.replace('android.permission.','').replace("u'", '').replace("'", '')
+                if name != '':
+                    self.properties.manifest['permissions'].append(name)
+
+            tab = droidutil.get_elements(xmldoc, 'application', 'obfuscation:name')
+            tab.extend(droidutil.get_elements(xmldoc, 'application', 'android:name'))
+            for t in tab:
+                if 'multidex' in t:
+                    self.properties.manifest['multidex'] = True
+                    break
 
             self.properties.manifest['maxSDK'] = droidutil.get_element(xmldoc, 'uses-sdk', 'android:maxSdkVersion')
             self.properties.manifest['minSDK'] = droidutil.get_element(xmldoc, 'uses-sdk', 'android:minSdkVersion')
@@ -499,10 +521,13 @@ class droidsample:
             # get main activity
             for actitem in xmldoc.getElementsByTagName('activity'):
                 for a in actitem.getElementsByTagName('action'):
-                    if a.getAttribute( 'android:name' ) == 'android.intent.action.MAIN':
+                    if a.getAttribute( 'android:name' ) == 'android.intent.action.MAIN' or a.getAttribute('obfuscation:name') ==  'android.intent.action.MAIN':
                         for b in actitem.getElementsByTagName('category'):
-                            if b.getAttribute( 'android:name' ) == 'android.intent.category.LAUNCHER':
-                                self.properties.manifest['main_activity'] = actitem.getAttribute( 'android:name' )
+                            if b.getAttribute( 'android:name' ) == 'android.intent.category.LAUNCHER' or b.getAttribute('obfuscation:name') ==  'android.intent.category.LAUNCHER':
+                                if actitem.getAttribute('android:name') != '':
+                                    self.properties.manifest['main_activity'] = actitem.getAttribute( 'android:name' )
+                                else:
+                                    self.properties.manifest['main_activity'] = actitem.getAttribute( 'obfuscation:name' )                  
             if self.verbose and self.properties.manifest['main_activity'] != None:
                 print( "Main activity: " + self.properties.manifest['main_activity'])
 
