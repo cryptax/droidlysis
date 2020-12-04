@@ -568,12 +568,15 @@ class droidsample:
                 for section in self.properties.kitsconfig.get_sections():
                     pattern_list = self.properties.kitsconfig.get_pattern(section).split('|')
                     for pattern in pattern_list:
-                        if os.access(os.path.join(smali_dir, pattern), os.R_OK):
-                            if self.verbose:
-                                print("kits[%s] = True (detected pattern: %s)" % (section, pattern))
-                            list.append(section)
-                            self.properties.kits[ section ] = True
-                            break # break one level
+                        for root, dirs, fname in os.walk(smali_dir):
+                            if pattern in root:
+                                if self.verbose:
+                                    print("kits[%s] = True (detected pattern: %s)" % (section, pattern))
+                                    list.append(section)
+                                    self.properties.kits[ section ] = True
+                                break # break one level
+                        if self.properties.kits[ section ] == True:
+                            break # break another level
         return list
 
     def extract_dex_properties(self):
@@ -673,7 +676,7 @@ class droidsample:
             for kit in list_of_kits:
                 pattern = self.properties.kitsconfig.get_pattern(kit)
                 if pattern != None and pattern != '':
-                    exceptions.append(os.path.join(smali_dir, pattern ))
+                    exceptions.append(pattern) # pattern may be part of a path so do not prefix with smali_dir
                 else:
                     if self.verbose:
                         print( "WARNING: configuration file error: empty pattern for %s" % (kit) )
@@ -738,7 +741,7 @@ class droidsample:
         if self.properties.filetype == droidutil.APK or self.properties.filetype == droidutil.DEX:
             exceptions = []
             for kit in list_of_kits:
-                exceptions.append(os.path.join(os.path.join(self.outdir, 'smali'), self.properties.kitsconfig.get_pattern(kit)))
+                exceptions.append(self.properties.kitsconfig.get_pattern(kit))
             exceptions.append("/unjarred")
             exceptions.append("/unzipped")
             exceptions.append("/unknown")
