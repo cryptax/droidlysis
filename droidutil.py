@@ -258,8 +258,11 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
         try: 
             if os.path.isfile(current_entry):
                 for exception in exception_list:
-                    match = re.search(exception, current_entry)
-                    if match != None:
+                    # TO DO: not entirely sure we need 'match'? perhaps if it is a regexp?
+                    # Remember that "exception" can be part of a path e.g we want everything that matches blah/bloh
+                    # then com/blah/bloh must match
+                    match = re.search(exception, current_entry) # TO DO: not entirely sure we need the match
+                    if match != None or exception in current_entry: 
                         # skip this file
                         raise Found
 
