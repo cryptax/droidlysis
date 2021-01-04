@@ -270,7 +270,7 @@ class droidsample:
                     print("Dex2jar: file is not executable, skipping (file: {0})".format(droidconfig.DEX2JAR_CMD))
                     
             if os.access( jar_file, os.R_OK ):
-                if self.enable_procyon:
+                if self.enable_procyon and os.access( droidconfig.PROCYON_JAR, os.R_OK ):
                     if self.verbose:
                         print( "Procyon decompiler on " + jar_file )
                     subprocess.call( [ "java", "-jar", droidconfig.PROCYON_JAR, \

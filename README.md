@@ -15,10 +15,16 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 
 - [Apktool](https://ibotpeaches.github.io/Apktool/) - note we only need the Jar.
 - [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads) - note we only need the Jar.
+
+### Optional
+
 - [Dex2jar](https://github.com/pxb1988/dex2jar) - dex2jar is now *optional*. If you don't need Dex to Jar transformation (useful for later decompiling!), you can skip it.
-- [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)
+- [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) - *optional*. If you don't want to use this decompiler, skip its installation.
 
 Some of these tools are redundant, but sometimes one fails on a sample while another does not. DroidLysis detects this and tries to switch to a tool that works for the sample.
+
+
+### Example
 
 As of August 13 2020, the following installation works:
 
@@ -29,7 +35,6 @@ $ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.1.jar
 $ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.4.0.jar
 $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
 $ unzip dex-tools-2.1-SNAPSHOT.zip
-$ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.36.jar
 ```
 
 ### Installation
@@ -69,7 +74,7 @@ The configuration is extremely simple, you only need to tune `droidconfig.py`:
 - `APKTOOL_JAR`: set the path to your apktool jar
 - `BAKSMALI_JAR`: set the path to your baksmali jar
 - `DEX2JAR_CMD`: set the path to the folder containing `d2j-dex2.jar.sh`. If you did not install dex2jar, simply provide an invalid path here, for example pointing to a non-existant file.
-- `PROCYON_JAR`: set the path to the procyon decompiler jar
+- `PROCYON_JAR`: set the path to the procyon decompiler jar. If you don't want Procyon, leave this path to a non existant file.
 - `INSTALL_DIR`: set the path to your DroidLysis instance. Do not forget to set this or DroidLysis won't work correctly!
 
 Example:
