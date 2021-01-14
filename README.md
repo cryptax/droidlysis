@@ -10,7 +10,7 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 
 ### Requirements
 
-1. **Install required system packages**: Python3, Pip, unzip: `sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev`
+1. **Install required system packages**: Python3, Pip, unzip: `sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev`
 2. **Install Android disassembly tools**. DroidLysis does not perform the disassembly itself, but relies on other tools to do so. Therefore, you must install:
 
 - [Apktool](https://ibotpeaches.github.io/Apktool/) - note we only need the Jar.
@@ -36,12 +36,12 @@ $ wget https://bitbucket.org/mstrobel/procyon/downloads/procyon-decompiler-0.5.3
 
 Once the necessary tools are installed, you have two options:
 
-1. pip3: recommended install. The package might date back a little, so with this option you might not get the latest version.
+1. pip3: The package might date back a little, so with this option you might not get the latest version.
 2. clone the repo: this will always be the most up-to-date version.
 
-#### Easiest install: pip3
+#### Via pip3
 
-The recommended install is with **pip3** in a *virtual environment* (`pip3 install virtualenv`):
+First, install system requirements - see above. Then, create a virtual environment and install droidlysis.
 
 ```
 $ python3 -m venv droidlysis
@@ -49,7 +49,6 @@ $ cd droidlysis
 $ source ./bin/activate
 (droidlysis) /droidlysis # pip3 install droidlysis
 ```
-
 
 #### Most up-to-date solution: clone the repo
 
@@ -59,6 +58,21 @@ $ source ./bin/activate
 $ git clone https://github.com/cryptax/droidlysis
 $ cd droidlysis
 $ pip3 install -r requirements.txt
+```
+
+#### Docker
+
+The following Dockerfile builds droidlysis, if that's what you want:
+
+```
+ARG PYTHON_VERSION=3.9-slim-buster
+FROM python:${PYTHON_VERSION} as build
+WORKDIR /opt
+RUN apt-get update && apt-get install -yqq libxml2-dev libxslt-dev libmagic-dev git
+RUN git clone https://github.com/cryptax/droidlysis
+ENV PATH="$PATH:/root/.local/bin"
+ENV PYTHONPATH=$PYTHONPATH:/opt/droidlysis
+RUN cd /opt/droidlysis && pip3 install --user -r requirements.txt
 ```
 
 
