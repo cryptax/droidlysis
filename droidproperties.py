@@ -158,3 +158,26 @@ class droidproperties:
             if self.verbose:
                 print("Sample is already in the database")
 
+    def dump_json(self, filename='report.json'):
+        data = { 'sanitized_basename' : self.sanitized_basename, \
+                 'file_nb_classes' : self.file_nb_classes, \
+                 'file_nb_dir' : self.file_nb_dir, \
+                 'file_size' : self.file_size, \
+                 'file_small' : self.file_small, \
+                 'filetype' : self.filetype, \
+                 'file_innerzips' : self.file_innerzips,\
+                 'manifest_properties' : self.manifest, \
+                'smali_properties' : self.smali,\
+                 'wide_properties' : self.wide,\
+                 'arm_properties' : self.arm,\
+                 'dex_properties' : self.dex,\
+                 'kits' : self.kits }
+        if self.verbose:
+            print("Dumping to JSON file {}".format(filename))
+        f = open(filename, 'w') 
+        f.write(json.dumps(data))
+        f.close()
+        
+                 
+        
+

@@ -14,7 +14,8 @@ import sys
 
 property_dump_file = 'autoanalysis.md'
 report_file = 'report.md'
-__version__ = "3.2.1"
+json_file = 'report.json'
+__version__ = "3.3.0"
 
 def get_arguments():
     """Read arguments for the program and returns the ArgumentParser"""
@@ -34,6 +35,7 @@ script which processes Android samples. \n
     parser.add_argument('--enable-procyon', help='enable procyon decompilation', action='store_true')
     parser.add_argument('--disable-report', help='do not generate automatic report', action='store_true')
     parser.add_argument('--disable-sql', help='do not write analysis to SQL database', action='store_true')
+    parser.add_argument('--disable-json', help='do not dump analysis to JSON', action='store_true')
 
     args = parser.parse_args()
     
@@ -61,7 +63,7 @@ def process_input(args):
         if os.path.isdir(element): 
             listing = os.listdir(element)
             for file in listing:
-                process_file(os.path.join(element, file), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_report, args.no_kit_exception, args.disable_sql)
+                process_file(os.path.join(element, file), args.output, args.verbose, args.clearoutput, args.enable_procyon, args.disable_report, args.no_kit_exception, args.disable_sql, args.disable_json)
                 if args.movein:
                     if args.verbose:
                         print("Moving %s to %s" % (os.path.join('.',element), os.path.join(args.movein, element)))
@@ -81,7 +83,7 @@ def process_input(args):
                 os.rename(os.path.join('.',element), os.path.join(args.movein, os.path.basename(element)))
 
 
-def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_report=False, silent=False, no_kit_exception=False, disable_sql=False):
+def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, disable_report=False, silent=False, no_kit_exception=False, disable_sql=False, disable_json=False):
     """Static analysis of a given file"""
 
     if os.access(infile, os.R_OK): 
@@ -102,6 +104,9 @@ def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, ena
 
         if not disable_sql:
             sample.properties.write()
+
+        if not disable_json:
+            sample.properties.dump_json(os.path.join(sample.outdir, json_file))
 
         report_to_file = True
         if clear or disable_report:
