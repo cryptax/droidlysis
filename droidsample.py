@@ -477,6 +477,10 @@ class droidsample:
                     print( "XML parsing error" )
                 return;
 
+            # getting package's name
+            self.properties.manifest['package_name'] = xmldoc.documentElement.getAttribute('package')
+
+
             tab = droidutil.get_elements(xmldoc, 'service', 'android:name')
             tab.extend(droidutil.get_elements(xmldoc, 'service', 'obfuscation:name'))
             for t in tab:
@@ -565,12 +569,6 @@ class droidsample:
                 print( "Listens to incoming SMS  : %d" % (self.properties.manifest['listens_incoming_sms']))
                 print( "Listens to outgoing calls: %d" % (self.properties.manifest['listens_outgoing_call']))
                 
-            # get package name
-            if not self.clear:
-                self.properties.manifest_package = droidutil.get_element(xmldoc, 'manifest', 'package')
-                if self.verbose:
-                    print( "Package's name : %s" % (self.properties.manifest_package))
-
 
     def extract_kit_properties(self):
         """
@@ -849,7 +847,7 @@ class droidsample:
             output = proc.communicate()
 
             for section in self.properties.armconfig.get_sections():
-                matches = re.findall(self.properties.armconfig.get_pattern(section), output[0])
+                matches = re.findall(self.properties.armconfig.get_pattern(section), output[0].decode('utf-8'))
                 if matches != None:
                     self.properties.arm[section] = True
                     if self.verbose:

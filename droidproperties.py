@@ -84,7 +84,7 @@ class droidproperties:
             'maxSDK' : 0,\
             'main_activity': None, \
             'minSDK' : 0,\
-            'package' : None, \
+            'package_name' : None, \
             'permissions' : [], \
             'providers' : [], \
             'receivers' : [], \
