@@ -450,16 +450,21 @@ class droidsample:
 
     def is_packed(self):
         """
-        We assume a sample is packed if the main activity its manifest references cannot be found in the DEX.
+        We assume a sample is packed if the main activity its manifest references cannot be found in the DEX + DexClassLoader or Dex File
         This test is far from perfect
         """
         smali_dir = os.path.join(self.outdir, 'smali')
+        missing = False
         if self.properties.manifest['main_activity'] != None:
             filename = os.path.join(smali_dir, self.properties.manifest['main_activity'].replace('.', os.path.sep).replace('\'','') + '.smali')
             if not os.access(filename, os.R_OK):
                 if self.verbose:
                     print("Unable to find Main Activitity: {} filename={}".format(self.properties.manifest['main_activity'],filename))
-                    self.properties.manifest['packed'] = True
+                missing = True
+
+        if missing and (self.properties.smali['dex_class_loader'] or self.properties.smali['dex_file']):
+            self.properties.smali['packed'] = True
+                
 
     def extract_manifest_properties(self):
         """Extracting services, receivers, activities etc from manifest"""
@@ -566,10 +571,6 @@ class droidsample:
                 if self.verbose:
                     print( "Package's name : %s" % (self.properties.manifest_package))
 
-            # test if packed
-            self.is_packed()
-
-                    
 
     def extract_kit_properties(self):
         """
@@ -696,7 +697,7 @@ class droidsample:
                     else:
                         if self.verbose:
                             print( "WARNING: configuration file error: empty pattern for %s" % (kit) )
-
+                              
             smali_regexp = self.properties.smaliconfig.get_all_regexp()
             match = droidutil.recursive_search(smali_regexp, smali_dir, exceptions, False)
             
@@ -730,7 +731,9 @@ class droidsample:
                         analysis_file.write("- "+str(element)+"\n")
                     analysis_file.write('\n')
                     analysis_file.close()
-                
+
+            # test if sample is likely to be packed
+            self.is_packed()
         else:
             if self.verbose:
                 print( "Cannot extract smali properties, because directory %s not found" % (smali_dir))

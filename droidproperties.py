@@ -85,7 +85,6 @@ class droidproperties:
             'main_activity': None, \
             'minSDK' : 0,\
             'package' : None, \
-            'packed' : False, \
             'permissions' : [], \
             'providers' : [], \
             'receivers' : [], \
@@ -98,6 +97,8 @@ class droidproperties:
         self.smaliconfig = droidconfig.droidconfig(droidconfig.SMALI_CONFIGFILE, self.verbose)
         for section in self.smaliconfig.get_sections():
             self.smali[section] = False
+
+        self.smali['packed'] = False # This property is not in conf section as it is deduced from no main activity + loading DEX dynamically
 
         # automatically adding wide properties
         self.wide.clear()
