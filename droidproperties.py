@@ -85,6 +85,7 @@ class droidproperties:
             'main_activity': None, \
             'minSDK' : 0,\
             'package' : None, \
+            'packed' : False, \
             'permissions' : [], \
             'providers' : [], \
             'receivers' : [], \

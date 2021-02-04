@@ -448,11 +448,23 @@ class droidsample:
                     print( "Certificate owner matches Famous : "+m.group(0) )
                 self.certificate['famous'] = True
 
-            
-
+    def is_packed(self):
+        """
+        We assume a sample is packed if the main activity its manifest references cannot be found in the DEX.
+        This test is far from perfect
+        """
+        smali_dir = os.path.join(self.outdir, 'smali')
+        filename = os.path.join(smali_dir, self.properties.manifest['main_activity'].replace('.', os.path.sep).replace('\'','') + '.smali')
+        print(filename)
+        if not os.access(filename, os.R_OK):
+            if self.verbose:
+                print("Unable to find Main Activitity: {} filename={}".format(self.properties.manifest['main_activity'],filename))
+                self.properties.manifest['packed'] = True
+        #else:
+        #    print("Main Activity filename={} is present".format(filename))
 
     def extract_manifest_properties(self):
-        """Extracting services, receviers, activities etc from manifest"""
+        """Extracting services, receivers, activities etc from manifest"""
         manifest = os.path.join(self.outdir, 'AndroidManifest.xml')
         if self.properties.filetype == droidutil.APK and os.access(manifest, os.R_OK) and os.path.getsize(manifest)>0:
             try:
@@ -555,6 +567,11 @@ class droidsample:
                 self.properties.manifest_package = droidutil.get_element(xmldoc, 'manifest', 'package')
                 if self.verbose:
                     print( "Package's name : %s" % (self.properties.manifest_package))
+
+            # test if packed
+            self.is_packed()
+
+                    
 
     def extract_kit_properties(self):
         """
