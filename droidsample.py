@@ -454,14 +454,12 @@ class droidsample:
         This test is far from perfect
         """
         smali_dir = os.path.join(self.outdir, 'smali')
-        filename = os.path.join(smali_dir, self.properties.manifest['main_activity'].replace('.', os.path.sep).replace('\'','') + '.smali')
-        print(filename)
-        if not os.access(filename, os.R_OK):
-            if self.verbose:
-                print("Unable to find Main Activitity: {} filename={}".format(self.properties.manifest['main_activity'],filename))
-                self.properties.manifest['packed'] = True
-        #else:
-        #    print("Main Activity filename={} is present".format(filename))
+        if self.properties.manifest['main_activity'] != None:
+            filename = os.path.join(smali_dir, self.properties.manifest['main_activity'].replace('.', os.path.sep).replace('\'','') + '.smali')
+            if not os.access(filename, os.R_OK):
+                if self.verbose:
+                    print("Unable to find Main Activitity: {} filename={}".format(self.properties.manifest['main_activity'],filename))
+                    self.properties.manifest['packed'] = True
 
     def extract_manifest_properties(self):
         """Extracting services, receivers, activities etc from manifest"""
