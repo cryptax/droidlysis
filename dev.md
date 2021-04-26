@@ -1,5 +1,24 @@
 # Dev notes
 
+## Testing the git in a Docker container
+
+```
+$ docker run -it --rm ubuntu:latest /bin/bash
+# sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev
+# mkdir -p ~/softs
+# cd ~/softs
+# wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.5.0.jar
+# wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
+# wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
+# unzip dex-tools-2.1-SNAPSHOT.zip
+# rm -f dex-tools-2.1-SNAPSHOT.zip
+# pip3 install -U pip
+# git clone https://github.com/cryptax/droidlysis
+# cd droidlysis
+# pip3 install -r requirements.txt
+```
+
+
 ## Packaging
 
 - check everything you need is in dist/
@@ -10,7 +29,7 @@ python3 -m pip install --user --upgrade twine
 python3 -m twine upload --repository testpypi dist/*
 ```
 
-## Testing in a Docker container
+### Testing the package in a Docker container
 
 In Alpine:
 
@@ -33,6 +52,6 @@ docker run -it --rm ubuntu:latest /bin/bash
 # pip3 install --extra-index-url https://testpypi.python.org/pypi --no-deps droidlysis
 ```
 
-## Final upload
+### Final upload
 
 When ready, upload on the real pypi: `twine upload dist/*`

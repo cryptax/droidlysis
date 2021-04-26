@@ -8,47 +8,68 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 
 <img src="https://img.shields.io/badge/PyPi%20-3.3.1-blue">
 
-## Install
+## Quick setup
 
-### Requirements
+Can't wait to use DroidLysis? Then, use a Docker container:
 
-1. **Install required system packages**: Python3, Pip, unzip: `sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev`
-2. **Install Android disassembly tools**. DroidLysis does not perform the disassembly itself, but relies on other tools to do so. Therefore, you must install:
+```
+$ docker pull cryptax/droidlysis:2021.04
+$ docker run -it --rm -v /tmp/share:/share cryptax/droidlysis:2021.04  /bin/bash
+```
+
+DroidLysis is located in `/opt/droidlysis`.
+
+## Installing DroidLysis
+
+1. Install required system packages
+2. Install Android disassembly tools
+3. Get DroidLysis from the Git repository or from pip
+4. Configure `droidconfig.py`
+
+### Step1: Install required system packages
+
+`sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev`
+
+### Step 2: Install Android disassembly tools
+
+DroidLysis does not perform the disassembly itself, but relies on other tools to do so. Therefore, you must install:
 
 - [Apktool](https://ibotpeaches.github.io/Apktool/) - note we only need the Jar.
 - [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads) - note we only need the Jar.
 
-### Optional
+Optionally:
 
 - [Dex2jar](https://github.com/pxb1988/dex2jar) - dex2jar is now *optional*. If you don't need Dex to Jar transformation (useful for later decompiling!), you can skip it.
 - [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) - *optional*. If you don't want to use this decompiler, skip its installation.
 
 Some of these tools are redundant, but sometimes one fails on a sample while another does not. DroidLysis detects this and tries to switch to a tool that works for the sample.
 
-
-### Example
-
-As of August 13 2020, the following installation works:
+For example,
 
 ```
-$ mkdir softs
-$ cd softs
+$ mkdir -p ~/softs
+$ cd ~/softs
 $ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.5.0.jar
-$ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.4.0.jar
+$ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
 $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
 $ unzip dex-tools-2.1-SNAPSHOT.zip
+$ rm -f dex-tools-2.1-SNAPSHOT.zip
 ```
 
-### Installation
+### Step 3a. Get DroidLysis from the Git Repository
 
-Once the necessary tools are installed, you have two options:
+This is the most up-to-date version.
 
-1. pip3: The package might date back a little, so with this option you might not get the latest version.
-2. clone the repo: this will always be the most up-to-date version.
 
-#### Via pip3
+```
+$ git clone https://github.com/cryptax/droidlysis
+$ cd droidlysis
+$ pip3 install -r requirements.txt
+```
 
-First, install system requirements - see above. Then, create a virtual environment and install droidlysis.
+### Step 3b. Get DroidLysis from Pypi
+
+Alternatively, you can install DroidLysis from pip3. Note the package may be slightly behind the git repository.
 
 ```
 $ python3 -m venv droidlysis
@@ -57,25 +78,7 @@ $ source ./bin/activate
 (droidlysis) /droidlysis # pip3 install droidlysis
 ```
 
-#### Most up-to-date solution: clone the repo
-
-**Clone the repository**: `git clone https://github.com/cryptax/droidlysis`, then install Python requirements:
-
-```
-$ git clone https://github.com/cryptax/droidlysis
-$ cd droidlysis
-$ pip3 install -r requirements.txt
-```
-
-#### Docker
-
-```
-$ docker-compose --build
-$ docker run -it --rm cryptax/droidlysis:2021.04 /bin/bash
-```
-
-
-### Configuration
+### Step 4. Configure `droidconfig.py`
 
 The configuration is extremely simple, you only need to tune `droidconfig.py`:
 
@@ -88,8 +91,8 @@ The configuration is extremely simple, you only need to tune `droidconfig.py`:
 Example:
 
 ```python
-APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.4.1.jar")
-BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.4.0.jar")
+APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.5.0.jar")
+BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.5.2.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.s
 h")
 PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.36.jar")
@@ -107,7 +110,7 @@ Optionally, if you need a specific situation, you might need to tune the followi
 
 ## Usage
 
-DroidLysis has been ported to Python 3. To launch it and get options:
+DroidLysis uses **Python 3**. To launch it and get options:
 
 ```
 python3 ./droidlysis3.py --help
@@ -162,11 +165,7 @@ If you do not need the sample output directory to be generated, use the option `
 
 ## SQLite database
 
-This field is particularly useful when you are processing a directory of samples and later want to scan through properties DroidLysis found in them.
-
-By default, you will find the database in the directory `droidlysis.db`.
-
-The results are stored in a table named `samples`. Each entry in the table is relative to a given sample. Each column is properties DroidLysis tracks.
+If you want to process a directory of samples, you'll probably like to store the properties DroidLysis found in a database, to easily parse and query the findings. In that case, use the option `--enable-sql`. This will automatically dump all results in a database named `droidlysis.db`, in a table named `samples`. Each entry in the table is relative to a given sample. Each column is properties DroidLysis tracks.
 
 For example, to retrieve all filename, SHA256 sum and smali properties of the database:
 
