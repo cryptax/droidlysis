@@ -47,6 +47,8 @@ versions = [ droidversion( '1.0', 1 ),
              droidversion( '8.0', 26, 'Oreo'),
              droidversion( '8.1', 27, 'Oreo'),
              droidversion( '9.0', 28, 'Pie'),
+             droidversion( '10.0', 29, 'Q'),
+             droidversion( '11.0', 30, 'R'),
              ]
 
 # ------------------------------------------------------

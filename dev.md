@@ -1,6 +1,6 @@
 # Dev notes
 
-Packaging:
+## Packaging
 
 - check everything you need is in dist/
 
@@ -10,19 +10,15 @@ python3 -m pip install --user --upgrade twine
 python3 -m twine upload --repository testpypi dist/*
 ```
 
-on pypi: `twine upload dist/*`
+## Testing in a Docker container
 
-Testing in a Docker container:
+In Alpine:
 
 ```
 $ docker run -it --rm alpine:latest /bin/sh
-/ # apk add bash python3 py3-setuptools py3-pip git libxml2 libxsl
-/ # pip3 install virtualenv
-/ # python3 -m venv droidlysis
-/ # cd droidlysis/
-/droidlysis # source ./bin/activate
-(droidlysis) /droidlysis # pip3 install --upgrade pip
-(droidlysis) /droidlysis # pip3 install --extra-index-url https://testpypi.python.org/pypi --no-deps droidlysis
+/ # apk add bash python3 py3-setuptools py3-pip git libxml2 libxslt-dev
+# pip3 install --upgrade pip
+# pip3 install --extra-index-url https://testpypi.python.org/pypi --no-deps droidlysis
 
 ```
 
@@ -37,3 +33,6 @@ docker run -it --rm ubuntu:latest /bin/bash
 # pip3 install --extra-index-url https://testpypi.python.org/pypi --no-deps droidlysis
 ```
 
+## Final upload
+
+When ready, upload on the real pypi: `twine upload dist/*`

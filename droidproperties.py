@@ -175,6 +175,7 @@ class droidproperties:
                  'dex_properties' : self.dex,\
                  'kits' : self.kits }
         if self.verbose:
+            print("-------------")
             print("Dumping to JSON file {}".format(filename))
         f = open(filename, 'w') 
         f.write(json.dumps(data))

@@ -6,7 +6,7 @@ and looks for various properties within the package or its disassembly.
 
 DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zip files (zip), Rar files (rar) or directories of files.
 
-<img src="https://img.shields.io/badge/PyPi%20-3.3.0-blue">
+<img src="https://img.shields.io/badge/PyPi%20-3.3.1-blue">
 
 ## Install
 
@@ -33,7 +33,7 @@ As of August 13 2020, the following installation works:
 ```
 $ mkdir softs
 $ cd softs
-$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.1.jar
+$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.5.0.jar
 $ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.4.0.jar
 $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
 $ unzip dex-tools-2.1-SNAPSHOT.zip
@@ -69,17 +69,9 @@ $ pip3 install -r requirements.txt
 
 #### Docker
 
-The following Dockerfile builds droidlysis, if that's what you want:
-
 ```
-ARG PYTHON_VERSION=3.9-slim-buster
-FROM python:${PYTHON_VERSION} as build
-WORKDIR /opt
-RUN apt-get update && apt-get install -yqq libxml2-dev libxslt-dev libmagic-dev git
-RUN git clone https://github.com/cryptax/droidlysis
-ENV PATH="$PATH:/root/.local/bin"
-ENV PYTHONPATH=$PYTHONPATH:/opt/droidlysis
-RUN cd /opt/droidlysis && pip3 install --user -r requirements.txt
+$ docker-compose --build
+$ docker run -it --rm cryptax/droidlysis:2021.04 /bin/bash
 ```
 
 
