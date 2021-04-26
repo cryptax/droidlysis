@@ -968,6 +968,12 @@ class droidsample:
         return self.properties.wide['urls']
 
     def find_base64_strings(self, thedir, exceptions, theproperty):
+        '''
+        To detect base64 strings, we spot all constants with potentially base64 encoded
+        characters. Then, on these, we attempt to perform base 64 decoding.
+        If that does not lead to an error (padding exception etc) and if the result is
+        printable (~ makes potential sense), we assume this is a Base64 string
+        '''
         # const-string v1, "xyz=="
         # this won't detect all base64 strings because they won't all finish with ==
         # but we'll get some...
@@ -975,7 +981,6 @@ class droidsample:
         base64_strings = droidutil.recursive_search(base64_regexp, thedir, exceptions, False)
 
         if base64_strings is not None:
-            b64s = []
             printable_chars = bytes(string.printable, 'ascii')
             for s in base64_strings.keys():
                 # remove the const-string vX part and trailing "
@@ -986,21 +991,22 @@ class droidsample:
                 try:
                     decoded = base64.b64decode(thestr)
                     
-                    if all(c in printable_chars for c in decoded) and decoded != b'':
+                    if all(c in printable_chars for c in decoded) and decoded != b'' and (not decoded.decode('utf-8') in theproperty):
                         # the decoded string is printable, so likely a valid decoded base64 info
-                        b64s.append(decoded)
+                        # + the array contains unique strings only
+                        theproperty.append(decoded.decode('utf-8'))
                         if self.verbose:
                             print("Base64 string: ", decoded)
                 except Exception as e:
                     # this is not a base64 string
                     pass
 
-            if len(b64s) > 0:
+            if len(theproperty) > 0:
                 analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
                 analysis_file.write("Base64 strings:\n")
 
-                for b in b64s:
-                    analysis_file.write("- "+b.decode('utf-8')+"\n")
+                for b in theproperty:
+                    analysis_file.write("- "+b+"\n")
                     
                 analysis_file.close()
 

@@ -203,6 +203,7 @@ description=Sending SMS messages
 
 ## Updates
 
+v3.3.1 - Improving detection of Base64 strings
 v3.3.0 - Dumping data to JSON
 v3.2.1 - IP address detection
 v3.2.0 - Dex2jar is optional
