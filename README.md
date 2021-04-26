@@ -6,6 +6,8 @@ and looks for various properties within the package or its disassembly.
 
 DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zip files (zip), Rar files (rar) or directories of files.
 
+<img src="https://img.shields.io/badge/PyPi%20-3.3.0-blue">
+
 ## Install
 
 ### Requirements

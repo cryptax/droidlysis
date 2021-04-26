@@ -3,13 +3,15 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
-__version__ = '3.3.0'
+__version__ = '3.3.1'
 """
 import hashlib
+import base64
 import os
 import re
 import itertools
 import sys
+import string
 import struct
 import zlib
 import shutil
@@ -969,39 +971,37 @@ class droidsample:
         # const-string v1, "xyz=="
         # this won't detect all base64 strings because they won't all finish with ==
         # but we'll get some...
-        base64_regexp = bytes("const-string v[0-9]*, \"[a-zA-Z0-9/=]*==\"", 'utf-8')
+        base64_regexp = bytes("const-string v[0-9]*, \"[a-zA-Z0-9/?=]*\"", 'utf-8')
         base64_strings = droidutil.recursive_search(base64_regexp, thedir, exceptions, False)
 
         if base64_strings is not None:
-            analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
-            analysis_file.write("Base64 strings:\n")
-            analysis_file.close()
-            
+            b64s = []
+            printable_chars = bytes(string.printable, 'ascii')
             for s in base64_strings.keys():
-                # remove the const-string vX part
+                # remove the const-string vX part and trailing "
                 thestr = re.sub('const-string v[0-9]*, "', '', s)
-                thestr = re.sub('==\"', '==', thestr)
-                if thestr not in theproperty:
-                    theproperty.append(thestr)
-                    analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
-                    analysis_file.write("- "+thestr+"\n")
-                    analysis_file.close()
-                    if self.verbose:
-                        print("Base64 string: ", thestr)
+                thestr = re.sub('"','', thestr)
+                    
+                # try to decode the Base64 string
+                try:
+                    decoded = base64.b64decode(thestr)
+                    
+                    if all(c in printable_chars for c in decoded) and decoded != b'':
+                        # the decoded string is printable, so likely a valid decoded base64 info
+                        b64s.append(decoded)
+                        if self.verbose:
+                            print("Base64 string: ", decoded)
+                except Exception as e:
+                    # this is not a base64 string
+                    pass
 
+            if len(b64s) > 0:
+                analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+                analysis_file.write("Base64 strings:\n")
 
-
-            
-            
-
-
-        
-
-
-
-                
-                                                
-                                                
-
+                for b in b64s:
+                    analysis_file.write("- "+b.decode('utf-8')+"\n")
+                    
+                analysis_file.close()
 
             
