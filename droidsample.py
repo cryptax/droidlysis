@@ -767,7 +767,7 @@ class droidsample:
             exceptions.append("/unzipped")
             exceptions.append("/unknown")
             exceptions.append("classes.dex")
-            exceptions.append('autoanalysis.md')
+            exceptions.append('details.md')
 
             wide_regexp = self.properties.wideconfig.get_all_regexp()
             match = droidutil.recursive_search(wide_regexp, self.outdir, exceptions, False)

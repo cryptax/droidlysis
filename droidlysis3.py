@@ -12,7 +12,7 @@ import droidsample
 import droidreport
 import sys
 
-property_dump_file = 'autoanalysis.md'
+property_dump_file = 'details.md'
 report_file = 'report.md'
 json_file = 'report.json'
 __version__ = "3.3.1"
