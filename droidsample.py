@@ -3,7 +3,7 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
-__version__ = '3.3.1'
+__version__ = '3.3.2'
 """
 import hashlib
 import base64
@@ -850,14 +850,13 @@ class droidsample:
 
             for section in self.properties.armconfig.get_sections():
                 matches = re.findall(self.properties.armconfig.get_pattern(section), output[0].decode('utf-8'))
-                if matches != None:
+                if matches != None and len(matches) > 0:
                     self.properties.arm[section] = True
                     if self.verbose:
                         print( "Setting arm[%s]  = True" % (section))
                     if section == 'url_in_exec':
                         for m in matches:
                             self.interesting_url(m)
-
 
     def find_executables(self, dir):
         """Finds executables in a given directory. Does not parse recursively.
@@ -911,8 +910,9 @@ class droidsample:
         asset_dir = os.path.join(self.outdir, "assets")
         raw_dir = os.path.join(self.outdir, "res/raw")
         lib_dir = os.path.join(self.outdir, "lib/armeabi")
-
-        list_dir = [ asset_dir, raw_dir, lib_dir ]
+        lib2_dir = os.path.join(self.outdir, "lib/arm64-v8a")
+        
+        list_dir = [ asset_dir, raw_dir, lib_dir, lib2_dir ]
 
         for dir in list_dir:
             if os.access(dir, os.R_OK) and os.path.isdir(dir):

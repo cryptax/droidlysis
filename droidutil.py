@@ -182,7 +182,7 @@ def get_filetype(filename):
     if filetype == None:
         # this happens if magic is unable to find file type
         return UNKNOWN
-    match = re.search('Zip archive data|zip|RAR archive data|executable, ARM|Java class|Dalvik dex|Java archive', filetype)
+    match = re.search('Zip archive data|zip|RAR archive data|executable, ARM|shared object, ARM|Java class|Dalvik dex|Java archive', filetype)
     if match == None:
         mytype = UNKNOWN
     else:
@@ -191,6 +191,7 @@ def get_filetype(filename):
                      'Java archive' : ZIP,
                      'RAR archive data' : RAR,
                      'executable, ARM' : ARM,
+                     'shared object, ARM' : ARM,
                      'Java class' : CLASS,
                      'Dalvik dex' : DEX,
                      'None' : UNKNOWN   }
