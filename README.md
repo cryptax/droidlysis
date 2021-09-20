@@ -49,7 +49,7 @@ For example,
 ```
 $ mkdir -p ~/softs
 $ cd ~/softs
-$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.5.0.jar
+$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.6.0.jar
 $ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
 $ wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
 $ unzip dex-tools-2.1-SNAPSHOT.zip
