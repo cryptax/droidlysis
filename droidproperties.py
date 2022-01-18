@@ -99,6 +99,7 @@ class droidproperties:
             self.smali[section] = False
 
         self.smali['packed'] = False # This property is not in conf section as it is deduced from no main activity + loading DEX dynamically
+        self.smali['multidex']= False # same reason
 
         # automatically adding wide properties
         self.wide.clear()

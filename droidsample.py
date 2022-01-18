@@ -227,9 +227,14 @@ class droidsample:
 
             # extract classes.dex whatever happens, we'll use it
             if self.verbose:
-                print( "Extracting classes.dex" )
+                print( "Extracting classes*.dex" )
             try:
                 self.ziprar.extract_one_file('classes.dex', self.outdir)
+                for i in range(2,10):
+                    self.ziprar.extract_one_file('classes{}.dex'.format(i), self.outdir)
+                    if not os.path.exists(os.path.join(self.outdir, 'classes{}.dex'.format(i))):
+                        break
+                    self.properties.smali['multidex'] = True
             except:
                 if self.verbose:
                     print( "Extracting classes.dex failed: %s" % (sys.exc_info()[0]))
