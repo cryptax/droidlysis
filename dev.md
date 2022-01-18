@@ -4,14 +4,15 @@
 
 ```
 $ docker run -it --rm ubuntu:latest /bin/bash
-# sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev
+# apt update
+# apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev
 # mkdir -p ~/softs
 # cd ~/softs
-# wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.5.0.jar
+# wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.6.0.jar
 # wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
-# wget https://github.com/pxb1988/dex2jar/files/1867564/dex-tools-2.1-SNAPSHOT.zip
-# unzip dex-tools-2.1-SNAPSHOT.zip
-# rm -f dex-tools-2.1-SNAPSHOT.zip
+# wget https://github.com/pxb1988/dex2jar/releases/download/v2.2-SNAPSHOT-2021-10-31/dex-tools-2.2-SNAPSHOT-2021-10-31.zip
+# unzip dex-tools-2.2-SNAPSHOT-2021-10-31.zip 
+# rm -f dex-tools-2.2-SNAPSHOT-2021-10-31.zip 
 # pip3 install -U pip
 # git clone https://github.com/cryptax/droidlysis
 # cd droidlysis
