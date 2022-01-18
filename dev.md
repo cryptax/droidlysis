@@ -21,12 +21,36 @@ $ docker run -it --rm ubuntu:latest /bin/bash
 
 ## Packaging
 
-- check everything you need is in dist/
+https://packaging.python.org/en/latest/tutorials/packaging-projects/
+
+Update packages:
 
 ```
-python3 setup.py sdist bdist_wheel
-python3 -m pip install --user --upgrade twine
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade build
+python3 -m pip install --upgrade twine
+```
+
+Then build:
+
+```
+python3 -m build
+```
+
+Upload the package to test:
+
+```
 python3 -m twine upload --repository testpypi dist/*
+```
+
+### Testing the package in a python virtual environment
+
+```
+cd /tmp
+python3 -m venv ./droid-test
+source ./droid-test/bin/activate
+pip install androguard==3.3.5
+pip install -i https://test.pypi.org/simple/ droidlysis
 ```
 
 ### Testing the package in a Docker container
