@@ -218,12 +218,21 @@ class droidsample:
                 subprocess.call(["java", "-jar", droidconfig.APKTOOL_JAR, \
                                  "-q", "d", "-f", self.absolute_filename,  \
                                  "-o", apktool_outdir ], stdout=self.process_output, stderr=self.process_output)
-                
-            if self.verbose:
-                print( "Apktool finished" )
 
             if os.path.isdir(apktool_outdir):
                 droidutil.move_dir(apktool_outdir, self.outdir)
+
+            # we want all smali_classes? dir in smali
+            if os.path.exists(os.path.join(self.outdir, "smali_classes2")):
+                # we have multidex - we are going to move all smali classes in the same directory
+                if self.verbose:
+                    print("Moving multidex smali classes to ./smali")
+
+                os.system("cp -R "+ os.path.join(self.outdir, "./smali_classes?/*") + " " + os.path.join(self.outdir, "./smali") )
+                os.system("rm -r "+ os.path.join(self.outdir, "./smali_classes?") )
+                
+            if self.verbose:
+                print( "Apktool finished" )
 
             # extract classes.dex whatever happens, we'll use it
             if self.verbose:
@@ -234,68 +243,83 @@ class droidsample:
                     self.ziprar.extract_one_file('classes{}.dex'.format(i), self.outdir)
                     if not os.path.exists(os.path.join(self.outdir, 'classes{}.dex'.format(i))):
                         break
-                    self.properties.smali['multidex'] = True
+                    self.properties.smali['multidex'].append('classes{}.dex'.format(i))
+                    
             except:
                 if self.verbose:
                     print( "Extracting classes.dex failed: %s" % (sys.exc_info()[0]))
                 else:
                     print( "Extracting classes.dex failed")
 
-        # Disassemble the DEX
+        # Disassemble the DEX(es)
+        dex_files = []
         if self.properties.filetype == droidutil.DEX:
-            dex_file = self.absolute_filename
+            dex_files.append( self.absolute_filename )
         else:
-            dex_file = os.path.join(self.outdir, 'classes.dex')
+            if len(self.properties.smali['multidex']) > 0:
+                for d in self.properties.smali['multidex']:
+                    dex_files.append(os.path.join(self.outdir, d))
+            else:
+                dex_files.append(os.path.join(self.outdir, 'classes.dex'))
 
         smali_dir = os.path.join( self.outdir, 'smali' )
 
         if (not os.access( smali_dir, os.R_OK) or \
-                (os.access(smali_dir, os.R_OK) and not os.listdir(smali_dir)) \
-                and os.access( dex_file, os.R_OK)):
-            if self.verbose:
-                print( "Using baksmali on " + dex_file )
-            try:
-                subprocess.call( [ "java", "-jar", droidconfig.BAKSMALI_JAR, \
-                                   "d", "-o", smali_dir, dex_file ], \
-                                 stdout=self.process_output, stderr=self.process_output)
-            except:
-                print( "Baksmali failed" )
+                (os.access(smali_dir, os.R_OK) and not os.listdir(smali_dir))):
+            # we only do this if apktool didn't baksmali correctly
+            for d in dex_files:
+                if os.access(d, os.R_OK):
+                    if self.verbose:
+                        print( "Baksmali on {} -> {}".format(d, smali_dir))
+                    try:
+                        subprocess.call( [ "java", "-jar", droidconfig.BAKSMALI_JAR, \
+                                           "d", "-o", smali_dir, d ], \
+                                         stdout=self.process_output, stderr=self.process_output)
+                    except:
+                        print( "[-] Baksmali failed for {}".format(d) )
 
-        # Decompile the DEX
+        # Decompile the DEX(es)
         if self.verbose:
             print("------------- Decompiling")
-            
-        if not self.clear and os.access( dex_file, os.R_OK ):
-            jar_file = os.path.join(self.outdir, 'classes-dex2jar.jar')
-            if os.access( droidconfig.DEX2JAR_CMD, os.X_OK):
-                if self.verbose:
-                    print( "Dex2jar on " + dex_file )
-                subprocess.call( [ droidconfig.DEX2JAR_CMD, "--force", dex_file, "-o", jar_file ], \
-                                 stdout=self.process_output, stderr=self.process_output)
-            else:
-                if self.verbose:
-                    print("Dex2jar: file is not executable, skipping (file: {0})".format(droidconfig.DEX2JAR_CMD))
+
+        if not self.clear:
+            for d in dex_files:
+                if os.access(d, os.R_OK):
+                    jar_file = os.path.join(self.outdir, '{}-dex2jar.jar'.format(os.path.splitext(os.path.basename(d))[0]))
+                    if os.access( droidconfig.DEX2JAR_CMD, os.X_OK):
+                        if self.verbose:
+                            print( "Dex2jar on " + d )
+                            try:
+                                subprocess.call( [ droidconfig.DEX2JAR_CMD, "--force", d, "-o", jar_file ], \
+                                                 stdout=self.process_output, stderr=self.process_output)
+                            except:
+                                if self.verbose:
+                                    print("[-] Dex2jar failed on {}".format(d))
+                        else:
+                            if self.verbose:
+                                print("Dex2jar software is not executable, skipping (file: {0})".format(droidconfig.DEX2JAR_CMD))
                     
-            if os.access( jar_file, os.R_OK ):
-                if self.enable_procyon and os.access( droidconfig.PROCYON_JAR, os.R_OK ):
+                    if os.access( jar_file, os.R_OK ):
+                        if self.enable_procyon and os.access( droidconfig.PROCYON_JAR, os.R_OK ):
+                            if self.verbose:
+                                print( "Procyon decompiler on " + jar_file )
+                            subprocess.call( [ "java", "-jar", droidconfig.PROCYON_JAR, \
+                                               jar_file, "-o", os.path.join(self.outdir, 'procyon') ], \
+                                             stdout=self.process_output, stderr=self.process_output)
+
                     if self.verbose:
-                        print( "Procyon decompiler on " + jar_file )
-                    subprocess.call( [ "java", "-jar", droidconfig.PROCYON_JAR, \
-                                           jar_file, "-o", os.path.join(self.outdir, 'procyon') ], \
-                                         stdout=self.process_output, stderr=self.process_output)
-                if self.verbose:
-                    print( "Unjarring " + jar_file )
-                jarziprar = droidziprar.droidziprar(jar_file, zipmode=True, verbose=self.verbose)
-                if jarziprar.handle == None:
-                    if self.verbose:
-                        print( "Bad Jar / Failed to unjar " + jar_file )
-                else:
-                    try:
-                        jarziprar.extract_all(os.path.join(self.outdir, 'unjarred'))
-                    except:
-                        print( "Failed to unjar: %s" % (sys.exc_info()[0]) )
-                    jarziprar.close()
-                
+                        print( "Unjarring " + jar_file )
+                    jarziprar = droidziprar.droidziprar(jar_file, zipmode=True, verbose=self.verbose)
+                    if jarziprar.handle == None:
+                        if self.verbose:
+                            print( "Bad Jar / Failed to unjar " + jar_file )
+                    else:
+                        try:
+                            jarziprar.extract_all(os.path.join(self.outdir, 'unjarred'))
+                        except:
+                            print( "Failed to unjar: %s" % (sys.exc_info()[0]) )
+                        jarziprar.close()
+
         # Convert binary Manifest
         if self.properties.filetype == droidutil.APK:
             manifest = os.path.join( self.outdir, 'AndroidManifest.xml')

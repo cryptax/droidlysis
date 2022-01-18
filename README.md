@@ -192,6 +192,11 @@ description=Sending SMS messages
 ```
 
 
+## To do
+
+- The code is quite crappy now. I could probably do the same in less lines!
+- Replace print by logging
+
 ## Updates
 
 v3.3.1 - Improving detection of Base64 strings
