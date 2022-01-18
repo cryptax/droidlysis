@@ -5,6 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: cryptax/droidlysis:2021.04
+    image: cryptax/droidlysis:2022.01
     volumes:
       - /tmp/droidlysis-share:/share

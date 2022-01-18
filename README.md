@@ -196,9 +196,11 @@ description=Sending SMS messages
 
 - The code is quite crappy now. I could probably do the same in less lines!
 - Replace print by logging
+- Remove the "caution: filename not matched:  classes6.dex" which occurs at file extraction in droidsample.py
 
 ## Updates
 
+v3.4.0 - Multidex support
 v3.3.1 - Improving detection of Base64 strings
 v3.3.0 - Dumping data to JSON
 v3.2.1 - IP address detection

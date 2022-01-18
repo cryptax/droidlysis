@@ -129,8 +129,9 @@ class droidreport:
         self.write_console("\n\033[0;30;47mSmali properties /  What the Dalvik code does\033[0m")
         for section in self.sample.properties.smali.keys():
             if self.sample.properties.smali[section] is not False:
-                self.write_console("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
-                self.write_file("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
+                if (type(self.sample.properties.smali[section]) is list and len(self.sample.properties.smali[section]) > 0) or (type(self.sample.properties.smali[section]) is bool):
+                    self.write_console("{0:20.20}: \033[1;31;1m{1} \033[1;33;40m({2})\033[0m".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
+                    self.write_file("{0:20.20}: {1} ({2})\n".format(section, self.sample.properties.smali[section], self.sample.properties.smaliconfig.get_description(section)))
             else:
                 self.write_file("{0:20.20}: {1}\n".format(section, self.sample.properties.smali[section]))
 
