@@ -70,7 +70,7 @@ $ source ./bin/activate
 ## Configuration
 
 
-If you used the default install commands & directories as specified above, you won't need any configuration. This 
+If you used the default install commands & directories as specified above, you won't need any configuration. 
 
 The configuration is extremely simple, you only need to tune `droidconfig.py`. Note that if you placed the tools in the default `~/softs` directory as I specified, you don't have to do anything: the tools will be automatically found in that location.
 
@@ -193,11 +193,11 @@ description=Sending SMS messages
 
 ## Updates
 
-v3.4.0 - Multidex support
-v3.3.1 - Improving detection of Base64 strings
-v3.3.0 - Dumping data to JSON
-v3.2.1 - IP address detection
-v3.2.0 - Dex2jar is optional
-v3.1.0 - Detection of Base64 strings
+- v3.4.0 - Multidex support
+- v3.3.1 - Improving detection of Base64 strings
+- v3.3.0 - Dumping data to JSON
+- v3.2.1 - IP address detection
+- v3.2.0 - Dex2jar is optional
+- v3.1.0 - Detection of Base64 strings
 
 
