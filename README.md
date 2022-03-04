@@ -32,7 +32,7 @@ Install required system packages:
 sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev
 ```
 
-Install Android disassembly tools: [Apktool](https://ibotpeaches.github.io/Apktool/) , [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally [Dex2jar](https://github.com/pxb1988/dex2jar) and  [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler).
+Install Android disassembly tools: [Apktool](https://ibotpeaches.github.io/Apktool/) , [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally [Dex2jar](https://github.com/pxb1988/dex2jar) and  [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) (note that Procyon only works with Java 8, not Java 11).
 
 ```
 $ mkdir -p ~/softs
