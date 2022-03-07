@@ -74,7 +74,8 @@ class droidconfig:
             pattern_list = self.configparser.get(section, 'pattern').split('|')
             properties[section] = False
             for pattern in pattern_list:
-                if match[pattern]:
+                # beware when pattern has blah\$binz, the matching key is blah$binz
+                if match[pattern.replace('\\','')]:
                     if self.verbose:
                         print( "Setting properties[%s] = True (matches %s)" % (section, pattern))
                     properties[section] = True
