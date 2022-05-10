@@ -29,11 +29,16 @@ def build_special_url_list():
     list.append('^http://server/.*')
     list.append('username:password@YOUR')
     list.append('www\.dummyurl\.com')
+    list.append('www\.example\.com')
 
 
     # clean URLs - which do not correspond to a kit i.e with a smali path
     list.append('creativecommons\.org')
     list.append('docs\.google\.')
+    list.append('support\.google\.')
+    list.append('developer\.android\.com')
+    list.append('developers\.google\.com')
+    list.append('googlesyndication\.com')
     list.append('jsoup\.org')
     list.append('www\.jcip\.net')
     list.append('finance\.google\.')
@@ -42,6 +47,7 @@ def build_special_url_list():
     list.append('https*://[a-zA-Z]*\.google\.com/') 
     list.append('www\.google\.') 
     list.append('checkout\.google\.com')
+    list.append('doubleclick\.net')
     list.append('\.google-analytics\.com') 
     list.append('^https*://[a-z]*\.googleapis\.com/')
     list.append('plus\.url\.google\.com') 
@@ -50,8 +56,11 @@ def build_special_url_list():
     list.append('material\.io')
     list.append('java\.sun\.com') 
     list.append('\.facebook\.com/help') 
-    list.append('\.facebook\.com$') 
+    list.append('\.facebook\.com$')
+    list.append('fonts\.gstatic\.com')
     list.append('forum\.xda-developers\.com/showthread\.php')
+    list.append('www\.freetype\.org')
+    list.append('www\.microsoft\.com')
     list.append('mozilla\.org') 
     list.append('www\.android\.com') 
     list.append('developer\.android\.com/reference/')
@@ -85,7 +94,9 @@ def build_special_url_list():
     list.append('github\.com')
     list.append('jquery\.org')
     list.append('www\.iana\.org')
-
+    list.append('stackoverflow\.com')
+    list.append('www\.unicode\.org')
+    list.append('freetype\.org')
 
         # AV
     list.append('www\.fortinet\.com') 

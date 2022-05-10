@@ -782,6 +782,11 @@ class droidsample:
         if os.access(ijiami, os.R_OK):
             self.properties.wide['ijiami'] = True
 
+        # detecting Flutter debug mode
+        flutter_debug = os.path.join(self.outdir, 'unzipped/assets/flutter_assets/kernel_blob.bin')
+        if os.access(ijiami, os.R_OK):
+            self.properties.kits['flutter'] = True
+
         # detect executables in resources
         self.find_exec_in_resources()
 
@@ -902,6 +907,11 @@ class droidsample:
             absolute_file = os.path.join(dir, file)
             if os.path.isfile(absolute_file):
                 filetype = droidutil.get_filetype(absolute_file)
+
+                # Special case to detect Flutter apps compiled in release mode
+                if file == 'libapp.so':
+                    self.properties.kits['flutter'] = True
+
                 if filetype == droidutil.ARM:
                     if self.verbose:
                         print( "%s is an ARM executable" % (absolute_file))
