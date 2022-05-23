@@ -15,7 +15,7 @@ import sys
 property_dump_file = 'details.md'
 report_file = 'report.md'
 json_file = 'report.json'
-__version__ = "3.4.0"
+__version__ = "3.4.1"
 
 def get_arguments():
     """Read arguments for the program and returns the ArgumentParser"""
