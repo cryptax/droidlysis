@@ -6,18 +6,23 @@ __status__ = "In progress"
 __license__ = "MIT License"
 """
 import zipfile
-import rarfile # install from https://github.com/markokr/rarfile
+import rarfile
 import re
 import droidutil
 import struct
 import subprocess
+import logging
+
+logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s', level=logging.INFO)
+
 
 class droidziprar:
 
     def __init__(self, archive, zipmode=True, verbose=False):
         """Returns the archive file handle - don't forget to close it once you've finished with the file"""
-        self.verbose = verbose
-        self.zipmode = zipmode # True for a zip, False for a Rar
+        if verbose:
+            logging.getLogger().setLevel(logging.DEBUG)
+        self.zipmode = zipmode  # True for a zip, False for a Rar
         self.password = 'infected'
         self.handle = None
         self.archive_name = archive
@@ -30,21 +35,17 @@ class droidziprar:
 
         self.open(archive)
 
-
     def open(self, filename):
         try:
             if self.zipmode:
-                if self.verbose:
-                    print( "Opening Zip archive "+filename)
+                logging.debug("Opening Zip archive "+filename)
                 self.handle = zipfile.ZipFile(filename, 'r')
             else:
-                if self.verbose:
-                    print( "Opening Rar archive "+filename)
+                logging.debug("Opening Rar archive "+filename)
                 self.handle = rarfile.RarFile(filename, 'r')
 
         except (struct.error, zipfile.BadZipfile, zipfile.LargeZipFile, IOError) as e:
-            if self.verbose:
-                print( "Exception caught in ZipFile: %s" % (repr(e)))
+            logging.debug("Exception caught in ZipFile: %s" % (repr(e)))
             self.handle = None
 
         return self.handle
@@ -56,9 +57,9 @@ class droidziprar:
         - the file type: APK, CLASS or ZIP
         - a list of inner zips/rars if any
         """
-        assert self.handle != None, "zip/rar file handle has been closed"
+        assert self.handle is not None, "zip/rar file handle has been closed"
 
-        innerzips = [] # default value
+        innerzips = []  # default value
         files_in_zip = self.handle.namelist()
 
         # guess file type based on contents
@@ -84,27 +85,26 @@ class droidziprar:
         """
         if self.zipmode:
             # the unzip command works better... (manages to unzip more)
-            subprocess.call([ "/usr/bin/unzip" , "-o", "-qq", "-P", self.password, "-d", outdir, self.archive_name, filename])
+            subprocess.call(["/usr/bin/unzip", "-o", "-qq", "-P",
+                             self.password, "-d", outdir, self.archive_name, filename])
         else:
-            assert self.handle != None, "zip/rar file handle has been closed"
+            assert self.handle is not None, "zip/rar file handle has been closed"
             # beware this may raise errors KeyError, RuntimeError...
             self.handle.extract(filename, outdir, pwd=self.password)
 
-    
-
     def extract_all(self, outdir):
         if self.zipmode:
-            print( 'Launching unzip process on %s with output dir=%s' % (self.archive_name, outdir))
-            subprocess.call([ "/usr/bin/unzip" , "-o", "-qq", "-P", self.password, self.archive_name, "-d", outdir ])
+            print('Launching unzip process on %s with output dir=%s' % (self.archive_name, outdir))
+            subprocess.call(["/usr/bin/unzip", "-o", "-qq", "-P", self.password, self.archive_name, "-d", outdir])
         else:
-            assert self.handle != None, "zip/rar file handle has been closed"
+            assert self.handle is not None, "zip/rar file handle has been closed"
             self.handle.extractall(path=outdir, pwd=self.password)
 
     def extract_pattern(self, outdir, pattern):
         """Unzips (or unrars) files matching a given regexp to a given output directory.
         Returns a list of what has been unzipped.
         """
-        assert self.handle != None, "zip/rar file handle has been closed"
+        assert self.handle is not None, "zip/rar file handle has been closed"
         all_files = self.handle.namelist()
         list = [x for x in all_files if re.search(pattern, x)]
         
@@ -115,20 +115,18 @@ class droidziprar:
 
     def get_date(self, filename):
         """Gets the time at which filename was created"""
-        assert self.handle != None, "zip/rar file handle has been closed"
+        assert self.handle is not None, "zip/rar file handle has been closed"
         try:
             metainfo = self.handle.getinfo(filename)
             return metainfo.date_time
         except (KeyError, rarfile.NoRarEntry) as e:
-            if self.verbose:
-                print( "%s does not exist in %s" % (filename, self.archive_name))
+            logging.debug("%s does not exist in %s" % (filename, self.archive_name))
         return None
 
     def close(self):
-        if self.handle == None:
+        if self.handle is not None:
             pass
         else:
             self.handle.close()
-            if self.verbose:
-                print( "Closing archive: " + self.archive_name)
+            logging.debug("Closing archive: " + self.archive_name)
     

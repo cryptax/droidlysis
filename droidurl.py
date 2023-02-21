@@ -30,8 +30,6 @@ def build_special_url_list():
     list.append('username:password@YOUR')
     list.append('www\.dummyurl\.com')
     list.append('www\.example\.com')
-
-
     # clean URLs - which do not correspond to a kit i.e with a smali path
     list.append('creativecommons\.org')
     list.append('docs\.google\.')
@@ -98,7 +96,7 @@ def build_special_url_list():
     list.append('www\.unicode\.org')
     list.append('freetype\.org')
 
-        # AV
+    # AV
     list.append('www\.fortinet\.com') 
     list.append('docs\.fortinet\.com/fclient/android/')
     list.append('home\.mcafee\.com')
@@ -109,7 +107,7 @@ def build_special_url_list():
     list.append('www\.trendmicro\.com') 
     list.append('https*://[a-zA-Z0-9]*\.360safe\.com')
 
-        # search engines
+    # search engines
     list.append('search\.twitter\.com') 
     list.append('search\.yahoo\.com') 
     list.append('www\.baidu\.com') 
@@ -118,7 +116,7 @@ def build_special_url_list():
     list.append('www\.searchmobileonline\.com') 
 
 
-        # XML
+    # XML
     list.append('^https*://push$') 
     list.append('^https*://schemas') 
     list.append('^https*://www\.$') 
@@ -128,7 +126,7 @@ def build_special_url_list():
     list.append('xmlpull\.org') 
     list.append('^https*://.*/configure[-_0-9]*\.dtd$')
     
-        # Operator
+    # Operator
     list.append('10\.0\.0\.172') 
     list.append('10\.0\.0\.200') 
     list.append('wap\.uni-info\.com\.cn') 
@@ -150,5 +148,3 @@ def build_special_url_list():
     list.append('^https*://.*\.alipay.com')
 
     return list
-
-        

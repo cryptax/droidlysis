@@ -14,6 +14,7 @@ verbose = False # to get SQL ALCHEMY requests
 engine = create_engine(droidconfig.SQLALCHEMY, echo=verbose)
 Base = declarative_base()
 
+
 class Sample(Base):
     __tablename__ = 'samples'
 
@@ -33,10 +34,8 @@ class Sample(Base):
     kits = Column(String())
 
     def __repr__(self):
-        return "<Sample(sha256=%s)>" % (self.sha256)
+        return "<Sample(sha256=%s)>" % self.sha256
 
     
 Base.metadata.create_all(engine)   
-    
-
     

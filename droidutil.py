@@ -3,24 +3,28 @@ import errno
 import re
 import shutil
 import magic
-import xml.dom.minidom
 import hashlib
 from collections import defaultdict
 
 """Those are my own utilities for sample analysis"""
 
-def mkdir_if_necessary(path):
-    """Creates the directory if it does not exist yet. 
-    If it exists, does not do anything.
-    If path is None (not filled), does not do anything."""
 
-    if path != None:
+def mkdir_if_necessary(path):
+    """
+    Creates the directory if it does not exist yet.
+    If it exists, does not do anything.
+    If path is None (not filled), does not do anything.
+    """
+
+    if path is not None:
         try:
             os.makedirs(path)
-        except OSError as exc: # Python >2.5
+        except OSError as exc:  # Python >2.5
             if exc.errno == errno.EEXIST and os.path.isdir(path):
                 pass
-            else: raise
+            else:
+                raise
+
 
 def on_rm_tree_error(fn, path, exc_info):
     """
@@ -38,11 +42,13 @@ def on_rm_tree_error(fn, path, exc_info):
         os.chmod(path, 777)
         os.remove(path)
 
-def move_dir(src,dst):
-        """Move src directory to dst - works even if dst already exists."""
-        assert os.path.isdir(src), "src must be an existing directory"
-        os.system ("mv"+ " " + src + "/* " + dst)
-        shutil.rmtree(src, onerror=on_rm_tree_error)
+
+def move_dir(src, dst):
+    # Move src directory to dst - works even if dst already exists.
+    assert os.path.isdir(src), "src must be an existing directory"
+    os.system("mv" + " " + src + "/* " + dst)
+    shutil.rmtree(src, onerror=on_rm_tree_error)
+
 
 def sanitize_filename(filename):
     """Sanitizes a filename so that we can create the output analysis directory without any problem.
@@ -52,19 +58,19 @@ def sanitize_filename(filename):
 
     Returns the sanitized name."""
     # we remove any character which is not letters, numbers, _ or .
-    return re.sub('[^a-zA-Z0-9_\.]','', filename)
+    return re.sub('[^a-zA-Z0-9_\.]', '', filename)
+
 
 def listAll(dirName):
-    filelist1=[]
+    filelist1 = []
     files = os.listdir(dirName)
     for f in files:
-        if os.path.isfile(os.path.join(dirName,f)):
-            filelist1.append(os.path.join(dirName,f))
+        if os.path.isfile(os.path.join(dirName, f)):
+            filelist1.append(os.path.join(dirName, f))
         else:
-            newlist=listAll(os.path.join(dirName,f));
+            newlist = listAll(os.path.join(dirName, f))
             filelist1.extend(newlist)           
     return filelist1 
-
 
 
 def count_filedirs(dirname):
@@ -94,10 +100,11 @@ def count_filedirs(dirname):
 
     return nb_dirs, nb_files
 
+
 def sha256sum(input_file_name):
     """Computes the SHA256 hash of a binary file
     Returns the digest string or '' if an error occurred reading the file"""
-    chunk_size = 1048576 # 1 MB
+    chunk_size = 1048576  # 1 MB
     file_sha256 = hashlib.sha256()
     try:
         with open(input_file_name, "rb") as f:
@@ -106,14 +113,17 @@ def sha256sum(input_file_name):
                 file_sha256.update(byte)
                 byte = f.read(chunk_size)
     except IOError:
-        print ('sha256sum: cannot open file: %s' % (input_file_name))
+        print('sha256sum: cannot open file: %s' % input_file_name)
         return ''
     return file_sha256.hexdigest()
 
+
 def sha1sum(input_file_name):
-    """Computes the SHA1 hash of a binary file
-    Returns the digest string or '' if an error occurred reading the file"""
-    chunk_size = 1048576 # 1 MB
+    """
+    Computes the SHA1 hash of a binary file
+    Returns the digest string or '' if an error occurred reading the file
+    """
+    chunk_size = 1048576  # 1 MB
     file_sha1 = hashlib.sha1()
     try:
         with open(input_file_name, "rb") as f:
@@ -122,33 +132,35 @@ def sha1sum(input_file_name):
                 file_sha1.update(byte)
                 byte = f.read(chunk_size)
     except IOError:
-        print ('sha1sum: cannot open file: %s' % (input_file_name))
+        print('sha1sum: cannot open file: %s' % input_file_name)
         return ''
     return file_sha1.hexdigest()
 
+
 # -------------------------- File Constants -------------------------
 """Something else than the other file types. We do not support this file type."""
-UNKNOWN=0 
+UNKNOWN = 0
 
 """An APK. It is not possible to differentiate a ZIP from an APK until we have looked inside the ZIP."""
-APK=1    
+APK = 1
 
 """A Dalvik Executable file. We do not check the file is valid/accepted by the verifier."""
-DEX=2
+DEX = 2
 
 """An ARM ELF executable."""
-ARM=3
+ARM = 3
 
 """A Java .class file"""
-CLASS=4
+CLASS = 4
 
 """A Zip file. Actually, this can also be a JAR or an APK until we have thoroughly checked."""
-ZIP=5
+ZIP = 5
 
 """A RARed file."""
-RAR=6
+RAR = 6
 
 """We can probably add some more later: TAR, TGZ, BZ2..."""
+
 
 def str_filetype(filetype):
     """Provide as input a droidutil filetype (APK, DEX, ARM...) and returns the corresponding string"""
@@ -179,23 +191,25 @@ def get_filetype(filename):
     droidutil.UNKNOWN
     """
     filetype = magic.from_file(filename)
-    if filetype == None:
+    if filetype is None:
         # this happens if magic is unable to find file type
         return UNKNOWN
-    match = re.search('Zip archive data|zip|RAR archive data|executable, ARM|shared object, ARM|Java class|Dalvik dex|Java archive|Android package', filetype)
-    if match == None:
+    match = re.search('Zip archive data|zip|RAR archive data|executable, ARM|'
+                      'shared object, ARM|Java class|Dalvik dex|Java archive|Android package', filetype)
+    if match is None:
         mytype = UNKNOWN
     else:
-        typecase = { 'Zip archive data' : ZIP,
-                     'zip' : ZIP,
-                     'Java archive' : ZIP,
-                     'RAR archive data' : RAR,
-                     'executable, ARM' : ARM,
-                     'shared object, ARM' : ARM,
-                     'Java class' : CLASS,
-                     'Dalvik dex' : DEX,
-                     'Android package' : ZIP,  # droidsample needs ZIP type to do all the processing
-                     'None' : UNKNOWN   }
+        typecase = {'Zip archive data': ZIP,
+                    'zip': ZIP,
+                    'Java archive': ZIP,
+                    'RAR archive data': RAR,
+                    'executable, ARM': ARM,
+                    'shared object, ARM': ARM,
+                    'Java class': CLASS,
+                    'Dalvik dex': DEX,
+                    'Android package': ZIP,  # droidsample needs ZIP type to do all the processing
+                    'None': UNKNOWN
+                    }
         mytype = typecase[match.group(0)]
     return mytype
 
@@ -203,20 +217,24 @@ def get_filetype(filename):
 def get_elements(xmldoc, tag_name, attribute):
     """Returns a list of elements"""
     l = []
-    for item in xmldoc.getElementsByTagName(tag_name) :
+    for item in xmldoc.getElementsByTagName(tag_name):
         value = item.getAttribute(attribute)
-        l.append( repr( value ) )
+        l.append(repr(value))
     return l
 
+
 def get_element(xmldoc, tag_name, attribute):
-    for item in xmldoc.getElementsByTagName(tag_name) :
+    for item in xmldoc.getElementsByTagName(tag_name):
         value = item.getAttribute(attribute)
-        if len(value) > 0 :
+        if len(value) > 0:
             return value
     return None
 
+
 """Very simple exception to raise when we found something. For instance to break a loop."""
-class Found(Exception): pass
+class Found(Exception):
+    pass
+
 
 class matchresult:
     """Match information"""
@@ -233,6 +251,7 @@ class matchresult:
 
     def __str__(self):
         return 'file=%s no=%4d line=%30s' % (self.file, self.lineno, self.line)
+
 
 def recursive_search(search_regexp, directory, exception_list=[], verbose=False):
     """Recursively search in a directory except in some subdirectories
@@ -257,10 +276,10 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
             if os.path.isfile(current_entry):
                 for exception in exception_list:
                     # TO DO: not entirely sure we need 'match'? perhaps if it is a regexp?
-                    # Remember that "exception" can be part of a path e.g we want everything that matches blah/bloh
+                    # Remember that "exception" can be part of a path e.g. we want everything that matches blah/bloh
                     # then com/blah/bloh must match
-                    match = re.search(exception, current_entry) # TO DO: not entirely sure we need the match
-                    if match != None or exception in current_entry: 
+                    match = re.search(exception, current_entry)  # TO DO: not entirely sure that we need the match
+                    if match is not None or exception in current_entry:
                         # skip this file
                         raise Found
 
@@ -269,19 +288,20 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
                 for line in open(current_entry, 'rb'):
                     lineno += 1
                     match = re.search(search_regexp, line)
-                    if match != None:
+                    if match is not None:
                         if verbose:
-                            print("Match: File: " +entry+ " Keyword: " +match.group(0).decode('utf-8', errors='replace') + " Line: " + line.decode('utf-8', errors='replace'))
+                            print("Match: File: " + entry + " Keyword: " +
+                                  match.group(0).decode('utf-8', errors='replace') +
+                                  " Line: " + line.decode('utf-8', errors='replace'))
                         """match.group(0) only provides one match per line if we need more, 
                         re.search is not appropriate
                         and should be replaced by re.findall"""
-                        matches[ match.group(0).decode('utf-8', errors='replace') ].append(matchresult(current_entry, line, lineno))
-
+                        matches[match.group(0).decode('utf-8', errors='replace')].append(matchresult(current_entry, line, lineno))
 
             if os.path.isdir(current_entry):
                 for exception in exception_list:
                     match = re.search(exception, current_entry)
-                    if match != None:
+                    if match is not None:
                         # skip this directory
                         raise Found
 
@@ -290,14 +310,12 @@ def recursive_search(search_regexp, directory, exception_list=[], verbose=False)
                     hismatches = recursive_search(search_regexp, current_entry, exception_list, verbose)
                     # merge in those results
                     for key in hismatches.keys():
-                        matches[ key ].extend( hismatches[ key ] )
+                        matches[key].extend(hismatches[key])
                 except RuntimeError:
                     # we get this when there are too many recursive dirs
-                    pass # next
-
+                    pass  # next
 
         except Found:
-            pass # go to next entry
+            pass  # go to next entry
 
     return matches
-

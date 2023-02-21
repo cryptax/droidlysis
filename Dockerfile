@@ -27,6 +27,7 @@ RUN git clone https://github.com/cryptax/droidlysis
 ENV PATH $PATH:/root/.local/bin
 ENV PYTHONPATH $PYTHONPATH:/opt/droidlysis
 RUN cd /opt/droidlysis && pip3 install --user -r requirements.txt
+RUN chmod u+x /opt/droidlysis/droidlysis
 
 # Configure ---------------------------------------------
 RUN sed -i 's/~\/softs/\/opt/g' /opt/droidlysis/droidconfig.py

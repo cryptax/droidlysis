@@ -3,33 +3,34 @@ import configparser
 
 # ------------------------- DroidLysis Configuration file -----------------
 
-APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.7.0.jar")
+APKTOOL_JAR = os.path.join(os.path.expanduser("~/softs"), "apktool_2.7.0.jar")
 BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.5.2.jar")
 DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.2-SNAPSHOT"), "d2j-dex2jar.sh")
-PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
+PROCYON_JAR = os.path.join(os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
 INSTALL_DIR = os.path.dirname(__file__)
-SQLALCHEMY = 'sqlite:///droidlysis.db' # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
-KEYTOOL = os.path.join( "/usr/bin/keytool" )
+SQLALCHEMY = 'sqlite:///droidlysis.db'  # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
+KEYTOOL = os.path.join("/usr/bin/keytool")
 
 # ------------------------- Property configuration files -------------------
 SMALI_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/smali.conf'))
-WIDE_CONFIGFILE= os.path.join(os.path.join(INSTALL_DIR, './conf/wide.conf'))
-ARM_CONFIGFILE =  os.path.join(os.path.join(INSTALL_DIR, './conf/arm.conf'))
-KIT_CONFIGFILE =  os.path.join(os.path.join(INSTALL_DIR, './conf/kit.conf'))
+WIDE_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/wide.conf'))
+ARM_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/arm.conf'))
+KIT_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/kit.conf'))
 
 # ------------------------- Reading *.conf configuration files -----------
 
+
 class droidconfig:
     def __init__(self, filename, verbose=False):
-        assert filename != None, "Filename is invalid"
-        assert os.access(filename, os.R_OK) != False, "File {0} is not readable".format(filename)
+        assert filename is not None, "Filename is invalid"
+        assert os.access(filename, os.R_OK) is not False, "File {0} is not readable".format(filename)
 
         self.filename = filename
         self.verbose = verbose
         self.configparser = configparser.RawConfigParser()
 
         if self.verbose:
-            print( "Reading configuration file: '%s'" % (filename))
+            print("Reading configuration file: '%s'" % (filename))
         self.configparser.read(filename)
 
     def get_sections(self):
@@ -49,35 +50,35 @@ class droidconfig:
         # reads the config file and returns a list of all patterns for all sections
         # the patterns are concatenated with a |
         # throws NoSectionError, NoOptionError
-        allpatterns=''
+        allpatterns = ''
         for section in self.configparser.sections():
             if allpatterns == '':
                 allpatterns = self.configparser.get(section, 'pattern')
             else:
-                allpatterns= self.configparser.get(section, 'pattern') + '|' + allpatterns
+                allpatterns = self.configparser.get(section, 'pattern') + '|' + allpatterns
         return bytes(allpatterns, 'utf-8')
 
     def match_properties(self, match, properties):
-        '''
+        """
         Call this when the recursive search has been done to analyze the results
         and understand which properties have been spotted.
 
-        match: returned by droidutil.recursive_search. This is a dictionary
+        @param match: returned by droidutil.recursive_search. This is a dictionary
         of matching lines ordered by matching keyword (pattern)
 
-        properties: dictionary of properties where the key is the property name
+        @param properties: dictionary of properties where the key is the property name
         and the value will be False/True if set or not
-        
+
         throws NoSessionError, NoOptionError
-        '''
+        """
         for section in self.configparser.sections():
             pattern_list = self.configparser.get(section, 'pattern').split('|')
             properties[section] = False
             for pattern in pattern_list:
                 # beware when pattern has blah\$binz, the matching key is blah$binz
-                if match[pattern.replace('\\','')]:
+                if match[pattern.replace('\\', '')]:
                     if self.verbose:
-                        print( "Setting properties[%s] = True (matches %s)" % (section, pattern))
+                        print("Setting properties[%s] = True (matches %s)" % (section, pattern))
                     properties[section] = True
                     break
 

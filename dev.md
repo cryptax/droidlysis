@@ -19,7 +19,6 @@ $ docker run -it --rm ubuntu:latest /bin/bash
 # pip3 install -r requirements.txt
 ```
 
-
 ## Packaging
 
 https://packaging.python.org/en/latest/tutorials/packaging-projects/
@@ -50,7 +49,14 @@ python3 -m twine upload --repository testpypi dist/*
 cd /tmp
 python3 -m venv ./droid-test
 source ./droid-test/bin/activate
-pip install -i https://test.pypi.org/simple/ droidlysis
+pip3 install -i https://test.pypi.org/simple/ droidlysis
+```
+
+You might need to install the requirements...
+
+```
+which droidlysis
+droidlysis --version
 ```
 
 ### Testing the package in a Docker container

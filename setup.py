@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name = 'droidlysis',
-    description='DroidLysis: pre-analysis script for suspicious Android samples',
+    name='droidlysis',
+    description='DroidLysis: pre-analysis of suspicious Android samples',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='@cryptax',
@@ -15,8 +15,8 @@ setup(
     url='https://github.com/cryptax/droidlysis',
     license='MIT',
     keywords="android malware reverse",
-    python_requires='>=3.0.*',
-    version = '3.4.1',
+    python_requires='>=3.0',
+    version='3.4.1',
     packages=['conf'],
     py_modules=[
         'droidconfig',
@@ -38,6 +38,11 @@ setup(
         "Topic :: Software Development :: Disassemblers",
     ],
     include_package_data=True,
-    install_requires=[ 'python-magic', 'SQLAlchemy', 'rarfile' ],
-    scripts = [ 'droidlysis' ],
+    install_requires=[
+        'configparser>=4.0.2',
+        'python-magic==0.4.12',
+        'SQLAlchemy>=1.1.1',
+        'rarfile>=3.0'
+    ],
+    scripts=[ 'droidlysis', 'droidlysis3.py' ]
 )
