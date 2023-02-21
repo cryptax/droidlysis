@@ -3,7 +3,7 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
-__version__ = '3.4.0'
+__version__ = '3.4.1'
 """
 import hashlib
 import base64
@@ -167,7 +167,6 @@ class droidsample:
                 java -jar apktool.jar [-q] d file.apk outdir/apktool
                 if apktool failed
                       java -jar baksmali.jar -o outdir/smali classes.dex in file.apk
-                      androaxml.py --input binary-manifest in file.apk --output outdir/AndroidManifest.text.xml
                 if clear unset,
                       unzip file.apk -d outdir/unzipped
                 else
@@ -324,20 +323,11 @@ class droidsample:
         if self.properties.filetype == droidutil.APK:
             manifest = os.path.join( self.outdir, 'AndroidManifest.xml')
             if not os.access( manifest, os.R_OK) or os.path.getsize(manifest)==0:
-                if self.verbose: 
-                    print( "Extracting binary AndroidManifest.xml")
-                try:
-                    self.ziprar.extract_one_file('AndroidManifest.xml', self.outdir)
-                except:
-                    print("Failed to extract binary manifest: %s" % (sys.exc_info()[0]))
-                if os.access( manifest, os.R_OK) and os.path.getsize(manifest)>0:
-                    textmanifest = os.path.join( self.outdir, 'AndroidManifest.text.xml')
-                    subprocess.call( [ "androaxml.py", "--input", manifest, \
-                                           "--output", textmanifest ], \
-                                         stdout=self.process_output, stderr=self.process_output)
-                    if os.access( textmanifest, os.R_OK ):
-                        # overwrite the binary manifest with the converted text one
-                        os.rename(textmanifest, manifest)
+                print("Failed to extract binary manifest")
+                # we could attempt to do it with androaxml.py, but that introduces a dependancy to androguard just for that
+                # we could do it with ~/Android/Sdk/tools/bin/apkanalyzer manifest print package.apk, but that means finding
+                # apkanalyzer on the user's host + being sure they have Java 8 as the tool does not work with Java 11.
+                # it's simply not worth doing it, as this case happens very very seldom.
  
     def extract_file_properties(self):
         """Extracts file size, 

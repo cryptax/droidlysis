@@ -2,5 +2,4 @@ configparser>=4.0.2
 python-magic>=0.4.6
 rarfile>=3.0
 SQLAlchemy>=1.1.1
-androguard==3.3.5
 
