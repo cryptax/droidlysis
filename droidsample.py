@@ -3,7 +3,6 @@
 """
 __author__ = "Axelle Apvrille"
 __license__ = "MIT License"
-__version__ = '3.4.1'
 """
 import hashlib
 import base64

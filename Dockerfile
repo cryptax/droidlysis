@@ -2,8 +2,8 @@ ARG PYTHON_VERSION=3.9.4-buster
 FROM python:${PYTHON_VERSION} as build
 
 MAINTAINER Axelle Apvrille
-ENV REFRESHED_AT 2022-01-18
-ENV APKTOOL_VERSION "2.6.0"
+ENV REFRESHED_AT 2023-02-21
+ENV APKTOOL_VERSION "2.7.0"
 ENV SMALI_VERSION "2.5.2"
 
 WORKDIR /opt
@@ -17,6 +17,10 @@ RUN cd /opt && wget -q "https://bitbucket.org/iBotPeaches/apktool/downloads/apkt
 
 # Install Smali / Baksmali -------------------------
 RUN wget -q "https://bitbucket.org/JesusFreke/smali/downloads/baksmali-${SMALI_VERSION}.jar"
+
+# Install Dex2jar -------------------------------------
+RUN wget -O dex2jar.zip -q https://github.com/pxb1988/dex2jar/releases/download/v2.2-SNAPSHOT-2021-10-31/dex-tools-2.2-SNAPSHOT-2021-10-31.zip \
+    && unzip dex2jar.zip -d /opt && rm -f dex2jar.zip
 
 # Install DroidLysis ----------------------------------
 RUN git clone https://github.com/cryptax/droidlysis
