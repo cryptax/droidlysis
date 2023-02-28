@@ -25,22 +25,32 @@ import droidurl
 import xml.parsers.expat as expat
 import logging
 
-logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s', level=logging.INFO)
+logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
+                    level=logging.INFO)
 
 
 class droidsample:
     # Base class for an Android sample to analyze
-    
-    def __init__(self, filename, output='/tmp/analysis', verbose=False, clear=False, enable_procyon=False, 
-                 disable_description=False, silent=False, no_kit_exception=False):
-        # Setup analysis of a given sample. This does not perform the analysis in itself
+
+    def __init__(self,
+                 filename,
+                 output='/tmp/analysis',
+                 verbose=False,
+                 clear=False,
+                 enable_procyon=False,
+                 disable_description=False,
+                 silent=False,
+                 no_kit_exception=False):
+        # Setup analysis of a given sample.
+        # This does not perform the analysis in itself
 
         assert filename is not None, "Filename is invalid"
 
         self.absolute_filename = filename
         self.clear = clear
         self.enable_procyon = enable_procyon
-        self.disable_description = disable_description # we need those for recursive calls to process_file
+        # we need those for recursive calls to process_file
+        self.disable_description = disable_description
         self.silent = silent
         self.no_kit_exception = no_kit_exception
         self.ziprar = None  # zip file or rar file file handle
@@ -48,20 +58,24 @@ class droidsample:
         if verbose:
             logging.getLogger().setLevel(logging.DEBUG)
 
-        sanitized_basename = droidutil.sanitize_filename(os.path.basename(filename))
+        sanitized_basename = droidutil.sanitize_filename(
+            os.path.basename(filename))
         if not silent:
             logging.info("Filename: "+filename)
-        self.properties = droidproperties.droidproperties(samplename=sanitized_basename,
-                                                          sha256=droidutil.sha256sum(filename),
-                                                          verbose=verbose)
+        self.properties = droidproperties.droidproperties(
+            samplename=sanitized_basename,
+            sha256=droidutil.sha256sum(filename),
+            verbose=verbose)
         logging.debug("SHA256: %s" % (self.properties.sha256))
 
-        """Computing the SHA1 of a file is only useful to help out the analyst. 
-        The digest is written to the automatic analysis/description of the sample. That
-        description is located in the output analysis directory, so obviously, if the
-        end-user specifies he wants the output analysis directory erased, he obviously
-        does not want to know about the SHA1 digest, and thus it's useless to compute it."""
-        if not clear: 
+        """Computing the SHA1 of a file is only useful to help out the analyst.
+        The digest is written to the automatic analysis/description
+        of the sample. That description is located in the output analysis
+        directory, so obviously, if the end-user specifies he wants
+        the output analysis directory erased, he obviously
+        does not want to know about the SHA1 digest, and
+        thus it's useless to compute it."""
+        if not clear:
             sha1 = droidutil.sha1sum(filename)
             logging.debug("SHA1: %s" % (sha1))
 
@@ -74,10 +88,11 @@ class droidsample:
 
         if os.path.exists(self.outdir):
             try:
-                shutil.rmtree(self.outdir, ignore_errors=droidutil.on_rm_tree_error)
+                shutil.rmtree(self.outdir,
+                              ignore_errors=droidutil.on_rm_tree_error)
                 os.makedirs(self.outdir)
             except RuntimeError:
-                logging.debug("Failed to remove directory - rmtree / RuntimeError")
+                logging.debug("Failed to remove directory RuntimeError")
         else:
             os.makedirs(self.outdir)
 
@@ -93,72 +108,93 @@ class droidsample:
 
     def unzip(self):
         """
-        This method will unzip/unrar the sample, and recursively unzip/unrar inner zips/rars.
-        If we are not removing the analysis directory (clearoutput option), then we also
+        This method will unzip/unrar the sample,
+        and recursively unzip/unrar inner zips/rars.
+        If we are not removing the analysis directory
+        (clearoutput option), then we also
         unzip the sample in outdir/unzipped subdirectory.
-        If the sample is password protected, we try 'infected' as password.
-        
-        Returns the file type of the sample: droidutil.<FILE CONSTANT> (UNKNOWN, APK, DEX, ...)
+        If the sample is password protected,
+        we try 'infected' as password.
+        Returns the file type of the sample: droidutil
+        <FILE CONSTANT> (UNKNOWN, APK, DEX, ...)
         """
         logging.debug("------------- Unzipping %s" % (self.absolute_filename))
-            
-        self.properties.filetype = droidutil.get_filetype(self.absolute_filename)
+
+        self.properties.filetype = droidutil.get_filetype(
+            self.absolute_filename)
 
         if self.properties.filetype == droidutil.ARM or \
            self.properties.filetype == droidutil.UNKNOWN or \
            self.properties.filetype == droidutil.DEX:
-            logging.debug("This is a %s. Nothing to unzip for %s" % (droidutil.str_filetype(self.properties.filetype), 
-                                                                     self.absolute_filename))
+            logging.debug("This is a %s. Nothing to unzip for %s"
+                          % (droidutil.str_filetype(self.properties.filetype),
+                             self.absolute_filename))
             return self.properties.filetype
 
         if self.properties.filetype == droidutil.ZIP or \
                 self.properties.filetype == droidutil.RAR:
             if self.properties.filetype == droidutil.ZIP:
-                self.ziprar = droidziprar.droidziprar(self.absolute_filename,
-                                                      zipmode=True, verbose=self.verbose)
+                self.ziprar = droidziprar.droidziprar(
+                    self.absolute_filename,
+                    zipmode=True, verbose=self.verbose)
             else:
-                self.ziprar = droidziprar.droidziprar(self.absolute_filename,
-                                                      zipmode=False, verbose=self.verbose)
+                self.ziprar = droidziprar.droidziprar(
+                    self.absolute_filename,
+                    zipmode=False, verbose=self.verbose)
             if self.ziprar.handle is None:
                 self.properties.filetype = droidutil.UNKNOWN  # damaged zip/rar
-                logging.debug("We are unable to unzip/unrar %s because of errors" % (self.absolute_filename))
+                logging.debug("Unable to unzip/unrar %s because of errors"
+                              % self.absolute_filename)
                 return droidutil.UNKNOWN
             # Now, we know self.ziprar is valid and open.
             self.properties.filetype, innerzips = self.ziprar.get_type()
             if innerzips:
                 self.properties.file_innerzips = True
-                logging.debug("There are inner zips/rars in " + self.absolute_filename)
+                logging.debug("There are inner zips/rars in "
+                              + self.absolute_filename)
 
                 for element in innerzips:
                     # extract the inner zip/rar
-                    logging.debug("Extracting " + element + " inside " + self.absolute_filename)
+                    logging.debug("Extracting " + element
+                                  + " inside " + self.absolute_filename)
                     try:
                         self.ziprar.extract_one_file(element, self.outdir)
-                        logging.debug("Recursively processing " + os.path.join(self.outdir, element))
-                        # TODO: this is probably buggy: we should be providing enable_sql too etc.
-                        droidlysis3.process_file(os.path.join(self.outdir, element), 
-                                                 self.outdir, self.verbose, self.clear, 
-                                                 self.enable_procyon, self.disable_description, self.no_kit_exception)
+                        logging.debug("Recursively processing "
+                                      + os.path.join(self.outdir, element))
+                        # TODO: this is probably buggy: we
+                        # should be providing enable_sql too etc.
+                        droidlysis3.process_file(
+                            os.path.join(self.outdir, element),
+                            self.outdir, self.verbose, self.clear,
+                            self.enable_procyon,
+                            self.disable_description,
+                            self.no_kit_exception)
                     except:
-                        logging.warning("Cannot extract %s : %s" % (element, sys.exc_info()[0]))
-            
+                        logging.warning("Cannot extract %s : %s"
+                                        % (element, sys.exc_info()[0]))
+
         if self.properties.filetype == droidutil.APK:
             # our zip actually is an APK
             if not self.clear:
                 # let's unzip
-                logging.debug("Unzipping " + self.absolute_filename + " to " + os.path.join(self.outdir, 'unzipped'))
+                logging.debug("Unzipping " +
+                              self.absolute_filename
+                              + " to " + os.path.join(self.outdir, 'unzipped'))
                 try:
-                    self.ziprar.extract_all(outdir=os.path.join(self.outdir, 'unzipped'))
+                    self.ziprar.extract_all(
+                        outdir=os.path.join(self.outdir, 'unzipped'))
                 except:
-                    logging.warning("Unzipping failed (catching exception): %s" % (sys.exc_info()[0]))
+                    logging.warning("Unzipping failed (catching exception): %s"
+                                    % (sys.exc_info()[0]))
 
         return self.properties.filetype
 
     def disassemble(self):
         """
-        Disassembles the sample (as much as possible), and if the end-user is interested in output (clear unset)
+        Disassembles the sample (as much as possible),
+        and if the end-user is interested in output (clear unset)
         also decompiles it (as much as possible).
-        
+
         APK: 
                 java -jar apktool.jar [-q] d file.apk outdir/apktool
                 if apktool failed
@@ -186,24 +222,28 @@ class droidsample:
         """
         if self.verbose:
             print("------------- Disassembling")
-            
+
         if self.properties.filetype == droidutil.ARM or \
                 self.properties.filetype == droidutil.RAR or \
                 self.properties.filetype == droidutil.CLASS or \
                 self.properties.filetype == droidutil.UNKNOWN:
             # TODO: we could be running procyon on a class file.
-            logging.debug("Nothing to disassemble for " + self.absolute_filename)
-            return 
+            logging.debug("Nothing to disassemble for "
+                          + self.absolute_filename)
+            return
 
         if self.properties.filetype == droidutil.APK:
-            # APKTOOL won't output to an existing dir unless you use the -f switch. But then, -f erases the contents
+            # APKTOOL won't output to an existing
+            # dir unless you use the -f switch. But then, -f erases the contents
             # of the output dir... So we can't do this directly on self.outdir
             apktool_outdir = os.path.join(self.outdir, "apktool")
-            logging.debug("Running apktool on inputfile=" + self.absolute_filename)
+            logging.debug("Running apktool on inputfile="
+                          + self.absolute_filename)
 
             if self.verbose:
-                logging.debug("Apktool command: java -jar %s d -f %s %s" % (droidconfig.APKTOOL_JAR,
-                                                                            self.absolute_filename, apktool_outdir))
+                logging.debug("Apktool command: java -jar %s d -f %s %s"
+                              % (droidconfig.APKTOOL_JAR,
+                                 self.absolute_filename, apktool_outdir))
                 subprocess.call(["java", "-jar", droidconfig.APKTOOL_JAR,
                                  "d", "-f", self.absolute_filename,
                                  "-o", apktool_outdir])
@@ -211,19 +251,24 @@ class droidsample:
                 # with quiet option
                 subprocess.call(["java", "-jar", droidconfig.APKTOOL_JAR,
                                  "-q", "d", "-f", self.absolute_filename,
-                                 "-o", apktool_outdir], stdout=self.process_output, stderr=self.process_output)
+                                 "-o", apktool_outdir],
+                                 stdout=self.process_output,
+                                 stderr=self.process_output)
 
             if os.path.isdir(apktool_outdir):
                 droidutil.move_dir(apktool_outdir, self.outdir)
 
             # we want all smali_classes? dir in smali
             if os.path.exists(os.path.join(self.outdir, "smali_classes2")):
-                # we have multidex - we are going to move all smali classes in the same directory
+                # we have multidex - we are going to move
+                # all smali classes in the same directory
                 logging.debug("Moving multidex smali classes to ./smali")
 
-                os.system("cp -R " + os.path.join(self.outdir, "./smali_classes?/*")
+                os.system("cp -R "
+                          + os.path.join(self.outdir, "./smali_classes?/*")
                           + " " + os.path.join(self.outdir, "./smali"))
-                os.system("rm -r " + os.path.join(self.outdir, "./smali_classes?"))
+                os.system("rm -r "
+                          + os.path.join(self.outdir, "./smali_classes?"))
                 
             if self.verbose:
                 logging.debug("Apktool finished")
@@ -309,15 +354,23 @@ class droidsample:
         if self.properties.filetype == droidutil.APK:
             manifest = os.path.join(self.outdir, 'AndroidManifest.xml')
             if not os.access(manifest, os.R_OK) or os.path.getsize(manifest) == 0:
-                logging.warning("Failed to extract binary manifest")
-                """
-                we could attempt to do it with androaxml.py, but that introduces a dependancy to androguard 
-                just for that we could do it with ~/Android/Sdk/tools/bin/apkanalyzer manifest print package.apk, 
-                but that means finding apkanalyzer on the user's host + being sure they have Java 8 as the tool 
-                does not work with Java 11.
-                it's simply not worth doing it, as this case happens very very seldom.
-                """
- 
+                try:
+                    logging.debug( "Extracting binary AndroidManifest.xml")
+                    self.ziprar.extract_one_file('AndroidManifest.xml', self.outdir)
+                    if os.access( manifest, os.R_OK) and os.path.getsize(manifest) > 0:
+                        textmanifest = os.path.join( self.outdir, 'AndroidManifest.text.xml')
+                        subprocess.call( [ "androaxml.py", "--input", manifest, \
+                                           "--output", textmanifest ], \
+                                         stdout=self.process_output, stderr=self.process_output)
+                        if os.access( textmanifest, os.R_OK ):
+                            # overwrite the binary manifest with the converted text one
+                            os.rename(textmanifest, manifest)
+                except AssertionError:
+                    logging.warning("Failed to extract binary manifest: %s" % (sys.exc_info()[0]))
+                
+                except FileNotFoundError:
+                    logging.warning("Error while unzipping or Androguard not installed (no androaxml.py)")
+                     
     def extract_file_properties(self):
         """Extracts file size, 
         nb of dirs and classes in smali dir"""
