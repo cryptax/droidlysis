@@ -4,14 +4,12 @@ __status__ = "Alpha"
 __license__ = "MIT License"
 """
 
-from sqlalchemy import *
+import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.orm import sessionmaker
 import droidconfig
 
-verbose = False # to get SQL ALCHEMY requests
-engine = create_engine(droidconfig.SQLALCHEMY, echo=verbose)
+
 Base = declarative_base()
 
 
@@ -36,6 +34,11 @@ class Sample(Base):
     def __repr__(self):
         return "<Sample(sha256=%s)>" % self.sha256
 
-    
-Base.metadata.create_all(engine)   
+
+class DroidSql:
+    def __init__(self, verbose=False):
+        self.verbose = verbose  # to get SQL ALCHEMY requests
+        self.engine = sqlalchemy.create_engine(droidconfig.SQLALCHEMY, echo=self.verbose)
+        Base.metadata.create_all(self.engine)
+
     

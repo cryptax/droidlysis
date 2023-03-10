@@ -192,8 +192,8 @@ class droidproperties:
         with open(droidconfig.KIT_CONFIGFILE, 'a') as configfile:
             config.write(configfile)
 
-    def write(self):
-        Session = sessionmaker(bind=droidsql.engine)
+    def write(self, sql):
+        Session = sessionmaker(bind=sql.engine)
         session = Session()
         sample = droidsql.Sample(sha256=self.sha256,
                                  sanitized_basename=self.sanitized_basename,
@@ -214,8 +214,7 @@ class droidproperties:
             session.commit()
         except sqlalchemy.exc.IntegrityError:
             # occurs when the sample with the same sha256 is already in
-            if self.verbose:
-                print("Sample is already in the database")
+            logging.debug("Sample is already in the database")
 
     def dump_json(self, filename='report.json'):
         data = {'sanitized_basename': self.sanitized_basename,
@@ -235,6 +234,6 @@ class droidproperties:
         if self.verbose:
             print("-------------")
             print("Dumping to JSON file {}".format(filename))
-        f = open(filename, 'w') 
+        f = open(filename, 'w')
         f.write(json.dumps(data))
         f.close()

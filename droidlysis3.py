@@ -12,6 +12,7 @@ import droidsample
 import droidreport
 import sys
 import logging
+from droidsql import DroidSql
 
 property_dump_file = 'details.md'
 report_file = 'report.md'
@@ -97,6 +98,10 @@ def process_input(args):
     each file in an input directory are processed, but not recursively.
     each input file is process.
     """
+    sql = None
+    if args.enable_sql:
+        sql = DroidSql()
+
     for element in args.input:
         if os.path.isdir(element):
             listing = os.listdir(element)
@@ -108,7 +113,7 @@ def process_input(args):
                              enable_procyon=args.enable_procyon,
                              disable_report=args.disable_report,
                              no_kit_exception=args.no_kit_exception,
-                             enable_sql=args.enable_sql,
+                             sql=sql,
                              disable_json=args.disable_json,
                              import_exodus=args.import_exodus)
                 if args.movein:
@@ -131,7 +136,7 @@ def process_input(args):
                          disable_report=args.disable_report,
                          silent=args.silent,
                          no_kit_exception=args.no_kit_exception,
-                         enable_sql=args.enable_sql,
+                         sql=sql,
                          disable_json=args.disable_json,
                          import_exodus=args.import_exodus
                          )
@@ -151,7 +156,7 @@ def process_file(infile,
                  disable_report=False,
                  silent=False,
                  no_kit_exception=False,
-                 enable_sql=False,
+                 sql=None,
                  disable_json=False,
                  import_exodus=False):
     """Static analysis of a given file"""
@@ -180,8 +185,8 @@ def process_file(infile,
         sample.extract_smali_properties(listofkits)
         sample.extract_wide_properties(listofkits)
 
-        if enable_sql:
-            sample.properties.write()
+        if sql is not None:
+            sample.properties.write(sql)
 
         if not disable_json:
             sample.properties.dump_json(os.path.join(sample.outdir, json_file))
