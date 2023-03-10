@@ -45,6 +45,16 @@ python3 -m twine upload --repository testpypi dist/*
 
 ### Testing the package in a python virtual environment
 
+From github repo:
+
+```
+cd /tmp
+python3 -m venv ./droid-test
+source ./droid-test/bin/activate
+pip3 install git+https://github.com/cryptax/droidlysis
+```
+
+From test pypi:
 ```
 cd /tmp
 python3 -m venv ./droid-test
