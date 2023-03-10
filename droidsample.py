@@ -61,10 +61,7 @@ class droidsample:
 
         sanitized_basename = droidutil.sanitize_filename(
             os.path.basename(filename))
-        if not silent:
-            logging.info("Filename: "+filename)
 
-        logging.debug(f'import_exodus={import_exodus}')
         self.properties = droidproperties.droidproperties(
             samplename=sanitized_basename,
             sha256=droidutil.sha256sum(filename),
@@ -88,7 +85,7 @@ class droidsample:
                 filename=sanitized_basename,
                 hash=self.properties.sha256))
 
-        logging.debug("Output analysis directory: " + self.outdir)
+        logging.debug("Output dir: " + self.outdir)
 
         if os.path.exists(self.outdir):
             try:
@@ -224,8 +221,7 @@ class droidsample:
         DEX, clear set  : classes.dex ./smali classes-dex2jar.jar ./unjarred ./procyon
 
         """
-        if self.verbose:
-            print("------------- Disassembling")
+        logging.debug("------------- Disassembling")
 
         if self.properties.filetype == droidutil.ARM or \
                 self.properties.filetype == droidutil.RAR or \
@@ -343,15 +339,15 @@ class droidsample:
                                             jar_file, "-o", os.path.join(self.outdir, 'procyon')],
                                             stdout=self.process_output, stderr=self.process_output)
 
-                    logging.debug("Unjarring " + jar_file)
-                    jarziprar = droidziprar.droidziprar(jar_file, zipmode=True, verbose=self.verbose)
-                    if jarziprar.handle is None:
-                        logging.debug("Bad Jar / Failed to unjar " + jar_file)
-                    else:
-                        try:
-                            jarziprar.extract_all(os.path.join(self.outdir, 'unjarred'))
-                        except:
-                            logging.warning("Failed to unjar: %s" % (sys.exc_info()[0]))
+                        logging.debug("Unjarring " + jar_file)
+                        jarziprar = droidziprar.droidziprar(jar_file, zipmode=True, verbose=self.verbose)
+                        if jarziprar.handle is None:
+                            logging.debug("Bad Jar / Failed to unjar " + jar_file)
+                        else:
+                            try:
+                                jarziprar.extract_all(os.path.join(self.outdir, 'unjarred'))
+                            except:
+                                logging.warning("Failed to unjar: %s" % (sys.exc_info()[0]))
                         jarziprar.close()
 
         # Convert binary Manifest
@@ -642,6 +638,7 @@ class droidsample:
                                 break # break one level
                         if self.properties.kits[section] is True:
                             break  # break another level
+
         return list
 
     def extract_dex_properties(self):
@@ -792,7 +789,7 @@ class droidsample:
 
         # detecting Flutter debug mode
         flutter_debug = os.path.join(self.outdir, 'unzipped/assets/flutter_assets/kernel_blob.bin')
-        if flutter_debug:
+        if os.access(flutter_debug, os.R_OK):
             self.properties.kits['flutter'] = True
 
         # detect executables in resources

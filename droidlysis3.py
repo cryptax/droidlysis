@@ -163,7 +163,7 @@ def process_file(infile,
 
     if os.access(infile, os.R_OK):
         if not silent:
-            print("Processing: " + infile + " ...")
+            print("Processing file: " + infile + " ...")
         sample = droidsample.droidsample(filename=infile,
                                          output=outdir,
                                          verbose=verbose,
@@ -191,16 +191,9 @@ def process_file(infile,
         if not disable_json:
             sample.properties.dump_json(os.path.join(sample.outdir, json_file))
 
-        report_to_file = True
-        if clear or disable_report:
-            report_to_file = False
 
-        console = True
-        if silent:
-            console = False
-
-        if console or report_to_file:
-            report = droidreport.droidreport(sample, console=True, report_to_file=report_to_file)
+        if not silent and not clear:
+            report = droidreport.droidreport(sample, console=True, report_to_file=disable_report)
             report.write(os.path.join(sample.outdir, report_file), verbose)
 
         if not clear:
