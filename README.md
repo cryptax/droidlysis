@@ -177,12 +177,30 @@ pattern=;->sendTextMessage|;->sendMultipartTextMessage|SmsManager;->sendDataMess
 description=Sending SMS messages
 ```
 
-## To do
 
-- Remove the "caution: filename not matched:  classes6.dex" which occurs at file extraction in `droidsample.py`
+## Importing Exodus Privacy Trackers
+
+Exodus Privacy maintains a list of various SDKs which are interesting to rule out in our analysis via `conf/kit.conf`.
+Add option `--import_exodus` to the droidlysis command line: this will parse existing trackers Exodus Privacy knows and which aren't yet in your `kit.conf`. Finally, it will **append** all new trackers to `kit.conf`.
+
+Afterwards, you may want to sort your `kit.conf` file:
+
+```python
+import configparser
+import collections
+
+config = configparser.ConfigParser({}, collections.OrderedDict)
+config.read('./conf/kit.conf')
+# Order all sections alphabetically
+config._sections = collections.OrderedDict(sorted(config._sections.items(), key=lambda t: t[0] ))
+with open('sorted.conf','w') as f:
+    config.write(f)
+```    
+
 
 ## Updates
 
+- v3.4.2 - Adding import of Exodus Privacy Trackers
 - v3.4.1 - Removed dependency to Androguard
 - v3.4.0 - Multidex support
 - v3.3.1 - Improving detection of Base64 strings
