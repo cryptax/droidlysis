@@ -11,105 +11,163 @@ import droidutil  # that's my own utilities
 import droidsample
 import droidreport
 import sys
+import logging
 
 property_dump_file = 'details.md'
 report_file = 'report.md'
 json_file = 'report.json'
-__version__ = "3.4.1"
+__version__ = "3.4.2"
+
+logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
+                    level=logging.INFO)
 
 
 def get_arguments():
     """Read arguments for the program and returns the ArgumentParser"""
-
-    parser = argparse.ArgumentParser(description='''DroidLysis3 is a Python 
-    script which processes Android samples. \n
-    1/ It extracts properties from the samples (e.g connects to Internet, roots the phone...). 
-    The extracted properties are displayed.\n
-    2/ It helps the analyst begin its reverse engineering of the sample, by performing a first automatic analysis, 
-    disassembling, decompiling and a description draft.''',
-                                     prog='DroidLysis', epilog='Version '+__version__+' - Greetz from @cryptax')
+    description = 'DroidLysis3 is a Python which processes Android samples. \n'
+    'It prepares the sample for analysis, unzipping,'
+    'disassembling, decompiling it.'
+    'It parses for potentially suspicious features '
+    '(e.g "sample roots the phone")'
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='DroidLysis',
+                                     epilog='Version '+ __version__ + ' - Greetz from @cryptax')
     parser.add_argument('-i', '--input',
-                        help='input directories or files to process', nargs='+', action='store', default='.')
+                        help='input directories or files to process',
+                        nargs='+', action='store', default='.')
     parser.add_argument('-o', '--output',
-                        help='analysis of input files is written into subdirectories of this directory',
+                        help='analysis of input files is written into '
+                        'subdirectories of this directory',
                         action='store', default='.')
     parser.add_argument('-c', '--clearoutput',
-                        help='erase the output directory at the end. Indicates you want something quick.',
+                        help='erase the output directory at the end. '
+                        'Indicates you want something quick.',
                         action='store_true')
-    parser.add_argument('-s', '--silent', help='do not display output on console', action='store_true')
+    parser.add_argument('-s', '--silent',
+                        help='do not display output on console',
+                        action='store_true')
     parser.add_argument('-m', '--movein',
-                        help='after it has been processed, each input file is moved to this directory', action='store')
-    parser.add_argument('-v', '--verbose', help='get more detailed messages', action='store_true')
-    parser.add_argument('-V', '--version', help='displays version number', action='version',
+                        help='after it has been processed, '
+                        'each input file is moved to this directory',
+                        action='store')
+    parser.add_argument('-v', '--verbose',
+                        help='get more detailed messages',
+                        action='store_true')
+    parser.add_argument('-V', '--version',
+                        help='displays version number',
+                        action='version',
                         version="%(prog)s "+__version__)
     parser.add_argument('--no-kit-exception',
-                        help='by default, ad/dev/stats kits are ruled out for searches. '
-                             'Use this option to treat them as regular namespaces', action='store_true')
-    parser.add_argument('--enable-procyon', help='enable procyon decompilation', action='store_true')
-    parser.add_argument('--disable-report', help='do not generate automatic report', action='store_true')
-    parser.add_argument('--enable-sql', help='write analysis to SQL database', action='store_true')
-    parser.add_argument('--disable-json', help='do not dump analysis to JSON', action='store_true')
+                        help='by default, ad/dev/stats kits are ruled '
+                        'out for searches. '
+                        'Use this option to treat them as regular namespaces',
+                        action='store_true')
+    parser.add_argument('--enable-procyon',
+                        help='enable procyon decompilation',
+                        action='store_true')
+    parser.add_argument('--disable-report',
+                        help='do not generate automatic report',
+                        action='store_true')
+    parser.add_argument('--enable-sql',
+                        help='write analysis to SQL database',
+                        action='store_true')
+    parser.add_argument('--disable-json',
+                        help='do not dump analysis to JSON',
+                        action='store_true')
+    parser.add_argument('--import-exodus',
+                        help='import ETIP Exodus Privacy trackers '
+                        'and add them to kit config file',
+                        action='store_true')
 
     args = parser.parse_args()
-    
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
     # create output dir if necessary
     droidutil.mkdir_if_necessary(args.output)
-    
     # create movein dir if necessary
-    if args.verbose and args.movein:
-        print("Creating %s if necessary" % (args.movein))
     droidutil.mkdir_if_necessary(args.movein)
-
     return args
 
 
 def process_input(args):
     """
-    Process input. 
+    Process input.
     Provide ArgumentParser as argument.
-    
-    args.input contains a list of files and directories to process.
+    @args args.input contains a list of files and directories to process.
     each file in an input directory are processed, but not recursively.
     each input file is process.
-
     """
     for element in args.input:
-        if os.path.isdir(element): 
+        if os.path.isdir(element):
             listing = os.listdir(element)
             for file in listing:
-                process_file(os.path.join(element, file), args.output, args.verbose, args.clearoutput,
-                             args.enable_procyon, args.disable_report, args.no_kit_exception,
-                             args.enable_sql, args.disable_json)
+                process_file(os.path.join(element, file),
+                             outdir=args.output,
+                             verbose=args.verbose,
+                             clear=args.clearoutput,
+                             enable_procyon=args.enable_procyon,
+                             disable_report=args.disable_report,
+                             no_kit_exception=args.no_kit_exception,
+                             enable_sql=args.enable_sql,
+                             disable_json=args.disable_json,
+                             import_exodus=args.import_exodus)
                 if args.movein:
-                    if args.verbose:
-                        print("Moving %s to %s" % (os.path.join('.', element), os.path.join(args.movein, element)))
+                    logging.debug("Moving %s to %s" %
+                                  (os.path.join('.', element),
+                                   os.path.join(args.movein, element)))
                     # TODO: issue if inner dirs. Are we handling this?
-                    try: 
-                        os.rename(os.path.join(element, file), os.path.join(args.movein, file))
+                    try:
+                        os.rename(os.path.join(element, file),
+                                  os.path.join(args.movein, file))
                     except OSError as e:
-                        if args.verbose:
-                            print("%s no longer present?: %s\n" % (file, str(e)))
+                        logging.debug("%s no longer present?: %s\n" % (file, str(e)))
 
         if os.path.isfile(element):
-            process_file(os.path.join('.', element), args.output, args.verbose, args.clearoutput, args.enable_procyon,
-                         args.disable_report, args.silent, args.no_kit_exception)
+            process_file(os.path.join('.', element),
+                         outdir=args.output,
+                         verbose=args.verbose,
+                         clear=args.clearoutput,
+                         enable_procyon=args.enable_procyon,
+                         disable_report=args.disable_report,
+                         silent=args.silent,
+                         no_kit_exception=args.no_kit_exception,
+                         enable_sql=args.enable_sql,
+                         disable_json=args.disable_json,
+                         import_exodus=args.import_exodus
+                         )
             # dir name = os.path.join(args.output, '{filename}-*'.format(filename=element))
             if args.movein:
-                if args.verbose:
-                    print("Moving %s to %s" % (os.path.join('.', element), os.path.join(args.movein,
-                                                                                        os.path.basename(element))))
+                logging.debug("Moving %s to %s" %
+                              (os.path.join('.', element),
+                               os.path.join(args.movein, os.path.basename(element))))
                 os.rename(os.path.join('.', element), os.path.join(args.movein, os.path.basename(element)))
 
 
-def process_file(infile, outdir='/tmp/analysis', verbose=False, clear=False, enable_procyon=False,
-                 disable_report=False, silent=False, no_kit_exception=False, enable_sql=False, disable_json=False):
+def process_file(infile,
+                 outdir='/tmp/analysis',
+                 verbose=False,
+                 clear=False,
+                 enable_procyon=False,
+                 disable_report=False,
+                 silent=False,
+                 no_kit_exception=False,
+                 enable_sql=False,
+                 disable_json=False,
+                 import_exodus=False):
     """Static analysis of a given file"""
 
-    if os.access(infile, os.R_OK): 
+    if os.access(infile, os.R_OK):
         if not silent:
             print("Processing: " + infile + " ...")
-        sample = droidsample.droidsample(infile, outdir, verbose, clear, enable_procyon,
-                                         disable_report, silent, no_kit_exception)
+        sample = droidsample.droidsample(filename=infile,
+                                         output=outdir,
+                                         verbose=verbose,
+                                         clear=clear,
+                                         enable_procyon=enable_procyon,
+                                         disable_description=disable_report,
+                                         silent=silent,
+                                         no_kit_exception=no_kit_exception,
+                                         import_exodus=import_exodus)
         sample.unzip()
         sample.disassemble()
         sample.extract_file_properties()

@@ -11,10 +11,19 @@ import droidconfig
 import droidcountry
 import droidsql
 import json
+import requests
+import logging
+import re
+import configparser  # to import Exodus Privacy trackers
 from sqlalchemy.orm import sessionmaker
 import sqlalchemy.exc
 
-"""This is where to set whether given fields have a meaning or not for a given file type"""
+logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
+                    level=logging.INFO)
+
+
+# This is where to set whether given fields have
+# a meaning or not for a given file type
 applicability = {'file_size': [droidutil.APK, droidutil.DEX, droidutil.ARM,
                                droidutil.CLASS, droidutil.ZIP, droidutil.RAR],
                  'file_small': [droidutil.APK, droidutil.DEX, droidutil.ARM,
@@ -44,11 +53,14 @@ class droidproperties:
     dex = {}
     kits = {}
 
-    def __init__(self, samplename='', sha256='', verbose=False):
+    def __init__(self, samplename='', sha256='', verbose=False, import_exodus=False):
         """Properties concern a given sample identified by a basename (to be helpful) and a sha256 (real reference)"""
         self.verbose = verbose
+        if verbose:
+            logging.getLogger().setLevel(logging.DEBUG)
         self.sha256 = sha256
         self.sanitized_basename = samplename
+        self.import_exodus = import_exodus
         self.clear_fields()
 
     def clear_fields(self):
@@ -130,11 +142,55 @@ class droidproperties:
 
         # automatically set to False kit properties
         self.kits.clear()
-        self.kitsconfig = droidconfig.droidconfig(droidconfig.KIT_CONFIGFILE, self.verbose)
+        self.kitsconfig = droidconfig.droidconfig(droidconfig.KIT_CONFIGFILE,
+                                                  self.verbose)
         for section in self.kitsconfig.get_sections():
             self.kits[section] = False
-        
+
+        if self.import_exodus:
+            self.import_exodus_trackers()
+            quit()
         # END OF reinit to default values
+
+    def import_exodus_trackers(self):
+        # import ETIP Exodus Privacy trackers
+        url = 'https://etip.exodus-privacy.eu.org/api/trackers/?format=json'
+        logging.debug(f'Importing ETIP Exodus trackers from {url}')
+        r = requests.get(url)
+        if r.status_code != 200:
+            logging.warning('Cannot download Exodus Privacy trackers: '
+                            f'{url} responds code={r.status_code}')
+            return
+        j = json.loads(r.text)
+        config = configparser.ConfigParser()
+        for tracker in j:
+            # remove trailing dots
+            code_signature = re.sub('\.\|', '|', tracker['code_signature']).rstrip('.').lstrip('.').replace('.', '/').replace('\/', '/').split('|')
+            for sig in code_signature:
+                if len(re.sub('[^a-zA-Z0-9/_]', '', sig)) == 0:
+                    continue
+                if self.kitsconfig.is_pattern_present(sig):
+                    # logging.debug(f'Not adding tracker={tracker["name"]}'
+                    #              f' as pattern={sig} is already present')
+                    break
+                # sanitize name
+                name = re.sub('[^a-zA-Z0-9]', '', tracker['name']).lower()
+                # if our signature is more generic, nothing to do
+                if name in self.kits:
+                    # our signature is less generic / missing a pattern
+                    logging.debug(f'name={name} sig={sig} pattern={self.kitsconfig.get_pattern(name)}')
+                    logging.warning(f'You should add pattern={sig}'
+                                    f' in tracker={tracker["name"]}')
+                    break
+                logging.debug(f'Adding Exodus Tracker: {name}')
+                config[name] = {}
+                config[name]['description'] = f'{tracker["name"]} (from ETIP Exodus Privacy list)'
+                config[name]['pattern'] = '|'.join(code_signature)
+                break
+        logging.debug('Appending imported trackers '
+                      f'to {droidconfig.KIT_CONFIGFILE}')
+        with open(droidconfig.KIT_CONFIGFILE, 'a') as configfile:
+            config.write(configfile)
 
     def write(self):
         Session = sessionmaker(bind=droidsql.engine)

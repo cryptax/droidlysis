@@ -1,5 +1,9 @@
 import os
 import configparser
+import logging
+
+logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
+                    level=logging.INFO)
 
 # ------------------------- DroidLysis Configuration file -----------------
 
@@ -26,11 +30,10 @@ class droidconfig:
         assert os.access(filename, os.R_OK) is not False, "File {0} is not readable".format(filename)
 
         self.filename = filename
-        self.verbose = verbose
         self.configparser = configparser.RawConfigParser()
-
-        if self.verbose:
-            print("Reading configuration file: '%s'" % (filename))
+        if verbose:
+            logging.getLogger().setLevel(logging.DEBUG)
+        logging.debug("Reading configuration file: '%s'" % (filename))
         self.configparser.read(filename)
 
     def get_sections(self):
@@ -46,8 +49,20 @@ class droidconfig:
             pass
         return None
 
+    def is_pattern_present(self, pattern):
+        for section in self.get_sections():
+            section_patterns = self.get_pattern(section).split('|')
+            if pattern in section_patterns:
+                return True
+            for p in section_patterns:
+                if p in pattern:
+                    # our pattern is more generic
+                    return True
+        return False
+
     def get_all_regexp(self):
-        # reads the config file and returns a list of all patterns for all sections
+        # reads the config file and returns a list
+        # of all patterns for all sections
         # the patterns are concatenated with a |
         # throws NoSectionError, NoOptionError
         allpatterns = ''
@@ -77,9 +92,8 @@ class droidconfig:
             for pattern in pattern_list:
                 # beware when pattern has blah\$binz, the matching key is blah$binz
                 if match[pattern.replace('\\', '')]:
-                    if self.verbose:
-                        print("Setting properties[%s] = True (matches %s)" % (section, pattern))
+                    logging.debug("Setting properties[%s] = True (matches %s)" % (section, pattern))
                     properties[section] = True
                     break
 
-
+                

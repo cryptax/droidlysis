@@ -40,7 +40,8 @@ class droidsample:
                  enable_procyon=False,
                  disable_description=False,
                  silent=False,
-                 no_kit_exception=False):
+                 no_kit_exception=False,
+                 import_exodus=False):
         # Setup analysis of a given sample.
         # This does not perform the analysis in itself
 
@@ -62,10 +63,13 @@ class droidsample:
             os.path.basename(filename))
         if not silent:
             logging.info("Filename: "+filename)
+
+        logging.debug(f'import_exodus={import_exodus}')
         self.properties = droidproperties.droidproperties(
             samplename=sanitized_basename,
             sha256=droidutil.sha256sum(filename),
-            verbose=verbose)
+            verbose=verbose,
+            import_exodus=import_exodus)
         logging.debug("SHA256: %s" % (self.properties.sha256))
 
         """Computing the SHA1 of a file is only useful to help out the analyst.
