@@ -5,23 +5,36 @@ import logging
 logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
                     level=logging.INFO)
 
-# ------------------------- DroidLysis Configuration file -----------------
-
-APKTOOL_JAR = os.path.join(os.path.expanduser("~/softs"), "apktool_2.7.0.jar")
-BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.5.2.jar")
-DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.2-SNAPSHOT"), "d2j-dex2jar.sh")
-PROCYON_JAR = os.path.join(os.path.expanduser("~/softs"), "procyon-decompiler-0.5.30.jar")
-INSTALL_DIR = os.path.dirname(__file__)
-SQLALCHEMY = 'sqlite:///droidlysis.db'  # https://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
-KEYTOOL = os.path.join("/usr/bin/keytool")
-
-# ------------------------- Property configuration files -------------------
-SMALI_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/smali.conf'))
-WIDE_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/wide.conf'))
-ARM_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/arm.conf'))
-KIT_CONFIGFILE = os.path.join(os.path.join(INSTALL_DIR, './conf/kit.conf'))
-
 # ------------------------- Reading *.conf configuration files -----------
+class generalconfig:
+    def __init__(self, filename='./conf/general.conf', verbose=False):
+        self.config = configparser.ConfigParser()
+        self.config.read(filename)
+        
+        # get config
+        self.APKTOOL_JAR = self.config['tools']['apktool']
+        self.BAKSMALI_JAR = self.config['tools']['baksmali']
+        self.DEX2JAR_CMD = self.config['tools']['dex2jar']
+        self.PROCYON_JAR = self.config['tools']['procyon']
+        self.KEYTOOL = self.config['tools']['keytool']
+        self.SMALI_CONFIGFILE = os.path.join(os.path.dirname(filename),
+                                             self.config['general']['smali_config'])
+        self.WIDE_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['wide_config'])
+        self.ARM_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['arm_config'])
+        self.KIT_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['kit_config'])
+
+        self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'
+
+        # check files are accessible
+        for f in [self.APKTOOL_JAR, self.BAKSMALI_JAR,
+                  self.DEX2JAR_CMD, self.PROCYON_JAR,
+                  self.SMALI_CONFIGFILE, self.WIDE_CONFIGFILE,
+                  self.ARM_CONFIGFILE, self.KIT_CONFIGFILE]:
+            if not os.access(f, os.R_OK):
+                logging.warning(f'Cannot access {f}')
+
+        if not os.access(self.KEYTOOL, os.X_OK):
+            logging.warning(f'Cannot access keytool at {self.KEYTOOL}')
 
 
 class droidconfig:

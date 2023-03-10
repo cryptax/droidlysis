@@ -33,6 +33,7 @@ class droidsample:
     # Base class for an Android sample to analyze
 
     def __init__(self,
+                 config,
                  filename,
                  output='/tmp/analysis',
                  verbose=False,
@@ -47,6 +48,7 @@ class droidsample:
 
         assert filename is not None, "Filename is invalid"
 
+        self.config = config
         self.absolute_filename = filename
         self.clear = clear
         self.enable_procyon = enable_procyon
@@ -63,6 +65,7 @@ class droidsample:
             os.path.basename(filename))
 
         self.properties = droidproperties.droidproperties(
+            config=self.config,
             samplename=sanitized_basename,
             sha256=droidutil.sha256sum(filename),
             verbose=verbose,
@@ -242,14 +245,14 @@ class droidsample:
 
             if self.verbose:
                 logging.debug("Apktool command: java -jar %s d -f %s %s"
-                              % (droidconfig.APKTOOL_JAR,
+                              % (self.config.APKTOOL_JAR,
                                  self.absolute_filename, apktool_outdir))
-                subprocess.call(["java", "-jar", droidconfig.APKTOOL_JAR,
+                subprocess.call(["java", "-jar", self.config.APKTOOL_JAR,
                                  "d", "-f", self.absolute_filename,
                                  "-o", apktool_outdir])
             else:
                 # with quiet option
-                subprocess.call(["java", "-jar", droidconfig.APKTOOL_JAR,
+                subprocess.call(["java", "-jar", self.config.APKTOOL_JAR,
                                  "-q", "d", "-f", self.absolute_filename,
                                  "-o", apktool_outdir],
                                  stdout=self.process_output,
@@ -307,7 +310,7 @@ class droidsample:
                 if os.access(d, os.R_OK):
                     logging.debug("Baksmali on {} -> {}".format(d, smali_dir))
                     try:
-                        subprocess.call(["java", "-jar", droidconfig.BAKSMALI_JAR,
+                        subprocess.call(["java", "-jar", self.config.BAKSMALI_JAR,
                                          "d", "-o", smali_dir, d],
                                         stdout=self.process_output, stderr=self.process_output)
                     except:
@@ -321,21 +324,21 @@ class droidsample:
                 if os.access(d, os.R_OK):
                     jar_file = os.path.join(self.outdir, '{}-dex2jar.jar'.format(
                         os.path.splitext(os.path.basename(d))[0]))
-                    if os.access(droidconfig.DEX2JAR_CMD, os.X_OK):
+                    if os.access(self.config.DEX2JAR_CMD, os.X_OK):
                         if self.verbose:
                             logging.debug("Dex2jar on " + d)
                             try:
-                                subprocess.call([droidconfig.DEX2JAR_CMD, "--force", d, "-o", jar_file],
+                                subprocess.call([self.config.DEX2JAR_CMD, "--force", d, "-o", jar_file],
                                                 stdout=self.process_output, stderr=self.process_output)
                             except:
                                 logging.warning("[-] Dex2jar failed on {}".format(d))
                         else:
-                            logging.warning("Dex2jar software is not executable, skipping (file: {0})".format(droidconfig.DEX2JAR_CMD))
+                            logging.warning("Dex2jar software is not executable, skipping (file: {0})".format(self.config.DEX2JAR_CMD))
                     
                     if os.access(jar_file, os.R_OK):
-                        if self.enable_procyon and os.access(droidconfig.PROCYON_JAR, os.R_OK):
+                        if self.enable_procyon and os.access(self.config.PROCYON_JAR, os.R_OK):
                             logging.debug("Procyon decompiler on " + jar_file)
-                            subprocess.call(["java", "-jar", droidconfig.PROCYON_JAR,
+                            subprocess.call(["java", "-jar", self.config.PROCYON_JAR,
                                             jar_file, "-o", os.path.join(self.outdir, 'procyon')],
                                             stdout=self.process_output, stderr=self.process_output)
 
@@ -412,7 +415,7 @@ class droidsample:
 
             if list:
                 try: 
-                    keyout = subprocess.check_output([droidconfig.KEYTOOL, "-printcert",  "-file",
+                    keyout = subprocess.check_output([self.config.KEYTOOL, "-printcert",  "-file",
                                                       os.path.join(self.outdir, list[0])],
                                                       stderr=self.process_output).decode('utf-8')
                     keyout = re.sub(': ', '#', keyout)

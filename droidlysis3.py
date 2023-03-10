@@ -13,6 +13,7 @@ import droidreport
 import sys
 import logging
 from droidsql import DroidSql
+from droidconfig import generalconfig
 
 property_dump_file = 'details.md'
 report_file = 'report.md'
@@ -79,6 +80,9 @@ def get_arguments():
                         help='import ETIP Exodus Privacy trackers '
                         'and add them to kit config file',
                         action='store_true')
+    parser.add_argument('--config',
+                        help='general configuration file for DroidLysis',
+                        action='store', default='./conf/general.conf')
 
     args = parser.parse_args()
     if args.verbose:
@@ -98,6 +102,7 @@ def process_input(args):
     each file in an input directory are processed, but not recursively.
     each input file is process.
     """
+    config = generalconfig(filename=args.config, verbose=args.verbose)
     sql = None
     if args.enable_sql:
         sql = DroidSql()
@@ -106,7 +111,8 @@ def process_input(args):
         if os.path.isdir(element):
             listing = os.listdir(element)
             for file in listing:
-                process_file(os.path.join(element, file),
+                process_file(config, 
+                             os.path.join(element, file),
                              outdir=args.output,
                              verbose=args.verbose,
                              clear=args.clearoutput,
@@ -128,7 +134,8 @@ def process_input(args):
                         logging.debug("%s no longer present?: %s\n" % (file, str(e)))
 
         if os.path.isfile(element):
-            process_file(os.path.join('.', element),
+            process_file(config, 
+                         os.path.join('.', element),
                          outdir=args.output,
                          verbose=args.verbose,
                          clear=args.clearoutput,
@@ -148,7 +155,8 @@ def process_input(args):
                 os.rename(os.path.join('.', element), os.path.join(args.movein, os.path.basename(element)))
 
 
-def process_file(infile,
+def process_file(config,
+                 infile,
                  outdir='/tmp/analysis',
                  verbose=False,
                  clear=False,
@@ -164,7 +172,8 @@ def process_file(infile,
     if os.access(infile, os.R_OK):
         if not silent:
             print("Processing file: " + infile + " ...")
-        sample = droidsample.droidsample(filename=infile,
+        sample = droidsample.droidsample(config=config,
+                                         filename=infile,
                                          output=outdir,
                                          verbose=verbose,
                                          clear=clear,
@@ -190,7 +199,6 @@ def process_file(infile,
 
         if not disable_json:
             sample.properties.dump_json(os.path.join(sample.outdir, json_file))
-
 
         if not silent and not clear:
             report = droidreport.droidreport(sample, console=True, report_to_file=disable_report)

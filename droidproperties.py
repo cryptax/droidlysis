@@ -53,8 +53,9 @@ class droidproperties:
     dex = {}
     kits = {}
 
-    def __init__(self, samplename='', sha256='', verbose=False, import_exodus=False):
+    def __init__(self, config, samplename='', sha256='', verbose=False, import_exodus=False):
         """Properties concern a given sample identified by a basename (to be helpful) and a sha256 (real reference)"""
+        self.config = config
         self.verbose = verbose
         if verbose:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -106,7 +107,7 @@ class droidproperties:
 
         # automatically adding smali properties. 
         self.smali.clear()
-        self.smaliconfig = droidconfig.droidconfig(droidconfig.SMALI_CONFIGFILE, self.verbose)
+        self.smaliconfig = droidconfig.droidconfig(self.config.SMALI_CONFIGFILE, self.verbose)
         for section in self.smaliconfig.get_sections():
             self.smali[section] = False
 
@@ -120,13 +121,13 @@ class droidproperties:
         self.wide['urls'] = []
         self.wide['base64_strings'] = []
         self.wide['apk_zip_url'] = False
-        self.wideconfig = droidconfig.droidconfig(droidconfig.WIDE_CONFIGFILE, self.verbose)
+        self.wideconfig = droidconfig.droidconfig(self.config.WIDE_CONFIGFILE, self.verbose)
         for section in self.wideconfig.get_sections():
             self.wide[section] = False
 
         # automatically add ARM properties
         self.arm.clear()
-        self.armconfig = droidconfig.droidconfig(droidconfig.ARM_CONFIGFILE, self.verbose)
+        self.armconfig = droidconfig.droidconfig(self.config.ARM_CONFIGFILE, self.verbose)
         for section in self.armconfig.get_sections():
             self.arm[section] = False
 
@@ -142,7 +143,7 @@ class droidproperties:
 
         # automatically set to False kit properties
         self.kits.clear()
-        self.kitsconfig = droidconfig.droidconfig(droidconfig.KIT_CONFIGFILE,
+        self.kitsconfig = droidconfig.droidconfig(self.config.KIT_CONFIGFILE,
                                                   self.verbose)
         for section in self.kitsconfig.get_sections():
             self.kits[section] = False
