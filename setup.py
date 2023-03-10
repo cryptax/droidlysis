@@ -41,6 +41,7 @@ setup(
     install_requires=[
         'configparser>=4.0.2',
         'python-magic==0.4.12',
+        'requests',
         'SQLAlchemy>=1.1.1',
         'rarfile>=3.0'
     ],

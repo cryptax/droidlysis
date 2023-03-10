@@ -1,5 +1,6 @@
 configparser>=4.0.2
 python-magic==0.4.12
 rarfile>=3.0
+requests
 SQLAlchemy>=1.1.1
 
