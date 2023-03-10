@@ -23,7 +23,7 @@ $ python3 ./droidlysis3.py --help
 1. Install required system packages
 2. Install Android disassembly tools
 3. Get DroidLysis from the Git repository (preferred) or from pip
-4. Configure `droidconfig.py`
+4. Configure `conf/general.conf`
 
 Install required system packages:
 
@@ -67,33 +67,10 @@ Alternatively, you can install DroidLysis directly from PyPi (`pip3 install droi
 
 If you used the default install commands & directories as specified above, you won't need any configuration. 
 
-The configuration is extremely simple, you only need to tune `droidconfig.py`. Note that if you placed the tools in the default `~/softs` directory as I specified, you don't have to do anything: the tools will be automatically found in that location.
-
-- `APKTOOL_JAR`: set the path to your apktool jar
-- `BAKSMALI_JAR`: set the path to your baksmali jar
-- `DEX2JAR_CMD`: set the path to the folder containing `d2j-dex2.jar.sh`. If you did not install dex2jar, simply provide an invalid path here, for example pointing to a non-existant file.
-- `PROCYON_JAR`: set the path to the procyon decompiler jar. If you don't want Procyon, leave this path to a non existant file.
-- `INSTALL_DIR`: set the path to your DroidLysis instance. Do not forget to set this or DroidLysis won't work correctly!
-
-By default, `droidconfig.py` searches for tools at the following location:
-
-```python
-APKTOOL_JAR = os.path.join( os.path.expanduser("~/softs"), "apktool_2.7.0.jar")
-BAKSMALI_JAR = os.path.join(os.path.expanduser("~/softs"), "baksmali-2.5.2.jar")
-DEX2JAR_CMD = os.path.join(os.path.expanduser("~/softs/dex-tools-2.1-SNAPSHOT"), "d2j-dex2jar.sh")
-PROCYON_JAR = os.path.join( os.path.expanduser("~/softs"), "procyon-decompiler-0.5.36.jar")
-INSTALL_DIR = os.path.expanduser("~/droidlysis")
-```
-
-Optionally, if you need a specific situation, you might need to tune the following too. 
-Normally, the default options will work and you won't have to touch these:
-
-- `SQLALCHEMY`: specify your SQL database.
-- `KEYTOOL`: absolute path of `keytool` which generally ships with Java
-- `SMALI_CONFIGFILE`: smali patterns
-- `WIDE_CONFIGFILE`: resource patterns
-- `ARM_CONFIGFILE`: ARM executable patterns
-- `KIT_CONFIGFILE`: 3rd party SDK patterns
+The configuration file is `./conf/general.conf` (you can switch to another file with the `--config` option).
+This is where you configure the location of various external tools (e.g. Apktool), the name of pattern files 
+(by default `./conf/smali.conf`, `./conf/wide.conf`, `./conf/arm.conf`, `./conf/kit.conf`) and the name of
+the database file (only used if you specify `--enable-sql`)
 
 
 ## Usage
@@ -200,6 +177,7 @@ with open('sorted.conf','w') as f:
 
 ## Updates
 
+- v3.4.3 - Using configuration files
 - v3.4.2 - Adding import of Exodus Privacy Trackers
 - v3.4.1 - Removed dependency to Androguard
 - v3.4.0 - Multidex support
