@@ -5,7 +5,7 @@ The output helps the reverse engineer speed up the first few steps of analysis.
 
 DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zip files (zip), Rar files (rar) or directories of files.
 
-<img src="https://img.shields.io/badge/PyPi%20-3.4.1-blue">
+<img src="https://img.shields.io/badge/PyPi%20-3.4.3-blue">
 
 ## Quick setup
 
