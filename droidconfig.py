@@ -1,6 +1,8 @@
 import os
 import configparser
 import logging
+import shutil
+from platformdirs import *
 
 logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
                     level=logging.INFO)
@@ -21,7 +23,13 @@ class generalconfig:
                                              self.config['general']['smali_config'])
         self.WIDE_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['wide_config'])
         self.ARM_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['arm_config'])
-        self.KIT_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['kit_config'])
+        self.DISTRIB_KIT_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['kit_config'])
+
+        cache_dir = user_cache_dir('droidlysis','cryptax')
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        self.KIT_CONFIGFILE = os.path.join(cache_dir, self.config['general']['kit_config'])
+        shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
 
         self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'
 
