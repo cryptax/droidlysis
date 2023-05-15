@@ -4,15 +4,17 @@ import logging
 import shutil
 from platformdirs import *
 
+
 logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
                     level=logging.INFO)
+
 
 # ------------------------- Reading *.conf configuration files -----------
 class generalconfig:
     def __init__(self, filename='./conf/general.conf', verbose=False):
         self.config = configparser.ConfigParser()
         self.config.read(filename)
-        
+
         # get config
         self.APKTOOL_JAR = self.config['tools']['apktool']
         self.BAKSMALI_JAR = self.config['tools']['baksmali']
@@ -25,10 +27,11 @@ class generalconfig:
         self.ARM_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['arm_config'])
         self.DISTRIB_KIT_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['kit_config'])
 
-        cache_dir = user_cache_dir('droidlysis','cryptax')
+        cache_dir = user_cache_dir('droidlysis', 'cryptax')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
-        self.KIT_CONFIGFILE = os.path.join(cache_dir, self.config['general']['kit_config'])
+        self.KIT_CONFIGFILE = os.path.join(cache_dir,
+                                           self.config['general']['kit_config'])
         shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
 
         self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'

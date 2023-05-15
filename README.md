@@ -170,7 +170,7 @@ description=Sending SMS messages
 ## Importing Exodus Privacy Trackers
 
 Exodus Privacy maintains a list of various SDKs which are interesting to rule out in our analysis via `conf/kit.conf`.
-Add option `--import_exodus` to the droidlysis command line: this will parse existing trackers Exodus Privacy knows and which aren't yet in your `kit.conf`. Finally, it will **append** all new trackers to `kit.conf`.
+Add option `--import_exodus` to the droidlysis command line: this will parse existing trackers Exodus Privacy knows and which aren't yet in your `kit.conf`. Finally, it will **append** all new trackers to `~/.cache/droidlysis/kit.conf`.
 
 Afterwards, you may want to sort your `kit.conf` file:
 
@@ -179,7 +179,7 @@ import configparser
 import collections
 
 config = configparser.ConfigParser({}, collections.OrderedDict)
-config.read('./conf/kit.conf')
+config.read('~/.cache/droidlysis/kit.conf')
 # Order all sections alphabetically
 config._sections = collections.OrderedDict(sorted(config._sections.items(), key=lambda t: t[0] ))
 with open('sorted.conf','w') as f:

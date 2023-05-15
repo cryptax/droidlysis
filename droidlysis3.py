@@ -33,7 +33,8 @@ def get_arguments():
     '(e.g "sample roots the phone")'
     parser = argparse.ArgumentParser(description=description,
                                      prog='DroidLysis',
-                                     epilog='Version '+ __version__ + ' - Greetz from @cryptax')
+                                     epilog='Version ' + __version__
+                                     + ' - Greetz from @cryptax')
     parser.add_argument('-i', '--input',
                         help='input directories or files to process',
                         nargs='+', action='store', default='.')
@@ -111,7 +112,7 @@ def process_input(args):
         if os.path.isdir(element):
             listing = os.listdir(element)
             for file in listing:
-                process_file(config, 
+                process_file(config,
                              os.path.join(element, file),
                              outdir=args.output,
                              verbose=args.verbose,
@@ -134,7 +135,7 @@ def process_input(args):
                         logging.debug("%s no longer present?: %s\n" % (file, str(e)))
 
         if os.path.isfile(element):
-            process_file(config, 
+            process_file(config,
                          os.path.join('.', element),
                          outdir=args.output,
                          verbose=args.verbose,
@@ -147,7 +148,6 @@ def process_input(args):
                          disable_json=args.disable_json,
                          import_exodus=args.import_exodus
                          )
-            # dir name = os.path.join(args.output, '{filename}-*'.format(filename=element))
             if args.movein:
                 logging.debug("Moving %s to %s" %
                               (os.path.join('.', element),
