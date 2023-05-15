@@ -332,8 +332,8 @@ class droidsample:
                                                 stdout=self.process_output, stderr=self.process_output)
                             except:
                                 logging.warning("[-] Dex2jar failed on {}".format(d))
-                        else:
-                            logging.warning("Dex2jar software is not executable, skipping (file: {0})".format(self.config.DEX2JAR_CMD))
+                    else:
+                        logging.warning("Dex2jar software is not executable, skipping (file: {0})".format(self.config.DEX2JAR_CMD))
                     
                     if os.access(jar_file, os.R_OK):
                         if self.enable_procyon and os.access(self.config.PROCYON_JAR, os.R_OK):
