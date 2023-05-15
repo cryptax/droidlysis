@@ -189,8 +189,8 @@ class droidproperties:
                 config[name]['pattern'] = '|'.join(code_signature)
                 break
         logging.debug('Appending imported trackers '
-                      f'to {droidconfig.KIT_CONFIGFILE}')
-        with open(droidconfig.KIT_CONFIGFILE, 'a') as configfile:
+                      f'to {self.config.KIT_CONFIGFILE}')
+        with open(self.config.KIT_CONFIGFILE, 'a') as configfile:
             config.write(configfile)
 
     def write(self, sql):

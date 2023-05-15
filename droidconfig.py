@@ -23,16 +23,23 @@ class generalconfig:
         self.KEYTOOL = os.path.expanduser(self.config['tools']['keytool'])
         self.SMALI_CONFIGFILE = os.path.join(os.path.dirname(filename),
                                              self.config['general']['smali_config'])
-        self.WIDE_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['wide_config'])
-        self.ARM_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['arm_config'])
-        self.DISTRIB_KIT_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['kit_config'])
+        self.WIDE_CONFIGFILE = os.path.join(os.path.dirname(filename),
+                                            self.config['general']['wide_config'])
+        self.ARM_CONFIGFILE = os.path.join(os.path.dirname(filename),
+                                           self.config['general']['arm_config'])
+        self.DISTRIB_KIT_CONFIGFILE = os.path.join(os.path.dirname(filename),
+                                                   self.config['general']['kit_config'])
 
+        # duplicate kit configuration for edition
         cache_dir = user_cache_dir('droidlysis', 'cryptax')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         self.KIT_CONFIGFILE = os.path.join(cache_dir,
                                            self.config['general']['kit_config'])
-        shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
+        if not os.path.exists(self.KIT_CONFIGFILE):
+            logging.verbose(f'Copying {self.DISTRIB_KIT_CONFIGFILE}'
+                            'to {self.KIT_CONFIGFILE}')
+            shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
 
         self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'
 
