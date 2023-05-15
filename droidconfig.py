@@ -16,11 +16,11 @@ class generalconfig:
         self.config.read(filename)
 
         # get config
-        self.APKTOOL_JAR = self.config['tools']['apktool']
-        self.BAKSMALI_JAR = self.config['tools']['baksmali']
-        self.DEX2JAR_CMD = self.config['tools']['dex2jar']
-        self.PROCYON_JAR = self.config['tools']['procyon']
-        self.KEYTOOL = self.config['tools']['keytool']
+        self.APKTOOL_JAR = os.path.expanduser(self.config['tools']['apktool'])
+        self.BAKSMALI_JAR = os.path.expanduser(self.config['tools']['baksmali'])
+        self.DEX2JAR_CMD = os.path.expanduser(self.config['tools']['dex2jar'])
+        self.PROCYON_JAR = os.path.expanduser(self.config['tools']['procyon'])
+        self.KEYTOOL = os.path.expanduser(self.config['tools']['keytool'])
         self.SMALI_CONFIGFILE = os.path.join(os.path.dirname(filename),
                                              self.config['general']['smali_config'])
         self.WIDE_CONFIGFILE = os.path.join(os.path.dirname(filename), self.config['general']['wide_config'])
@@ -42,10 +42,10 @@ class generalconfig:
                   self.SMALI_CONFIGFILE, self.WIDE_CONFIGFILE,
                   self.ARM_CONFIGFILE, self.KIT_CONFIGFILE]:
             if not os.access(f, os.R_OK):
-                logging.warning(f'Cannot access {f}')
+                logging.warning(f'Cannot access {f} - check your configuration file {filename}')
 
         if not os.access(self.KEYTOOL, os.X_OK):
-            logging.warning(f'Cannot access keytool at {self.KEYTOOL}')
+            logging.warning(f'Cannot access keytool at {self.KEYTOOL} - check your configuration file {filename}')
 
 
 class droidconfig:
