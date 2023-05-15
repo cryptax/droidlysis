@@ -12,8 +12,8 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 Can't wait to use DroidLysis? Then, use a Docker container:
 
 ```
-$ docker pull cryptax/droidlysis:2023.02
-$ docker run -it --rm -v /tmp/share:/share cryptax/droidlysis:2023.02  /bin/bash
+$ docker pull cryptax/droidlysis:2023.05
+$ docker run -it --rm -v /tmp/share:/share cryptax/droidlysis:2023.05  /bin/bash
 $ cd /opt/droidlysis
 $ python3 ./droidlysis3.py --help
 ```
