@@ -69,6 +69,13 @@ which droidlysis
 droidlysis --version
 ```
 
+Run droidlysis using default config from Python virtual environment: 
+
+```
+droidlysis --config ./lib/python3.10/site-packages/conf/general.conf --input yourapk.apk --output /tmp/outputdir
+```
+
+
 ### Testing the package in a Docker container
 
 In Alpine:

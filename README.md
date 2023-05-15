@@ -5,7 +5,7 @@ The output helps the reverse engineer speed up the first few steps of analysis.
 
 DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zip files (zip), Rar files (rar) or directories of files.
 
-<img src="https://img.shields.io/badge/PyPi%20-3.4.3-blue">
+<img src="https://img.shields.io/badge/PyPi%20-3.4.4-blue">
 
 ## Quick setup
 
@@ -177,6 +177,7 @@ with open('sorted.conf','w') as f:
 
 ## Updates
 
+- v3.4.4 - Bug fix #14
 - v3.4.3 - Using configuration files
 - v3.4.2 - Adding import of Exodus Privacy Trackers
 - v3.4.1 - Removed dependency to Androguard
