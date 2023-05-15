@@ -16,7 +16,7 @@ setup(
     license='MIT',
     keywords="android malware reverse",
     python_requires='>=3.0',
-    version='3.4.4',
+    version='3.4.5',
     packages=['conf'],
     py_modules=[
         'droidconfig',
@@ -43,7 +43,8 @@ setup(
         'python-magic==0.4.12',
         'requests',
         'SQLAlchemy>=1.1.1',
-        'rarfile>=3.0'
+        'rarfile>=3.0',
+        'platformdirs'
     ],
     scripts=[ 'droidlysis', 'droidlysis3.py' ]
 )

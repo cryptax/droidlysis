@@ -2,7 +2,7 @@
 
 """
 __author__ = "Axelle Apvrille"
-__status__ = "Alpha"
+__status__ = "Beta"
 __license__ = "MIT License"
 """
 
