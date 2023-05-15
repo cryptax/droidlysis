@@ -29,7 +29,7 @@ sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev
 
 2. Install Android disassembly tools
 
-Install Android disassembly tools: [Apktool](https://ibotpeaches.github.io/Apktool/) , 
+[Apktool](https://ibotpeaches.github.io/Apktool/) , 
 [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally 
 [Dex2jar](https://github.com/pxb1988/dex2jar) and  
 [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) (note that Procyon only works with Java 8, not Java 11).
@@ -56,7 +56,7 @@ $ source ./venv/bin/activate
 
 Alternatively, you can install DroidLysis directly from PyPi (`pip3 install droidlysis`).
 
-4. Configure `conf/general.conf`. In particular make sure to change `/home/axelle` with your appropriate directories ;-)
+4. Configure `conf/general.conf`. In particular make sure to change `/home/axelle` with your appropriate directories.
 
 ```
 [tools]
@@ -77,12 +77,12 @@ python3 ./droidlysis3.py --help
 
 ## Configuration
 
-If you used the default install commands & directories as specified above, you won't need any configuration. 
-
 The configuration file is `./conf/general.conf` (you can switch to another file with the `--config` option).
 This is where you configure the location of various external tools (e.g. Apktool), the name of pattern files 
 (by default `./conf/smali.conf`, `./conf/wide.conf`, `./conf/arm.conf`, `./conf/kit.conf`) and the name of
 the database file (only used if you specify `--enable-sql`)
+
+Be sure to specify the correct paths for disassembly tools, or DroidLysis won't find them.
 
 
 ## Usage
