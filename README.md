@@ -21,15 +21,13 @@ $ python3 ./droidlysis3.py --help
 ## Installing DroidLysis
 
 1. Install required system packages
-2. Install Android disassembly tools
-3. Get DroidLysis from the Git repository (preferred) or from pip
-4. Configure `conf/general.conf`
-
-Install required system packages:
 
 ```
 sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev libxml2-dev libxslt-dev
 ```
+
+
+2. Install Android disassembly tools
 
 Install Android disassembly tools: [Apktool](https://ibotpeaches.github.io/Apktool/) , 
 [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally 
@@ -46,6 +44,8 @@ $ unzip dex-tools-2.2-SNAPSHOT-2021-10-31.zip
 $ rm -f dex-tools-2.2-SNAPSHOT-2021-10-31.zip 
 ```
 
+3. Get DroidLysis from the Git repository (preferred) or from pip
+
 Install from Git in a Python virtual environment:
 
 ```
@@ -54,14 +54,26 @@ $ source ./venv/bin/activate
 (venv) $ pip3 install git+https://github.com/cryptax/droidlysis
 ```
 
-Run it:
-
-```
-cd droidlysis
-./droidlysis --help
-```
-
 Alternatively, you can install DroidLysis directly from PyPi (`pip3 install droidlysis`).
+
+4. Configure `conf/general.conf`. In particular make sure to change `/home/axelle` with your appropriate directories ;-)
+
+```
+[tools]
+apktool = /home/axelle/softs/apktool_2.7.0.jar
+baksmali = /home/axelle/softs/baksmali-2.5.2.jar
+dex2jar = /home/axelle/softs/dex-tools-2.2-SNAPSHOT/d2j-dex2jar.sh
+procyon = /home/axelle/softs/procyon-decompiler-0.5.30.jar
+keytool = /usr/bin/keytool
+...
+```
+
+5. Run it:
+
+```
+python3 ./droidlysis3.py --help
+```
+
 
 ## Configuration
 
