@@ -1,4 +1,5 @@
 import os
+import errno
 import configparser
 import logging
 import shutil
@@ -12,6 +13,8 @@ logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
 # ------------------------- Reading *.conf configuration files -----------
 class generalconfig:
     def __init__(self, filename='./conf/general.conf', verbose=False):
+        if not os.path.exists(filename):
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), filename)
         self.config = configparser.ConfigParser()
         self.config.read(filename)
 
@@ -38,7 +41,7 @@ class generalconfig:
                                            self.config['general']['kit_config'])
         if not os.path.exists(self.KIT_CONFIGFILE):
             logging.debug(f'Copying {self.DISTRIB_KIT_CONFIGFILE}'
-                            'to {self.KIT_CONFIGFILE}')
+                          f' to {self.KIT_CONFIGFILE}')
             shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
 
         self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'
