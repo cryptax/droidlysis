@@ -37,7 +37,7 @@ class generalconfig:
         self.KIT_CONFIGFILE = os.path.join(cache_dir,
                                            self.config['general']['kit_config'])
         if not os.path.exists(self.KIT_CONFIGFILE):
-            logging.verbose(f'Copying {self.DISTRIB_KIT_CONFIGFILE}'
+            logging.debug(f'Copying {self.DISTRIB_KIT_CONFIGFILE}'
                             'to {self.KIT_CONFIGFILE}')
             shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
 
