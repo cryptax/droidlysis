@@ -4,15 +4,6 @@ import shutil
 from droidlysis3 import process_file
 from droidconfig import generalconfig
 
-'''
-To run tests:
-source ./venv/bin/activate
-python3 setup.py develop
-cd tests
-python3 ./droidlysis3_test.py
-'''
-
-
 class DroidLysisTest(unittest.TestCase):
     def setUp(self):
         # Create a temporary directory
