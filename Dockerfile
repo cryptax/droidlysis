@@ -2,8 +2,8 @@ ARG PYTHON_VERSION=3.9.4-buster
 FROM python:${PYTHON_VERSION} as build
 
 MAINTAINER Axelle Apvrille
-ENV REFRESHED_AT 2023-05-15
-ENV APKTOOL_VERSION "2.7.0"
+ENV REFRESHED_AT 2023-07-20
+ENV APKTOOL_VERSION "2.8.0"
 ENV SMALI_VERSION "2.5.2"
 
 WORKDIR /opt
@@ -30,8 +30,6 @@ RUN cd /opt/droidlysis && pip3 install --user -r requirements.txt
 RUN chmod u+x /opt/droidlysis/droidlysis
 
 # Configure ---------------------------------------------
-RUN sed -i 's/~\/softs/\/opt/g' /opt/droidlysis/droidconfig.py
-RUN sed -i "s/apktool_\(.*\).jar/apktool_${APKTOOL_VERSION}.jar/g" /opt/droidlysis/droidconfig.py
-RUN sed -i "s/baksmali-\(.*\).jar/baksmali-${SMALI_VERSION}.jar/g" /opt/droidlysis/droidconfig.py
+RUN sed -i 's#~/softs#/opt#g' /opt/droidlysis/conf/general.conf
 
 CMD [ "/bin/bash" ]
