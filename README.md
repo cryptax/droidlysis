@@ -37,7 +37,7 @@ sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev
 ```
 $ mkdir -p ~/softs
 $ cd ~/softs
-$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.7.0.jar
+$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.8.0.jar
 $ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
 $ wget https://github.com/pxb1988/dex2jar/releases/download/v2.2-SNAPSHOT-2021-10-31/dex-tools-2.2-SNAPSHOT-2021-10-31.zip
 $ unzip dex-tools-2.2-SNAPSHOT-2021-10-31.zip 
@@ -60,7 +60,7 @@ Alternatively, you can install DroidLysis directly from PyPi (`pip3 install droi
 
 ```
 [tools]
-apktool = /home/axelle/softs/apktool_2.7.0.jar
+apktool = /home/axelle/softs/apktool_2.8.0.jar
 baksmali = /home/axelle/softs/baksmali-2.5.2.jar
 dex2jar = /home/axelle/softs/dex-tools-2.2-SNAPSHOT/d2j-dex2jar.sh
 procyon = /home/axelle/softs/procyon-decompiler-0.5.30.jar
