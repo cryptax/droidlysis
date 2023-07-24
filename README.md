@@ -18,6 +18,13 @@ $ cd /opt/droidlysis
 $ python3 ./droidlysis3.py --help
 ```
 
+To analyze a sample:
+
+```
+$ cd /share
+$ python3 droidlysis --input ./mysample.apk --output . --config /opt/droidlysis/conf/general.conf
+```
+
 ## Installing DroidLysis
 
 1. Install required system packages
@@ -31,7 +38,7 @@ sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev
 
 [Apktool](https://ibotpeaches.github.io/Apktool/) , 
 [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally 
-[Dex2jar](https://github.com/pxb1988/dex2jar) and  
+[Dex2jar](https://github.com/pxb1988/dex2jar) and 
 [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) (note that Procyon only works with Java 8, not Java 11).
 
 ```
@@ -96,7 +103,7 @@ droidlysis --help
 For example, test it on [Signal's APK](https://signal.org/android/apk/):
 
 ```
-droidlysis --input Signal-website-universal-release-4.52.4.apk --output /tmp
+droidlysis --input Signal-website-universal-release-4.52.4.apk --output /tmp --config /PATH/TO/DROIDLYSIS/conf/general.conf
 ```
 
 ![](./images/example.png)

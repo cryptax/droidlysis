@@ -2,7 +2,7 @@ ARG PYTHON_VERSION=3.9.4-buster
 FROM python:${PYTHON_VERSION} as build
 
 MAINTAINER Axelle Apvrille
-ENV REFRESHED_AT 2023-07-20
+ENV REFRESHED_AT 2023-07-24
 ENV APKTOOL_VERSION "2.8.0"
 ENV SMALI_VERSION "2.5.2"
 
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -yqq default-jre libxml2-dev libxslt-dev l
 RUN pip3 install -U pip wheel
 RUN mkdir -p /share
 
-# Apktool ----------------------------------------------
+# Install Apktool ----------------------------------------------
 RUN cd /opt && wget -q "https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_VERSION}.jar"
 
 # Install Smali / Baksmali -------------------------
