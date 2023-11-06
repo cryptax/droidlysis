@@ -767,7 +767,8 @@ class droidsample:
                     if match[mykey]:
                         analysis_file.write("## %s\n" % mykey)
                     for element in match[mykey]:
-                        analysis_file.write("- "+str(element)+"\n")
+                        append = self.extract_method_name(str(element))
+                        analysis_file.write("- "+append+str(element)+"\n")
                     analysis_file.write('\n')
                     analysis_file.close()
 
@@ -778,7 +779,21 @@ class droidsample:
             # all smali properties should then be set to unknown
             for key in sorted(self.properties.smali.keys()):
                 self.properties.smali[key] = 'unknown'
-                                 
+
+    def extract_method_name(self, element):
+        m = re.findall(r'file=(.*?)\s+no=\s*(\d+)', element)
+        if m:
+            file_path, line_no = m[0]
+            with open(file_path, 'r') as f:
+                lines = f.readlines()
+                for i in range(int(line_no), 0, -1):
+                    line = lines[i]
+                    if line.startswith('.method'):
+                        clazz = (lines[0].split(' ')[-1]).strip()
+                        method = (line.split(' ')[-1]).strip()
+                        return f'path={clazz}->{method} '
+        return ''
+
     def extract_wide_properties(self, list_of_kits):
         """Will look for given properties (e.g GPS usage, presence of executables
         in all subdirectories (smali, assets, resources, library...)"""
