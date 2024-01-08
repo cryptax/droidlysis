@@ -514,7 +514,7 @@ class droidsample:
                                                                                       filename))
                 missing = True
 
-        if missing and (self.properties.smali['dex_class_loader'] or self.properties.smali['dex_file']):
+        if missing and (self.properties.smali['dex_class_loader'] or self.properties.smali['dex_file'] or self.properties.smali['load_library'] or self.properties.smali['class_loader']):
             self.properties.smali['packed'] = True
 
     def extract_manifest_properties(self):
