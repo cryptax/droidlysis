@@ -3,6 +3,7 @@ import errno
 import configparser
 import logging
 import shutil
+import filecmp 
 from platformdirs import *
 
 
@@ -43,6 +44,8 @@ class generalconfig:
             logging.debug(f'Copying {self.DISTRIB_KIT_CONFIGFILE}'
                           f' to {self.KIT_CONFIGFILE}')
             shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
+        elif not filecmp.cmp(self.KIT_CONFIGFILE, self.DISTRIB_KIT_CONFIGFILE):
+            logging.warning(f'Cached kit configuration {self.KIT_CONFIGFILE} != general distrib config {self.DISTRIB_KIT_CONFIGFILE}. Using cached config. Check this is ok')
 
         self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'
 
