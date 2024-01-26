@@ -143,6 +143,7 @@ class droidproperties:
 
         # automatically set to False kit properties
         self.kits.clear()
+        logging.debug(f'Reading Kit Config file = {self.config.KIT_CONFIGFILE}')
         self.kitsconfig = droidconfig.droidconfig(self.config.KIT_CONFIGFILE,
                                                   self.verbose)
         for section in self.kitsconfig.get_sections():
