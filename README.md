@@ -7,24 +7,6 @@ DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zi
 
 <img src="https://img.shields.io/badge/PyPi%20-3.4.5-blue">
 
-## Quick setup
-
-Can't wait to use DroidLysis? Then, use a Docker container:
-
-```
-$ docker pull cryptax/droidlysis:2023.07
-$ docker run -it --rm -v /tmp/share:/share cryptax/droidlysis:2023.07  /bin/bash
-$ cd /opt/droidlysis
-$ python3 ./droidlysis3.py --help
-```
-
-To analyze a sample:
-
-```
-$ cd /share
-$ python3 droidlysis --input ./mysample.apk --output . --config /opt/droidlysis/conf/general.conf
-```
-
 ## Installing DroidLysis
 
 1. Install required system packages
@@ -36,24 +18,24 @@ sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev
 
 2. Install Android disassembly tools
 
-[Apktool](https://ibotpeaches.github.io/Apktool/) , 
-[Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally 
-[Dex2jar](https://github.com/pxb1988/dex2jar) and 
-[Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) (note that Procyon only works with Java 8, not Java 11).
+- [Apktool](https://ibotpeaches.github.io/Apktool/) , 
+- [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally 
+- [Dex2jar](https://github.com/pxb1988/dex2jar) and 
+- *Obsolete*: [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) (note that Procyon only works with Java 8, not Java 11).
 
 ```
 $ mkdir -p ~/softs
 $ cd ~/softs
-$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.8.0.jar
+$ wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar
 $ wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
-$ wget https://github.com/pxb1988/dex2jar/releases/download/v2.2-SNAPSHOT-2021-10-31/dex-tools-2.2-SNAPSHOT-2021-10-31.zip
-$ unzip dex-tools-2.2-SNAPSHOT-2021-10-31.zip 
-$ rm -f dex-tools-2.2-SNAPSHOT-2021-10-31.zip 
+$ wget https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip
+$ unzip dex-tools-v2.4.zip 
+$ rm -f dex-tools-v2.4.zip 
 ```
 
 3. Get DroidLysis from the Git repository (preferred) or from pip
 
-Install from Git in a Python virtual environment:
+Install from Git in a Python virtual environment (`python3 -m venv`, or pyenv virtual environments etc).
 
 ```
 $ python3 -m venv venv
@@ -67,9 +49,9 @@ Alternatively, you can install DroidLysis directly from PyPi (`pip3 install droi
 
 ```
 [tools]
-apktool = /home/axelle/softs/apktool_2.8.0.jar
+apktool = /home/axelle/softs/apktool_2.9.3.jar
 baksmali = /home/axelle/softs/baksmali-2.5.2.jar
-dex2jar = /home/axelle/softs/dex-tools-2.2-SNAPSHOT/d2j-dex2jar.sh
+dex2jar = /home/axelle/softs/dex-tools-v2.4/d2j-dex2jar.sh
 procyon = /home/axelle/softs/procyon-decompiler-0.5.30.jar
 keytool = /usr/bin/keytool
 ...
