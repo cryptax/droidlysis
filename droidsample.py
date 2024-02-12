@@ -579,7 +579,15 @@ class droidsample:
             self.properties.manifest['maxSDK'] = droidutil.get_element(xmldoc, 'uses-sdk', 'android:maxSdkVersion')
             self.properties.manifest['minSDK'] = droidutil.get_element(xmldoc, 'uses-sdk', 'android:minSdkVersion')
             self.properties.manifest['targetSDK'] = droidutil.get_element(xmldoc, 'uses-sdk', 'android:targetSdkVersion')
-            droidutil.get_elements(xmldoc, 'meta-data', 'android:value')
+            tab = droidutil.get_elements(xmldoc, 'meta-data', 'android:name')
+            if self.verbose:
+                logging.debug('meta-data: ' + ''.join(tab))
+            for t in tab:
+                if 'android.content.ContactDirectory' in t:
+                    self.properties.manifest['auto_load'] = True
+                    if self.verbose:
+                        logging.debug('Suspicious ContactDirectory meta-data trick')
+                    break
 
             if self.verbose:
                 logging.debug("MinSDK=%s MaxSDK=%s TargetSDK=%s" % (self.properties.manifest['minSDK'],

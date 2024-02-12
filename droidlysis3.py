@@ -18,7 +18,7 @@ from droidconfig import generalconfig
 property_dump_file = 'details.md'
 report_file = 'report.md'
 json_file = 'report.json'
-__version__ = "3.4.5"
+__version__ = "3.4.6"
 
 logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
                     level=logging.INFO)

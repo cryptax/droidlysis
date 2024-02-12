@@ -197,6 +197,7 @@ with open('sorted.conf','w') as f:
 
 ## Updates
 
+- v3.4.6 - Detecting manifest feature that automatically loads APK at install
 - v3.4.5 - Creating a writable user kit.conf file
 - v3.4.4 - Bug fix #14
 - v3.4.3 - Using configuration files
