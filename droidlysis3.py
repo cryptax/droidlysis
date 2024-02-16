@@ -83,7 +83,7 @@ def get_arguments():
                         action='store_true')
     parser.add_argument('--config',
                         help='general configuration file for DroidLysis',
-                        action='store', default='./conf/general.conf')
+                        action='store')
 
     args = parser.parse_args()
     if args.verbose:
