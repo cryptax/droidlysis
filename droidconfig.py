@@ -3,6 +3,7 @@ import errno
 import configparser
 import logging
 import shutil
+import filecmp 
 from platformdirs import *
 
 
@@ -12,7 +13,23 @@ logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
 
 # ------------------------- Reading *.conf configuration files -----------
 class generalconfig:
-    def __init__(self, filename='./conf/general.conf', verbose=False):
+    def __init__(self, filename, verbose=False):
+        if not filename:
+            filename = './conf/general.conf'
+        if not os.path.exists(filename):
+            try:
+                from xdg.BaseDirectory import xdg_config_home
+
+                config = xdg_config_home
+            except ImportError:
+                config = os.path.join(os.getenv('HOME'), '.config')
+            if not os.path.exists(config):
+                config = '/etc'
+            config = os.path.join(config, 'droidlysis')
+            if os.path.exists(config):
+                filename = os.path.join(config, 'general.conf')
+        logging.debug(f'Reading config from {filename}')
+
         if not os.path.exists(filename):
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), filename)
         self.config = configparser.ConfigParser()
@@ -43,6 +60,8 @@ class generalconfig:
             logging.debug(f'Copying {self.DISTRIB_KIT_CONFIGFILE}'
                           f' to {self.KIT_CONFIGFILE}')
             shutil.copyfile(self.DISTRIB_KIT_CONFIGFILE, self.KIT_CONFIGFILE)
+        elif not filecmp.cmp(self.KIT_CONFIGFILE, self.DISTRIB_KIT_CONFIGFILE):
+            logging.warning(f'Cached kit configuration {self.KIT_CONFIGFILE} != general distrib config {self.DISTRIB_KIT_CONFIGFILE}. Using cached config. Check this is ok')
 
         self.SQLALCHEMY = f'sqlite:///{self.config["general"]["db_file"]}'
 
