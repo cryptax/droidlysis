@@ -817,6 +817,20 @@ class droidsample:
         flutter_debug = os.path.join(self.outdir, 'unzipped/assets/flutter_assets/kernel_blob.bin')
         if os.access(flutter_debug, os.R_OK):
             self.properties.kits['flutter'] = True
+        
+        # detecting react native framework using index.android.bundle
+        react_assets = os.path.join(self.outdir, 'unzipped/assets/index.android.bundle')
+        if os.access(react_assets, os.R_OK):
+            self.properties.wide['react_asset'] = True
+        
+        # Run "file" to detect hermes bytecode version
+        proc = subprocess.Popen(['file', react_assets], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = proc.communicate()[0]
+
+        analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+        analysis_file.write('# Hermes Bytecode version\n')
+        analysis_file.write(output.decode() + '\n')
+        analysis_file.close()
 
         # detect executables in resources
         self.find_exec_in_resources()
