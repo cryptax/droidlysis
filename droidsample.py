@@ -263,10 +263,10 @@ class droidsample:
                 logging.debug("Moving multidex smali classes to ./smali")
 
                 os.system("cp -R "
-                          + os.path.join(self.outdir, "./smali_classes?/*")
+                          + os.path.join(self.outdir, "./smali_classes*/*")
                           + " " + os.path.join(self.outdir, "./smali"))
                 os.system("rm -r "
-                          + os.path.join(self.outdir, "./smali_classes?"))
+                          + os.path.join(self.outdir, "./smali_classes*"))
                 
             if self.verbose:
                 logging.debug("Apktool finished")
@@ -275,7 +275,7 @@ class droidsample:
             logging.debug("Extracting classes*.dex")
             try:
                 self.ziprar.extract_one_file('classes.dex', self.outdir)
-                for i in range(2, 10):
+                for i in range(2, 1000):
                     self.ziprar.extract_one_file('classes{}.dex'.format(i), self.outdir)
                     if not os.path.exists(os.path.join(self.outdir, 'classes{}.dex'.format(i))):
                         break
@@ -764,7 +764,8 @@ class droidsample:
                     if match[mykey]:
                         analysis_file.write("## %s\n" % mykey)
                     for element in match[mykey]:
-                        analysis_file.write("- "+str(element)+"\n")
+                        append = self.extract_method_name(str(element))
+                        analysis_file.write("- "+append+str(element)+"\n")
                     analysis_file.write('\n')
                     analysis_file.close()
 
@@ -775,7 +776,21 @@ class droidsample:
             # all smali properties should then be set to unknown
             for key in sorted(self.properties.smali.keys()):
                 self.properties.smali[key] = 'unknown'
-                                 
+
+    def extract_method_name(self, element):
+        m = re.findall(r'file=(.*?)\s+no=\s*(\d+)', element)
+        if m:
+            file_path, line_no = m[0]
+            with open(file_path, 'r') as f:
+                lines = f.readlines()
+                for i in range(int(line_no), 0, -1):
+                    line = lines[i]
+                    if line.startswith('.method'):
+                        clazz = (lines[0].split(' ')[-1]).strip()
+                        method = (line.split(' ')[-1]).strip()
+                        return f'path={clazz}->{method} '
+        return ''
+
     def extract_wide_properties(self, list_of_kits):
         """Will look for given properties (e.g GPS usage, presence of executables
         in all subdirectories (smali, assets, resources, library...)"""
@@ -791,6 +806,20 @@ class droidsample:
         flutter_debug = os.path.join(self.outdir, 'unzipped/assets/flutter_assets/kernel_blob.bin')
         if os.access(flutter_debug, os.R_OK):
             self.properties.kits['flutter'] = True
+        
+        # detecting react native framework using index.android.bundle
+        react_assets = os.path.join(self.outdir, 'unzipped/assets/index.android.bundle')
+        if os.access(react_assets, os.R_OK):
+            self.properties.wide['react_asset'] = True
+        
+        # Run "file" to detect hermes bytecode version
+        proc = subprocess.Popen(['file', react_assets], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = proc.communicate()[0]
+
+        analysis_file = open(os.path.join(self.outdir, droidlysis3.property_dump_file), 'a')
+        analysis_file.write('# Hermes Bytecode version\n')
+        analysis_file.write(output.decode() + '\n')
+        analysis_file.close()
 
         # detect executables in resources
         self.find_exec_in_resources()

@@ -190,6 +190,12 @@ with open('sorted.conf','w') as f:
     config.write(f)
 ```    
 
+## JEB script for smali properties
+
+This script helps you search for methods on JEB UI that contain code that matches the smali pattern and easily navigates to those functions. When you load the script and select `details.md` file among the droidlysis analysis files, a search box will appear. Once moved, you can easily bring up the search windows again by using recent script execution shortcut.
+
+- JEB > File > Scripts > Script selector > `script/DroidlysisSearch.py`
+- JEB > File > Scripts > Run last Script
 
 ## Updates
 
