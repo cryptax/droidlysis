@@ -5,7 +5,7 @@ The output helps the reverse engineer speed up the first few steps of analysis.
 
 DroidLysis can be used over Android packages (apk), Dalvik executables (dex), Zip files (zip), Rar files (rar) or directories of files.
 
-<img src="https://img.shields.io/badge/PyPi%20-3.4.5-blue">
+<img src="https://img.shields.io/badge/PyPi%20-3.4.7-blue">
 
 ## Installing DroidLysis
 
@@ -21,7 +21,6 @@ sudo apt-get install default-jre git python3 python3-pip unzip wget libmagic-dev
 - [Apktool](https://ibotpeaches.github.io/Apktool/) , 
 - [Baksmali](https://bitbucket.org/JesusFreke/smali/downloads), and optionally 
 - [Dex2jar](https://github.com/pxb1988/dex2jar) and 
-- *Obsolete*: [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler) (note that Procyon only works with Java 8, not Java 11).
 
 ```
 $ mkdir -p ~/softs
@@ -52,7 +51,6 @@ Alternatively, you can install DroidLysis directly from PyPi (`pip3 install droi
 apktool = /home/axelle/softs/apktool_2.9.3.jar
 baksmali = /home/axelle/softs/baksmali-2.5.2.jar
 dex2jar = /home/axelle/softs/dex-tools-v2.4/d2j-dex2jar.sh
-procyon = /home/axelle/softs/procyon-decompiler-0.5.30.jar
 keytool = /usr/bin/keytool
 ...
 ```
@@ -103,8 +101,6 @@ Get usage with `droidlysis --help`
 - The input can be a file or a directory of files to recursively look into. DroidLysis knows how to process Android packages, DEX, ODEX and ARM executables, ZIP, RAR. DroidLysis won't fail on other type of files (unless there is a bug...) but won't be able to understand the content.
 
 - When processing directories of files, it is typically quite helpful to move processed samples to another location to know what has been processed. This is handled by option `--movein`.  Also, if you are only interested in statistics, you should probably clear the output directory which contains detailed information for each sample: this is option `--clearoutput`. If you want to store all statistics in a SQL database, use `--enable-sql` (see [here](#sqlite_database))
-
-- DEX decompilation is quite long with Procyon, so this option is *disabled* by default. If you want to decompile to Java, use `--enable-procyon`.
 
 - DroidLysis's analysis does not inspect known 3rd party SDK by default, i.e. for instance it won't report any suspicious activity from these. If you want them to be inspected, use option `--no-kit-exception`. This usually creates many more detected properties for the sample, as SDKs (e.g. advertisment) use lots of flagged APIs (get GPS location, get IMEI, get IMSI, HTTP POST...).
 

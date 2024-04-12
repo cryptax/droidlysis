@@ -18,7 +18,7 @@ from droidconfig import generalconfig
 property_dump_file = 'details.md'
 report_file = 'report.md'
 json_file = 'report.json'
-__version__ = "3.4.6"
+__version__ = "3.4.7"
 
 logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
                     level=logging.INFO)
@@ -64,9 +64,6 @@ def get_arguments():
                         help='by default, ad/dev/stats kits are ruled '
                         'out for searches. '
                         'Use this option to treat them as regular namespaces',
-                        action='store_true')
-    parser.add_argument('--enable-procyon',
-                        help='enable procyon decompilation',
                         action='store_true')
     parser.add_argument('--disable-report',
                         help='do not generate automatic report',
@@ -117,7 +114,6 @@ def process_input(args):
                              outdir=args.output,
                              verbose=args.verbose,
                              clear=args.clearoutput,
-                             enable_procyon=args.enable_procyon,
                              disable_report=args.disable_report,
                              no_kit_exception=args.no_kit_exception,
                              sql=sql,
@@ -140,7 +136,6 @@ def process_input(args):
                          outdir=args.output,
                          verbose=args.verbose,
                          clear=args.clearoutput,
-                         enable_procyon=args.enable_procyon,
                          disable_report=args.disable_report,
                          silent=args.silent,
                          no_kit_exception=args.no_kit_exception,
@@ -160,7 +155,6 @@ def process_file(config,
                  outdir='/tmp/analysis',
                  verbose=False,
                  clear=False,
-                 enable_procyon=False,
                  disable_report=False,
                  silent=False,
                  no_kit_exception=False,
@@ -177,7 +171,6 @@ def process_file(config,
                                          output=outdir,
                                          verbose=verbose,
                                          clear=clear,
-                                         enable_procyon=enable_procyon,
                                          disable_description=disable_report,
                                          silent=silent,
                                          no_kit_exception=no_kit_exception,

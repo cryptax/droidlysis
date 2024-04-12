@@ -38,7 +38,6 @@ class droidsample:
                  output='/tmp/analysis',
                  verbose=False,
                  clear=False,
-                 enable_procyon=False,
                  disable_description=False,
                  silent=False,
                  no_kit_exception=False,
@@ -51,7 +50,6 @@ class droidsample:
         self.config = config
         self.absolute_filename = filename
         self.clear = clear
-        self.enable_procyon = enable_procyon
         # we need those for recursive calls to process_file
         self.disable_description = disable_description
         self.silent = silent
@@ -170,7 +168,6 @@ class droidsample:
                         droidlysis3.process_file(
                             os.path.join(self.outdir, element),
                             self.outdir, self.verbose, self.clear,
-                            self.enable_procyon,
                             self.disable_description,
                             self.no_kit_exception)
                     except:
@@ -214,14 +211,13 @@ class droidsample:
                       make sure classes.dex is readable
                       dex2jar classes.dex -o classes-dex2jar.jar
                       unzip -qq classes-dex2jar.jar -d outdir/unjarred
-                      procyon classes-dex2jar.jar -o outdir/procyon
 
         What we'll find:
-        APK, clear unset: ./smali AndroidManifest.xml ./unzipped classes.dex classes-dex2jar.jar ./unjarred ./procyon
+        APK, clear unset: ./smali AndroidManifest.xml ./unzipped classes.dex classes-dex2jar.jar ./unjarred 
         APK, clear set  : ./smali AndroidManifest.xml classes.dex
 
         DEX, clear unset: classes.dex ./smali
-        DEX, clear set  : classes.dex ./smali classes-dex2jar.jar ./unjarred ./procyon
+        DEX, clear set  : classes.dex ./smali classes-dex2jar.jar ./unjarred
 
         """
         logging.debug("------------- Disassembling")
@@ -230,7 +226,6 @@ class droidsample:
                 self.properties.filetype == droidutil.RAR or \
                 self.properties.filetype == droidutil.CLASS or \
                 self.properties.filetype == droidutil.UNKNOWN:
-            # TODO: we could be running procyon on a class file.
             logging.debug("Nothing to disassemble for "
                           + self.absolute_filename)
             return
@@ -336,12 +331,6 @@ class droidsample:
                         logging.warning("Dex2jar software is not executable, skipping (file: {0})".format(self.config.DEX2JAR_CMD))
                     
                     if os.access(jar_file, os.R_OK):
-                        if self.enable_procyon and os.access(self.config.PROCYON_JAR, os.R_OK):
-                            logging.debug("Procyon decompiler on " + jar_file)
-                            subprocess.call(["java", "-jar", self.config.PROCYON_JAR,
-                                            jar_file, "-o", os.path.join(self.outdir, 'procyon')],
-                                            stdout=self.process_output, stderr=self.process_output)
-
                         logging.debug("Unjarring " + jar_file)
                         jarziprar = droidziprar.droidziprar(jar_file, zipmode=True, verbose=self.verbose)
                         if jarziprar.handle is None:
@@ -975,7 +964,7 @@ class droidsample:
                     if found_apk:
                         for apk in found_apk:
                             logging.debug("Recursively processing " + apk)
-                            droidlysis3.process_file(apk, self.outdir, self.verbose, self.clear, self.enable_procyon, 
+                            droidlysis3.process_file(apk, self.outdir, self.verbose, self.clear, 
                                                      disable_report=self.disable_description,
                                                      no_kit_exception=self.no_kit_exception)
 
