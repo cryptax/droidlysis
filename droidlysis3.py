@@ -79,7 +79,8 @@ def get_arguments():
                         'and add them to kit config file',
                         action='store_true')
     parser.add_argument('--config',
-                        help='general configuration file for DroidLysis',
+                        help='general configuration file for DroidLysis. Default: ./conf/general.conf',
+                        default='./conf/general.conf',
                         action='store')
 
     args = parser.parse_args()
