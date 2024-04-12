@@ -103,4 +103,5 @@ docker run -it --rm ubuntu:latest /bin/bash
 
 When ready, upload on the real pypi: `twine upload dist/*`
 
+Make sure to use ~/.pypirc with API token.
 

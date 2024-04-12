@@ -199,6 +199,7 @@ This script helps you search for methods on JEB UI that contain code that matche
 
 ## Updates
 
+- v3.4.7 - Removed Procyon, integrated several PR #24 and #25, added more detailed accessibility abuse detection
 - v3.4.6 - Detecting manifest feature that automatically loads APK at install
 - v3.4.5 - Creating a writable user kit.conf file
 - v3.4.4 - Bug fix #14
