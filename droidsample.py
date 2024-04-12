@@ -268,10 +268,10 @@ class droidsample:
                 logging.debug("Moving multidex smali classes to ./smali")
 
                 os.system("cp -R "
-                          + os.path.join(self.outdir, "./smali_classes?/*")
+                          + os.path.join(self.outdir, "./smali_classes*/*")
                           + " " + os.path.join(self.outdir, "./smali"))
                 os.system("rm -r "
-                          + os.path.join(self.outdir, "./smali_classes?"))
+                          + os.path.join(self.outdir, "./smali_classes*"))
                 
             if self.verbose:
                 logging.debug("Apktool finished")
@@ -280,7 +280,7 @@ class droidsample:
             logging.debug("Extracting classes*.dex")
             try:
                 self.ziprar.extract_one_file('classes.dex', self.outdir)
-                for i in range(2, 10):
+                for i in range(2, 1000):
                     self.ziprar.extract_one_file('classes{}.dex'.format(i), self.outdir)
                     if not os.path.exists(os.path.join(self.outdir, 'classes{}.dex'.format(i))):
                         break
