@@ -23,11 +23,11 @@ class generalconfig:
                 config = xdg_config_home
             except ImportError:
                 config = os.path.join(os.getenv('HOME'), '.config')
+            config = os.path.join(config, 'droidlysis', 'general.conf')
             if not os.path.exists(config):
-                config = '/etc'
-            config = os.path.join(config, 'droidlysis')
+                config = '/etc/droidlysis/general.conf'
             if os.path.exists(config):
-                filename = os.path.join(config, 'general.conf')
+                filename = config
         logging.debug(f'Reading config from {filename}')
 
         if not os.path.exists(filename):
