@@ -783,7 +783,7 @@ class droidsample:
             file_path, line_no = m[0]
             with open(file_path, 'r') as f:
                 lines = f.readlines()
-                for i in range(int(line_no), 0, -1):
+                for i in range(min(int(line_no) - 1, len(lines) - 1), -1, -1):
                     line = lines[i]
                     if line.startswith('.method'):
                         clazz = (lines[0].split(' ')[-1]).strip()
@@ -993,7 +993,7 @@ class droidsample:
                     if found_apk:
                         for apk in found_apk:
                             logging.debug("Recursively processing " + apk)
-                            droidlysis3.process_file(apk, self.outdir, self.verbose, self.clear, 
+                            droidlysis3.process_file(self.config, apk, self.outdir, self.verbose, self.clear,
                                                      disable_report=self.disable_description,
                                                      no_kit_exception=self.no_kit_exception)
 
