@@ -15,19 +15,34 @@ logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s',
 class generalconfig:
     def __init__(self, filename, verbose=False):
         if not filename:
-            filename = './conf/general.conf'
-        if not os.path.exists(filename):
-            try:
-                from xdg.BaseDirectory import xdg_config_home
-
-                config = xdg_config_home
-            except ImportError:
-                config = os.path.join(os.getenv('HOME'), '.config')
-            config = os.path.join(config, 'droidlysis', 'general.conf')
-            if not os.path.exists(config):
-                config = '/etc/droidlysis/general.conf'
-            if os.path.exists(config):
-                filename = config
+            filename = None
+        
+        # Build a priority-ordered list of config file locations
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        fallbacks = [
+            './general.conf',
+            './conf/general.conf',
+            os.path.join(script_dir, 'conf', 'general.conf'),
+        ]
+        
+        # Add XDG and system-wide fallbacks
+        try:
+            from xdg.BaseDirectory import xdg_config_home
+            config_home = xdg_config_home
+        except ImportError:
+            config_home = os.path.join(os.getenv('HOME'), '.config')
+        fallbacks.append(os.path.join(config_home, 'droidlysis', 'general.conf'))
+        fallbacks.append('/etc/droidlysis/general.conf')
+        
+        # Use the provided filename first, then search fallbacks
+        if filename and os.path.exists(filename):
+            pass  # keep provided filename
+        else:
+            filename = None
+            for candidate in fallbacks:
+                if os.path.exists(candidate):
+                    filename = candidate
+                    break
         logging.debug(f'Reading config from {filename}')
 
         if not os.path.exists(filename):
