@@ -17,6 +17,7 @@ import subprocess
 import xml.dom.minidom
 import droidutil
 import droidlysis3
+import droidaxml
 import droidconfig
 import droidcountry
 import droidproperties
@@ -351,17 +352,15 @@ class droidsample:
                     self.ziprar.extract_one_file('AndroidManifest.xml', self.outdir)
                     if os.access( manifest, os.R_OK) and os.path.getsize(manifest) > 0:
                         textmanifest = os.path.join( self.outdir, 'AndroidManifest.text.xml')
-                        subprocess.call( [ "androaxml.py", "--input", manifest, \
-                                           "--output", textmanifest ], \
-                                         stdout=self.process_output, stderr=self.process_output)
+                        droidaxml.axml_to_text(manifest, textmanifest)
                         if os.access( textmanifest, os.R_OK ):
                             # overwrite the binary manifest with the converted text one
                             os.rename(textmanifest, manifest)
                 except AssertionError:
                     logging.warning("Failed to extract binary manifest: %s" % (sys.exc_info()[0]))
                 
-                except FileNotFoundError:
-                    logging.warning("Error while unzipping or Androguard not installed (no androaxml.py)")
+                except (OSError, droidaxml.AxmlError) as error:
+                    logging.warning("Failed to extract or decode AndroidManifest.xml: %s", error)
                      
     def extract_file_properties(self):
         """Extracts file size, 

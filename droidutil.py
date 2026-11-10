@@ -46,7 +46,10 @@ def on_rm_tree_error(fn, path, exc_info):
 def move_dir(src, dst):
     # Move src directory to dst - works even if dst already exists.
     assert os.path.isdir(src), "src must be an existing directory"
-    os.system("mv" + " " + src + "/* " + dst)
+    # Guard against an empty src: the 'src/*' glob would not match anything
+    # and mv would fail with "cannot stat". Just drop the empty directory.
+    if os.listdir(src):
+        os.system("mv" + " " + src + "/* " + dst)
     shutil.rmtree(src, onerror=on_rm_tree_error)
 
 

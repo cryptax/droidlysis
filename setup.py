@@ -19,6 +19,7 @@ setup(
     version='3.4.7',
     packages=['conf'],
     py_modules=[
+        'droidaxml',
         'droidconfig',
         'droidcountry',
         'droidlysis3',
